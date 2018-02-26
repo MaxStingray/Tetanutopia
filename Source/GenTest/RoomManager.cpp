@@ -329,16 +329,6 @@ void ARoomManager::BeginPlay()
 	this->AddInstanceComponent(Walls);
 	
 	GenerateRoom(lm->roomXSize, lm->roomYSize);
-	//place turrets at a random point
-	if (hasTurrets)
-	{
-		TurretRing();
-	}
-	else
-	{
-		if(assignedRoomType != RoomType::RT_START)
-			assignedRoomType = RoomType::RT_GENERIC;
-	}
 
 	//if this is not the start room (parameters can be changed)
 	if (this->GetActorLocation() != FVector(0, 0, 0))
@@ -397,7 +387,11 @@ void ARoomManager::BeginPlay()
 void ARoomManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	time += DeltaTime;
+	if (time > 10) {
+		this->SetActorTransform(FTransform(FVector(0, 0, 5)));
+		time = 0;
+	}
 }
 
 
