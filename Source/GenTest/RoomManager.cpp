@@ -352,7 +352,9 @@ void ARoomManager::BeginPlay()
 		{
 			if (lm->weaponRooms < 3)
 			{
-				DrawInteriorRoom(20, 10, 10, 10);
+				int w = rand() % 20 + 5;
+				int h = rand() % 20 + 5;
+				DrawInteriorRoom(20, 10, w, h);
 				lm->weaponRooms++;
 			}
 			else
