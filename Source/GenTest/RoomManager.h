@@ -37,17 +37,6 @@ class GENTEST_API ARoomManager : public AActor
 public:
 	// Sets default values for this actor's properties
 	ARoomManager();
-	/*
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UInstancedStaticMeshComponent* ISMC;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UStaticMesh* SMAsset_Cube;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UInstancedStaticMeshComponent> ISM;
-	//UInstancedStaticMeshComponent* ISM = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("RootComponent"));
-	*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Enum)
 		RoomType assignedRoomType;

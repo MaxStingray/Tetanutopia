@@ -384,10 +384,6 @@ void ARoomManager::BeginPlay()
 				lm->genericRooms++;
 			}
 		}
-		else
-		{
-			hasTurrets = false;
-		}
 	}
 	else
 	{
