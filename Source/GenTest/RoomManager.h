@@ -69,7 +69,7 @@ public:
 	bool visited = false;
 	int x;
 	int y;
-
+	float time = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UStaticMesh* Floor1;
