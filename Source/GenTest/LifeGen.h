@@ -29,7 +29,10 @@ public:
 		//const int m_width = 50;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		//static const int height = 50;*/
-	bool map[50][50];
+	bool map[40][100];
+
+	const int m_width = 40;
+	const int m_height = 100;
 
 	UFUNCTION(BlueprintCallable, Category = "GameDev|LifeGen")
 		void CreateMap();

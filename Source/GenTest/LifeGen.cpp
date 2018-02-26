@@ -15,8 +15,8 @@ ALifeGen::ALifeGen()
 }
 
 void ALifeGen::CreateMap() {
-	const int width = 50;
-	const int height = 50;
+	const int width = 40;
+	const int height = 100;
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
 			if (rand()%(100+1) < this->livingChance) {
@@ -31,8 +31,8 @@ void ALifeGen::CreateMap() {
 
 void ALifeGen::DrawMap()
 {
-	const int width = 50;
-	const int height = 50;
+	const int width = 40;
+	const int height = 100;
 	CreateMap();
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
@@ -45,8 +45,8 @@ void ALifeGen::DrawMap()
 
 
 int ALifeGen::CountAliveNeighbours(int x, int y) {
-	const int width = 50;
-	const int height = 50;
+	const int width = 40;
+	const int height = 100;
 	int count = 0;
 	for (int i = -1; i<2; i++) {
 		for (int j = -1; j<2; j++) {
@@ -71,8 +71,8 @@ int ALifeGen::CountAliveNeighbours(int x, int y) {
 
 
 void ALifeGen::DoSimulationStep() {
-	const int width = 50;
-	const int height = 50;
+	const int width = 40;
+	const int height = 100;
 	bool tempMap[width][height];
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
