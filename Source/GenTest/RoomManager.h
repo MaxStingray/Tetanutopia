@@ -25,6 +25,7 @@ enum class RoomType : uint8
 	RT_START		UMETA(DisplayName = "start room"),
 	RT_END			UMETA(DisplayName = "end room"),
 	RT_ENEMY		UMETA(DisplayName = "enemy room"),
+	RT_WEAPON		UMETA(DisplayName = "weapon room"),
 	RT_GENERIC		UMETA(DisplayName = "generic room (placeholder roomtype)")//remove this eventually
 };
 

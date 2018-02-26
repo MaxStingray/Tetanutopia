@@ -162,6 +162,7 @@ void ARoomManager::DrawInteriorRoom(int startX, int startY, int width, int heigh
 {
 	int endX = startX - width;//might need to be +
 	int endY = startY + height;//also might be wrong
+	assignedRoomType = RoomType::RT_WEAPON;
 	//draw lines between each point
 	for (int x = startX; x > (endX)-1; x--)//might need to flip loop!
 	{
@@ -301,46 +302,11 @@ TMap<FString, FVector> ARoomManager::GetNodeNeighbors(FVector start)
 
 	return neighborMap;
 }
-/*
-void ARoomManager::SpawnISM(FVector trans)
-{
-	 FTransform t;
-	 t.SetLocation(FVector(0, 0, 0));
-	 t.SetRotation(FQuat(10, 10, 10, 10));
-	 t.SetScale3D(FVector(1, 1, 1));
-	try {
-		ISMComp->AddInstance(t);
-		//Spawn(FVector(0,0,0));
-	}
-	catch (...) {
 
-	}
-}
-*/
 //Please note that this function gets the last level manager in the scene so please ensure there is only one level manager at any one time.
 void ARoomManager::BeginPlay()
 {
-	Super::BeginPlay();
-
-	//if this is not the start room (parameters can be changed)
-	if (this->GetActorLocation() != FVector(0, 0, 0))
-	{
-		//decide whether this room has turrets (50% chance for now)
-		if (rand() % (100 + 1) < 50)
-		{
-			hasTurrets = true;
-		}
-		else
-		{
-			hasTurrets = false;
-		}
-	}
-	else
-	{
-		//this is the start room
-		assignedRoomType = RoomType::RT_START;
-	}
-	
+	Super::BeginPlay();	
 
 	ALevelManager* lm = new ALevelManager();
 	for (TActorIterator<ALevelManager> ActorItr(GetWorld()); ActorItr; ++ActorItr)
@@ -374,11 +340,61 @@ void ARoomManager::BeginPlay()
 			assignedRoomType = RoomType::RT_GENERIC;
 	}
 
-	DrawInteriorRoom(20, 10, 10, 10);
-	/*SpawnISM(FVector(0, 0, 0), ISMComp);
-	Tiles[0].index = ISMComp->GetInstanceCount();
-	Tiles[0].parentComp = ISMComp;
-	Tiles[0].parentComp->RemoveInstance(Tiles[0].index);*/
+	//if this is not the start room (parameters can be changed)
+	if (this->GetActorLocation() != FVector(0, 0, 0))
+	{
+		int percentage = rand() % (100 + 1);
+		//decide whether this room has turrets (50% chance for now)
+		if (percentage < 25)
+		{
+			if (lm->turretRooms < 3)
+			{
+				TurretRing();
+				lm->turretRooms++;
+			}
+			else
+			{
+				assignedRoomType = RoomType::RT_GENERIC;
+				lm->genericRooms++;
+			}
+		}
+		else if (percentage > 25 && percentage < 50)
+		{
+			if (lm->weaponRooms < 3)
+			{
+				DrawInteriorRoom(20, 10, 10, 10);
+				lm->weaponRooms++;
+			}
+			else
+			{
+				assignedRoomType = RoomType::RT_GENERIC;
+				lm->genericRooms++;
+			}
+		}
+		else if (percentage > 50 && percentage < 100)
+		{
+			if (lm->enemyRooms < 10)
+			{
+				assignedRoomType = RoomType::RT_ENEMY;
+				lm->enemyRooms++;
+			}
+			else
+			{
+				assignedRoomType = RoomType::RT_GENERIC;
+				lm->genericRooms++;
+			}
+		}
+		else
+		{
+			hasTurrets = false;
+		}
+	}
+	else
+	{
+		//this is the start room
+		assignedRoomType = RoomType::RT_START;
+	}
+	
 }
 
 // Called every frame

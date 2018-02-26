@@ -18,6 +18,16 @@ private:
 public:	
 	// Sets default values for this actor's properties
 	ALevelManager();
+
+	//room counters, increment in RoomManager
+	UPROPERTY(EditAnywhere)
+		int turretRooms = 0;
+	UPROPERTY(EditAnywhere)
+		int enemyRooms = 0;
+	UPROPERTY(EditAnywhere)
+		int weaponRooms = 0;
+	UPROPERTY(EditAnywhere)
+		int genericRooms = 0;
 	void * operator new(size_t size);
 	static const int roomsX = 4;
 	static const int roomsY = 4;
