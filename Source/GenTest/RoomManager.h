@@ -95,6 +95,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void TurretRing();
 
+	UFUNCTION(BlueprintCallable)
+		void PlaceProps(FString location);
+
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "GameDev|RoomManager")
 		void SpawnISM(FTransform trans, UHierarchicalInstancedStaticMeshComponent* targetMesh);
 

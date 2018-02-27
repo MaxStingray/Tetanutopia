@@ -112,7 +112,10 @@ void ARoomManager::GenerateRoom(int sizeX, int sizeY)
 			floorCoords.Add(FVector(x, y, 0));
 			//get local coordinates from _x and _y and make a string
 			//string is the key value to access world coordinates from the TMap
-			floorMap.Add((FString::FromInt(_x) + "," + FString::FromInt(_y)), FVector(x, y, 0));
+			FString locationString = (FString::FromInt(_x) + "," + FString::FromInt(_y));
+			floorMap.Add(locationString, FVector(x, y, 0));
+			//see if we should place a prop
+			PlaceProps(locationString);
 			//spawn mesh
 			FQuat rot(0, 0, 0, 0);
 			rot.Normalize();
@@ -246,13 +249,43 @@ void ARoomManager::TurretRing()
 	Turret = lm->_Turret;
 	
 	TArray<FString> positions;
-	FString arr[] = { "13,4", "9,8", "17,8", "5,12", "21,12", "9,16", "17,16", "13,20" };
-	positions.Append(arr, ARRAY_COUNT(arr));
+	int percentage = rand() % 100 + 1;
+
+	if (percentage < 50)
+	{
+		FString arr[] = { "13,4", "9,8", "17,8", "5,12", "21,12", "9,16", "17,16", "13,20" };
+		positions.Append(arr, ARRAY_COUNT(arr));
+	}
+	else if (percentage > 50)
+	{
+		FString arr[] = { "2,2", "24,24", "24,2", "2,24" };
+		positions.Append(arr, ARRAY_COUNT(arr));
+	}
 	
 	for (int i = 0; i < positions.Num(); i++)
 	{
 		FVector nextPosition = floorMap.FindChecked(positions[i]);
 		Spawn(nextPosition, Turret);
+	}
+}
+//place a prop if condition is met
+void ARoomManager::PlaceProps(FString location)
+{
+	//get the level manager.. there has to be a less shit way to do this
+	ALevelManager* lm = new ALevelManager();
+	for (TActorIterator<ALevelManager> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		lm = *ActorItr;
+	}
+	//give props a five percent chance to spawn per tile
+	int percentage = rand() % 100 + 1;
+	if (percentage == 1)
+	{
+		//select the prop
+		int whichProp = rand() % lm->props.Num();//remove brackets if necessary
+		TSubclassOf<AActor> actor = lm->props[whichProp];
+		//spawn it
+		Spawn(floorMap.FindChecked(location), actor);
 	}
 }
 
