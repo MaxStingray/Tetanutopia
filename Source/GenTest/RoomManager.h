@@ -71,11 +71,12 @@ public:
 	UPROPERTY(EditAnywhere)
 		TMap<FString, FVector> floorMap;
 
-	UPROPERTY(EditAnywhere)
-		TArray<FVector> floorCoords;
 	//collection of wall tile locations for this room
 	UPROPERTY(EditAnywhere)
 		TArray<FVector> wallCoords;
+
+	UPROPERTY(EditAnywhere)
+		TMap<FString, FVector> wallMap;
 
 	UFUNCTION(BlueprintCallable)
 		void Spawn(FVector location, TSubclassOf<AActor> actor);
@@ -107,7 +108,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	UFUNCTION(BlueprintCallable)
-		TMap<FString, FVector> GetNodeNeighbors(FVector start);
+		TMap<FString, FVector> GetNodeNeighbors(FString startLocation, int numTiles);
 
 	virtual void BeginPlay() override;
 	

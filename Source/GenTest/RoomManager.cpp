@@ -108,11 +108,10 @@ void ARoomManager::GenerateRoom(int sizeX, int sizeY)
 	{
 		for (int x = blCorner.X, _x = 0; x < blCorner.X + sizeX; x += lm->unitSize, _x++)
 		{
-			//add world coordinates to list 
-			floorCoords.Add(FVector(x, y, 0));
 			//get local coordinates from _x and _y and make a string
 			//string is the key value to access world coordinates from the TMap
 			FString locationString = (FString::FromInt(_x) + "," + FString::FromInt(_y));
+			//add coordinates to collection
 			floorMap.Add(locationString, FVector(x, y, 0));
 			//see if we should place a prop
 			PlaceProps(locationString);
@@ -287,50 +286,68 @@ void ARoomManager::PlaceProps(FString location)
 		//spawn it
 		Spawn(floorMap.FindChecked(location), actor);
 	}
+
+	//TODO: Make this less random. Take into account wall positions and record placement of other objects
 }
 
 //returns array of neighboring nodes to a given start point
-TMap<FString, FVector> ARoomManager::GetNodeNeighbors(FVector start)
+TMap<FString, FVector> ARoomManager::GetNodeNeighbors(FString startLocation, int numTiles)//change to location string, add number of tiles
 {
-	//use a Tmap instead :D
+	//split the given string into two integers
+	FString _x;
+	FString _y;
+	startLocation.Split(TEXT(","), &_x, &_y);
+	int startX = FCString::Atoi(*_x);
+	int startY = FCString::Atoi(*_y);
+	//no, I can't believe this is how it works either
+	//return a TMap of neighboring tiles
 	TMap<FString, FVector> neighborMap;
-
+	//create the start point key from the given parameters
+	FString startKey = FString::FromInt(startX) + "," + FString::FromInt(startY);
+	//get the start vector from the floormap using the created key
+	FVector start = floorMap.FindChecked(startKey);
 	ALevelManager* lm = new ALevelManager();
 	for (TActorIterator<ALevelManager> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
 		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
 		lm = *ActorItr;
 	}
-	//the position of the next neighbor to be checked
-	FVector nextNeighborPosition = FVector(0, 0, 0);
+	
+	//the key of the next neighbor to check
+	FString nextNeighborKey;
 
 	//+ x axis check
-	nextNeighborPosition = FVector((start.X + lm->unitSize), start.Y, start.Z);
+	//get the key of the next neighbor to check
+	nextNeighborKey = FString::FromInt(startX + 1) + "," + FString::FromInt(startY);
+	FVector wallCheck = FVector(floorMap.FindChecked(nextNeighborKey).X, floorMap.FindChecked(nextNeighborKey).Y, floorMap.FindChecked(nextNeighborKey).Z + lm->unitSize);
 	///check for walls
-	if (!wallCoords.Contains(FVector(nextNeighborPosition.X, nextNeighborPosition.Y, (nextNeighborPosition.Z + (lm->unitSize * 0.5)) )) && floorCoords.Contains(nextNeighborPosition))
+	if (!wallCoords.Contains(wallCheck) && floorMap.Contains(nextNeighborKey))
 	{
-		neighborMap.Add("posX", nextNeighborPosition);
+		neighborMap.Add("posX", floorMap.FindChecked(nextNeighborKey));
 	}
 	//- x axis check
-	nextNeighborPosition = FVector((start.X - lm->unitSize), start.Y, start.Z);
+	nextNeighborKey = FString::FromInt(startX - 1) + "," + FString::FromInt(startY);
+	wallCheck = FVector(floorMap.FindChecked(nextNeighborKey).X, floorMap.FindChecked(nextNeighborKey).Y, floorMap.FindChecked(nextNeighborKey).Z + lm->unitSize);
 	///check for walls
-	if (!wallCoords.Contains(FVector(nextNeighborPosition.X, nextNeighborPosition.Y, (nextNeighborPosition.Z + (lm->unitSize * 0.5)))) && floorCoords.Contains(nextNeighborPosition))
+	if (!wallCoords.Contains(wallCheck) && floorMap.Contains(nextNeighborKey))
 	{
-		neighborMap.Add("negX", nextNeighborPosition);
+		neighborMap.Add("negX", floorMap.FindChecked(nextNeighborKey));
 	}
 	//+ y axis check
-	nextNeighborPosition = FVector(start.X, (start.Y + lm->unitSize), start.Z);
+	nextNeighborKey = FString::FromInt(startX) + "," + FString::FromInt(startY + 1);
+	wallCheck = FVector(floorMap.FindChecked(nextNeighborKey).X, floorMap.FindChecked(nextNeighborKey).Y, floorMap.FindChecked(nextNeighborKey).Z + lm->unitSize);
 	///check for walls
-	if (!wallCoords.Contains(FVector(nextNeighborPosition.X, nextNeighborPosition.Y, (nextNeighborPosition.Z + (lm->unitSize * 0.5)))) && floorCoords.Contains(nextNeighborPosition))
+	if (!wallCoords.Contains(wallCheck) && floorMap.Contains(nextNeighborKey))
 	{
-		neighborMap.Add("posY", nextNeighborPosition);
+		neighborMap.Add("posY", floorMap.FindChecked(nextNeighborKey));
 	}
 	//-y axis check
-	nextNeighborPosition = FVector(start.X, (start.Y - lm->unitSize), start.Z);
-	//check for walls
-	if (!wallCoords.Contains(FVector(nextNeighborPosition.X, nextNeighborPosition.Y, (nextNeighborPosition.Z + (lm->unitSize * 0.5)))) && floorCoords.Contains(nextNeighborPosition))
+	nextNeighborKey = FString::FromInt(startX) + "," + FString::FromInt(startY - 1);
+	wallCheck = FVector(floorMap.FindChecked(nextNeighborKey).X, floorMap.FindChecked(nextNeighborKey).Y, floorMap.FindChecked(nextNeighborKey).Z + lm->unitSize);
+	///check for walls
+	if (!wallCoords.Contains(wallCheck) && floorMap.Contains(nextNeighborKey))
 	{
-		neighborMap.Add("negY", nextNeighborPosition);
+		neighborMap.Add("negY", floorMap.FindChecked(nextNeighborKey));
 	}
 
 	return neighborMap;
