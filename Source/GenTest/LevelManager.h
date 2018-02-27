@@ -41,6 +41,12 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<AActor> _Turret;
+	//array of props to randomly place
+	UPROPERTY(EditAnywhere)
+		TArray<TSubclassOf<AActor>> props;
+	//array of enemies WHEN WE GET ENEMIES
+	UPROPERTY(EditAnywhere)
+		TArray<TSubclassOf<AActor>> enemies;
 	UPROPERTY(EditAnywhere)
 		UStaticMesh* Floor1;
 	UPROPERTY(EditAnywhere)
