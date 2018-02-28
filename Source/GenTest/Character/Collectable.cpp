@@ -16,9 +16,12 @@ ACollectable::ACollectable()
 	RootComponent = newRoot;
 
 	// The collision sphere
+	UPROPERTY(Category = "Collectable", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Collider"));
 	CollisionSphere->InitSphereRadius(110.0f);
 	CollisionSphere->SetupAttachment(RootComponent);
+
+	CollisionSphere->SetCollisionProfileName("Pickup");
 
 	CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &ACollectable::StartOverlap);
 	CollisionSphere->OnComponentEndOverlap.AddDynamic(this, &ACollectable::EndOverlap);
@@ -158,6 +161,7 @@ void ACollectable::SetItem()
 		Item->SetupAttachment(RootComponent);
 		Item->AttachTo(RootComponent);
 		Item->RegisterComponentWithWorld(GetWorld());	// If we use the CreateObject method we must register with the world for the render to work
+		Item->SetCollisionProfileName("Pickup");
 	}
 }
 
