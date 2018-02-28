@@ -448,7 +448,7 @@ void ARoomManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	time += DeltaTime;
 	if (time > 10) {
-		this->SetActorTransform(FTransform(FVector(0, 0, 5)));
+		this->SetActorTransform(FTransform(FVector(0, 0, 0)));
 		time = 0;
 	}
 }
