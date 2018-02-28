@@ -46,7 +46,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Fires the weapon
-	virtual void Fire();
+	UFUNCTION(BlueprintCallable)
+	void Fire();
 
 	// Sets the offset
 	virtual void SetOffset(FVector offset);
