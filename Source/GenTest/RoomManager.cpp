@@ -276,15 +276,18 @@ void ARoomManager::PlaceProps(FString location)
 	{
 		lm = *ActorItr;
 	}
-	//give props a five percent chance to spawn per tile
+	//give props a percentage chance to spawn per tile
 	int percentage = rand() % 100 + 1;
 	if (percentage == 1)
 	{
-		//select the prop
-		int whichProp = rand() % lm->props.Num();//remove brackets if necessary
-		TSubclassOf<AActor> actor = lm->props[whichProp];
-		//spawn it
-		Spawn(floorMap.FindChecked(location), actor);
+		if (lm->props.Num() != 0)
+		{
+			//select the prop
+			int whichProp = rand() % lm->props.Num();//remove brackets if necessary
+			TSubclassOf<AActor> actor = lm->props[whichProp];
+			//spawn it
+			Spawn(floorMap.FindChecked(location), actor);
+		}
 	}
 
 	//TODO: Make this less random. Take into account wall positions and record placement of other objects
@@ -293,6 +296,13 @@ void ARoomManager::PlaceProps(FString location)
 //returns array of neighboring nodes to a given start point
 TMap<FString, FVector> ARoomManager::GetNodeNeighbors(FString startLocation, int numTiles)//change to location string, add number of tiles
 {
+	/*TODO: give getnodeNeighbors a number of tiles in each direction to check
+	only one press and one fire pit per room
+	place barrels and pallets close to walls
+
+	then roomgen is DONE*/
+
+
 	//split the given string into two integers
 	FString _x;
 	FString _y;
@@ -312,13 +322,10 @@ TMap<FString, FVector> ARoomManager::GetNodeNeighbors(FString startLocation, int
 		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
 		lm = *ActorItr;
 	}
-	
-	//the key of the next neighbor to check
-	FString nextNeighborKey;
 
 	//+ x axis check
 	//get the key of the next neighbor to check
-	nextNeighborKey = FString::FromInt(startX + 1) + "," + FString::FromInt(startY);
+	FString nextNeighborKey = FString::FromInt(startX + 1) + "," + FString::FromInt(startY);
 	FVector wallCheck = FVector(floorMap.FindChecked(nextNeighborKey).X, floorMap.FindChecked(nextNeighborKey).Y, floorMap.FindChecked(nextNeighborKey).Z + lm->unitSize);
 	///check for walls
 	if (!wallCoords.Contains(wallCheck) && floorMap.Contains(nextNeighborKey))
