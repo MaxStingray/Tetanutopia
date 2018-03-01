@@ -5,6 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "TimerManager.h"
 #include <string>
+#include "Kismet/GameplayStatics.h"
 
 UBaseWeapon::UBaseWeapon()
 {
@@ -13,6 +14,7 @@ UBaseWeapon::UBaseWeapon()
 
 	InitialiseWeaponStats();
 	InitialiseStaticMesh();
+	InitialiseSounds();
 }
 
 void UBaseWeapon::BeginPlay()
@@ -29,11 +31,11 @@ void UBaseWeapon::Fire()
 {
 	if (bCanFire && ProjectileType)
 	{
-		bCanFire = false;
-
 		UWorld* const World = GetWorld();
 		if (World != NULL)
 		{
+			bCanFire = false;
+
 			FRotator FireRotation = GetComponentRotation();
 			FVector SpawnLocation = GetComponentLocation() + FireRotation.RotateVector(ProjectileSpawnOffset);
 
@@ -44,8 +46,11 @@ void UBaseWeapon::Fire()
 					const float randomSpread = ((static_cast<float>(FMath::RandRange(0, 100)) / 100.0f) * (ProjectileMaxSpread * 2)) - ProjectileMaxSpread;
 					FireRotation.Yaw += randomSpread;
 				}
-				World->SpawnActor<ABaseProjectile>(ProjectileType, SpawnLocation, FireRotation);
+				ABaseProjectile* proj = World->SpawnActor<ABaseProjectile>(ProjectileType, SpawnLocation, FireRotation);
+				proj->SetOwningActor(GetOwner());
 			}
+
+			UGameplayStatics::PlaySoundAtLocation(this, ShootSound, SpawnLocation, FireRotation);
 
 			World->GetTimerManager().SetTimer(TimerHandle_TimeUntilCanFire, this, &UBaseWeapon::ReEnableCanFire, FireInterval);
 		}
@@ -60,6 +65,12 @@ void UBaseWeapon::SetOffset(FVector offset)
 void UBaseWeapon::ReEnableCanFire()
 {
 	bCanFire = true;
+}
+
+void UBaseWeapon::InitialiseSounds()
+{
+	static ConstructorHelpers::FObjectFinder<USoundCue> shootCue(TEXT("/Game/Audio/pew_cue"));
+	ShootSound = shootCue.Object;
 }
 
 void UBaseWeapon::InitialiseStaticMesh()

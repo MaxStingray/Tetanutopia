@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/StaticMeshComponent.h"
+#include "Runtime/Engine/Classes/Sound/SoundCue.h"
+#include "Runtime/Engine/Classes/Components/AudioComponent.h"
 #include "BaseWeapon.generated.h"
 
 UCLASS(Blueprintable)
@@ -18,6 +20,12 @@ protected:
 
 	// The handle for the timer until the next shot can be fired
 	FTimerHandle TimerHandle_TimeUntilCanFire;
+
+	// The actual sound
+	USoundCue* ShootSound;
+	
+	// Setup the Shoot Sound
+	void InitialiseSounds();
 
 	// Setup the Static Mesh
 	void InitialiseStaticMesh();

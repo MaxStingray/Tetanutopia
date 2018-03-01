@@ -7,6 +7,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/CollisionProfile.h"
 #include "Engine/StaticMesh.h"
+#include "Kismet/GameplayStatics.h"
 
 APlayerRobot::APlayerRobot()
 {
@@ -17,6 +18,10 @@ APlayerRobot::APlayerRobot()
 	InitialiseControls();
 	InitialiseCamera();
 	InitialiseWeapons();
+
+	// Setup SOunds
+	static ConstructorHelpers::FObjectFinder<USoundCue> shootCue(TEXT("/Game/Audio/pickup_cue"));
+	EquipSound = shootCue.Object;
 }
 
 void APlayerRobot::InitialiseControls()
@@ -68,6 +73,9 @@ void APlayerRobot::InitialiseCamera()
 void APlayerRobot::InitialisePlayerStats()
 {
 	MoveSpeed = 1000.0f;
+
+	MaxHealth = 100;
+	CurrentHealth = MaxHealth;
 }
 
 void APlayerRobot::InitialiseStaticMesh()
@@ -211,6 +219,8 @@ void APlayerRobot::UseActiveItem()
 
 void APlayerRobot::OnDeath()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Player had died!"));
+	Destroy(); // TODO: Other stuff
 }
 
 void APlayerRobot::BeginPlay()
@@ -271,6 +281,8 @@ void APlayerRobot::EquipWeaponPrimary()
 		WeaponPrimary->SetupAttachment(RootComponent);
 		WeaponPrimary->SetOffset(WeaponPrimaryOffset);
 		WeaponPrimary->AttachTo(RootComponent);
+
+		UGameplayStatics::PlaySoundAtLocation(this, EquipSound, GetActorLocation(), GetActorRotation());
 	}
 }
 
@@ -289,6 +301,8 @@ void APlayerRobot::EquipWeaponAlternate()
 		WeaponAlternate->SetupAttachment(RootComponent);
 		WeaponAlternate->SetOffset(WeaponAlternateOffset);
 		WeaponAlternate->AttachTo(RootComponent);
+
+		UGameplayStatics::PlaySoundAtLocation(this, EquipSound, GetActorLocation(), GetActorRotation());
 	}
 }
 
@@ -307,6 +321,8 @@ void APlayerRobot::EquipItemActive()
 		ItemActive->SetupAttachment(RootComponent);
 		ItemActive->SetOffset(ItemOffset);
 		ItemActive->AttachTo(RootComponent);
+
+		UGameplayStatics::PlaySoundAtLocation(this, EquipSound, GetActorLocation(), GetActorRotation());
 	}
 }
 
@@ -345,8 +361,36 @@ void APlayerRobot::UnequipItemActive()
 
 void APlayerRobot::TakeDamage(int amount)
 {
+	if(amount > 0)
+	{
+		CurrentHealth -= amount;
+
+		if (CurrentHealth <= 0)
+		{
+			OnDeath();
+		}
+	}
 }
 
 void APlayerRobot::Heal(int amount)
 {
+	if (amount > 0)
+	{
+		CurrentHealth += amount;
+
+		if (CurrentHealth > MaxHealth)
+		{
+			CurrentHealth = MaxHealth;
+		}
+	}
+}
+
+int APlayerRobot::GetMaxHealth()
+{
+	return MaxHealth;
+}
+
+int APlayerRobot::GetCurrentHealth()
+{
+	return CurrentHealth;
 }
