@@ -7,6 +7,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/CollisionProfile.h"
 #include "Engine/StaticMesh.h"
+#include "Kismet/GameplayStatics.h"
 
 APlayerRobot::APlayerRobot()
 {
@@ -17,6 +18,10 @@ APlayerRobot::APlayerRobot()
 	InitialiseControls();
 	InitialiseCamera();
 	InitialiseWeapons();
+
+	// Setup SOunds
+	static ConstructorHelpers::FObjectFinder<USoundCue> shootCue(TEXT("/Game/Audio/pickup_cue"));
+	EquipSound = shootCue.Object;
 }
 
 void APlayerRobot::InitialiseControls()
@@ -276,6 +281,8 @@ void APlayerRobot::EquipWeaponPrimary()
 		WeaponPrimary->SetupAttachment(RootComponent);
 		WeaponPrimary->SetOffset(WeaponPrimaryOffset);
 		WeaponPrimary->AttachTo(RootComponent);
+
+		UGameplayStatics::PlaySoundAtLocation(this, EquipSound, GetActorLocation(), GetActorRotation());
 	}
 }
 
@@ -294,6 +301,8 @@ void APlayerRobot::EquipWeaponAlternate()
 		WeaponAlternate->SetupAttachment(RootComponent);
 		WeaponAlternate->SetOffset(WeaponAlternateOffset);
 		WeaponAlternate->AttachTo(RootComponent);
+
+		UGameplayStatics::PlaySoundAtLocation(this, EquipSound, GetActorLocation(), GetActorRotation());
 	}
 }
 
@@ -312,6 +321,8 @@ void APlayerRobot::EquipItemActive()
 		ItemActive->SetupAttachment(RootComponent);
 		ItemActive->SetOffset(ItemOffset);
 		ItemActive->AttachTo(RootComponent);
+
+		UGameplayStatics::PlaySoundAtLocation(this, EquipSound, GetActorLocation(), GetActorRotation());
 	}
 }
 

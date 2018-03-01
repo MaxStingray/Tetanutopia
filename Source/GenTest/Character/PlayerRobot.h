@@ -4,6 +4,7 @@
 #include "GameFramework/Pawn.h"
 #include "BaseWeapon.h"
 #include "Collectable.h"
+#include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Health.h"
 #include "PlayerRobot.generated.h"
 
@@ -53,6 +54,8 @@ private:
 	UPROPERTY(Category = "Weapons", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	FVector ItemOffset;
 
+	// The sound that plays when you equip something
+	USoundCue* EquipSound;
 
 	// The Active Use Item
 	// TODO: Item Implementation
