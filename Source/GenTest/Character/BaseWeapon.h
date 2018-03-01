@@ -63,4 +63,7 @@ public:
 	// How fast the weapon fires each shot
 	UPROPERTY(Category = "Weapon|Stats", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float FireInterval;
+
+
+	void* operator new  (std::size_t count);
 };

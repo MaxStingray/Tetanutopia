@@ -188,7 +188,7 @@ void APlayerRobot::FireAlternate()
 		}
 		else
 		{
-			UE_LOG(LogTemp, Display, TEXT("Nho Alternate Weapon"));
+			UE_LOG(LogTemp, Display, TEXT("No Alternate Weapon"));
 		}
 	}
 }

@@ -1,5 +1,4 @@
 
-
 #include "BasicAI.h"
 
 
@@ -11,11 +10,16 @@ ABasicAI::ABasicAI()
 
 }
 
+
+
 // Called when the game starts or when spawned
 void ABasicAI::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	UBaseWeapon* bw = new UBaseWeapon;
+	weapon = bw;
+	//weapon->SetupAttachment(RootComponent);
+	//weapon->AttachTo(RootComponent);
 }
 
 // Called every frame
@@ -33,6 +37,35 @@ void ABasicAI::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 }
 
 void ABasicAI::Attack() {
-	weapon->Fire();
+	if (weapon) {
+		weapon->Fire();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Display, TEXT("No Weapon"));
+	}
+}
+
+void ABasicAI::OnDeath()
+{
+	UE_LOG(LogTemp, Display, TEXT("AI has died"));
+}
+
+void ABasicAI::TakeDamage(int value)
+{
+	UE_LOG(LogTemp, Display, TEXT("AI took damage"));
+
+	health -= value;
+	if (health < 0) {
+		OnDeath();
+	}
+}
+
+void ABasicAI::Heal(int value)
+{
+	health += value;
+	if (health > 100) {
+		health = 100;
+	}
 }
 

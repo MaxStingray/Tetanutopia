@@ -82,3 +82,9 @@ void UBaseWeapon::InitialiseWeaponStats()
 	ProjectileSpawnOffset = FVector(0, 0, 0);
 	WeaponPositionOffset = FVector(0, 0, 0);
 }
+
+
+void * UBaseWeapon::operator new(std::size_t count)
+{
+	return nullptr;
+}
