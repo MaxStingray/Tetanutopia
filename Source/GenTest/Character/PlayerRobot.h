@@ -4,14 +4,23 @@
 #include "GameFramework/Pawn.h"
 #include "BaseWeapon.h"
 #include "Collectable.h"
+#include "Health.h"
 #include "PlayerRobot.generated.h"
 
 UCLASS()
-class GENTEST_API APlayerRobot : public APawn
+class GENTEST_API APlayerRobot : public APawn, public IHealth
 {
 	GENERATED_BODY()
 
 private:
+	// The max health the player can have at a single time
+	UPROPERTY(Category = "Character", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	int MaxHealth;
+
+	// The current health the player has. When the player dies (reaches 0) on death will be called.
+	UPROPERTY(Category = "Character", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	int CurrentHealth;
+
 	// The visible representation of the player
 	// This is the actual robot that will physically move around the environment
 	UPROPERTY(Category = Mesh, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
@@ -110,6 +119,10 @@ private:
 	void StartPickingItem() { bPickingUpItem = true; };
 	void StopPickingItem() { bPickingUpItem = false; };
 
+	// This function is called when the players health reaches 0
+	UFUNCTION(BlueprintCallable)
+	void OnDeath();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -196,4 +209,13 @@ public:
 	void UnequipWeaponPrimary();
 	void UnequipWeaponAlternate();
 	void UnequipItemActive();
+
+	// Method for taking damage
+	UFUNCTION(BlueprintCallable)
+	void TakeDamage(int amount);
+
+	// Method for healing health
+	// In theory you could use negative take damage, but for the sake of readability both are included
+	UFUNCTION(BlueprintCallable)
+	void Heal(int amount);
 };

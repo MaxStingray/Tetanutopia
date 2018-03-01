@@ -209,6 +209,10 @@ void APlayerRobot::UseActiveItem()
 	}
 }
 
+void APlayerRobot::OnDeath()
+{
+}
+
 void APlayerRobot::BeginPlay()
 {
 	Super::BeginPlay();	// Required by Unreal
@@ -337,4 +341,12 @@ void APlayerRobot::UnequipItemActive()
 	{
 		ItemActive->DestroyComponent();
 	}
+}
+
+void APlayerRobot::TakeDamage(int amount)
+{
+}
+
+void APlayerRobot::Heal(int amount)
+{
 }
