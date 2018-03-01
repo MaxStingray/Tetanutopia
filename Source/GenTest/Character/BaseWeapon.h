@@ -24,6 +24,10 @@ protected:
 	// The actual sound
 	USoundCue* ShootSound;
 	
+	// The name of the weapon
+	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FString WeaponName;
+
 	// Setup the Shoot Sound
 	void InitialiseSounds();
 
@@ -56,6 +60,10 @@ public:
 	// Fires the weapon
 	UFUNCTION(BlueprintCallable)
 	void Fire();
+
+	// Gets the string name of the weapon
+	UFUNCTION(BlueprintCallable)
+	FString GetWeaponName();
 
 	// Sets the offset
 	virtual void SetOffset(FVector offset);

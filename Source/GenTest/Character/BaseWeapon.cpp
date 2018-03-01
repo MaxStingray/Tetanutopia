@@ -12,6 +12,8 @@ UBaseWeapon::UBaseWeapon()
 	PrimaryComponentTick.bCanEverTick = true;
 	RegisterComponentWithWorld(GetWorld());	// If we use the CreateObject method we must register with the world for the render to work
 
+	WeaponName = "Unnamed Weapon";
+
 	InitialiseWeaponStats();
 	InitialiseStaticMesh();
 	InitialiseSounds();
@@ -55,6 +57,11 @@ void UBaseWeapon::Fire()
 			World->GetTimerManager().SetTimer(TimerHandle_TimeUntilCanFire, this, &UBaseWeapon::ReEnableCanFire, FireInterval);
 		}
 	}
+}
+
+FString UBaseWeapon::GetWeaponName()
+{
+	return WeaponName;
 }
 
 void UBaseWeapon::SetOffset(FVector offset)
