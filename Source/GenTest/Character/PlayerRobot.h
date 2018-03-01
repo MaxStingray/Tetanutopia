@@ -218,4 +218,10 @@ public:
 	// In theory you could use negative take damage, but for the sake of readability both are included
 	UFUNCTION(BlueprintCallable)
 	void Heal(int amount);
+
+	UFUNCTION(BlueprintCallable)
+	int GetMaxHealth();
+
+	UFUNCTION(BlueprintCallable)
+	int GetCurrentHealth();
 };

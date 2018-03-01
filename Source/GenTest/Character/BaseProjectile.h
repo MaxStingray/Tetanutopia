@@ -20,6 +20,10 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	class UProjectileMovementComponent* ProjectileMovement;
 
+	// How much damage the projectile deals on hit
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	int ProjectileDamage;
+
 	// Sets up the Mesh
 	void InitialiseStaticMesh();
 

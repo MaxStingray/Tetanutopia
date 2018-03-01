@@ -1,4 +1,5 @@
 #include "BaseProjectile.h"
+#include "Health.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
@@ -9,6 +10,8 @@ ABaseProjectile::ABaseProjectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	ProjectileDamage = 20;
 
 	InitialiseStaticMesh();
 	InitialiseProjectileMove();
@@ -49,8 +52,11 @@ void ABaseProjectile::BeginPlay()
 
 void ABaseProjectile::OnHit(UPrimitiveComponent * HitComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, FVector NormalImpulse, const FHitResult & Hit)
 {
-	// TODO: Damage
-	UE_LOG(LogTemp, Warning, TEXT("Projectile Hit Something!"));
+	IHealth* healthActor = Cast<IHealth>(OtherActor);
+	if(healthActor)
+	{
+		healthActor->TakeDamage(ProjectileDamage);
+	}
 
 	// End of the lifetime for this projectile
 	Destroy();

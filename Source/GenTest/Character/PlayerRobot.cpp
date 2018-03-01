@@ -68,6 +68,9 @@ void APlayerRobot::InitialiseCamera()
 void APlayerRobot::InitialisePlayerStats()
 {
 	MoveSpeed = 1000.0f;
+
+	MaxHealth = 100;
+	CurrentHealth = MaxHealth;
 }
 
 void APlayerRobot::InitialiseStaticMesh()
@@ -211,6 +214,8 @@ void APlayerRobot::UseActiveItem()
 
 void APlayerRobot::OnDeath()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Player had died!"));
+	Destroy(); // TODO: Other stuff
 }
 
 void APlayerRobot::BeginPlay()
@@ -345,8 +350,36 @@ void APlayerRobot::UnequipItemActive()
 
 void APlayerRobot::TakeDamage(int amount)
 {
+	if(amount > 0)
+	{
+		CurrentHealth -= amount;
+
+		if (CurrentHealth <= 0)
+		{
+			OnDeath();
+		}
+	}
 }
 
 void APlayerRobot::Heal(int amount)
 {
+	if (amount > 0)
+	{
+		CurrentHealth += amount;
+
+		if (CurrentHealth > MaxHealth)
+		{
+			CurrentHealth = MaxHealth;
+		}
+	}
+}
+
+int APlayerRobot::GetMaxHealth()
+{
+	return MaxHealth;
+}
+
+int APlayerRobot::GetCurrentHealth()
+{
+	return CurrentHealth;
 }
