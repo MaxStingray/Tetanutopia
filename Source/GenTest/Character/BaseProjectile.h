@@ -12,6 +12,9 @@ class GENTEST_API ABaseProjectile : public AActor
 	GENERATED_BODY()
 
 private:
+	// The owner of the projectile
+	class AActor* Owner;
+
 	// The visible representation of the projectile
 	UPROPERTY(Category = Mesh, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* ProjectileMeshComponent;
@@ -44,4 +47,6 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void SetOwningActor(class AActor* owner);
 };

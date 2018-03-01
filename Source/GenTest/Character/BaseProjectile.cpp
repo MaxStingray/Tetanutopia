@@ -9,9 +9,10 @@
 ABaseProjectile::ABaseProjectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	ProjectileDamage = 20;
+	Owner = nullptr;
 
 	InitialiseStaticMesh();
 	InitialiseProjectileMove();
@@ -45,6 +46,12 @@ void ABaseProjectile::InitialiseProjectileMove()
 	InitialLifeSpan = 3.0f;	// Lifetime of the projectile
 }
 
+void ABaseProjectile::SetOwningActor(AActor* owner)
+{
+	Owner = owner;
+	UE_LOG(LogTemp, Warning, TEXT("OWNER SET"));
+}
+
 void ABaseProjectile::BeginPlay()
 {
 	Super::BeginPlay();
@@ -52,10 +59,13 @@ void ABaseProjectile::BeginPlay()
 
 void ABaseProjectile::OnHit(UPrimitiveComponent * HitComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, FVector NormalImpulse, const FHitResult & Hit)
 {
-	IHealth* healthActor = Cast<IHealth>(OtherActor);
-	if(healthActor)
+	if(OtherActor != Owner)
 	{
-		healthActor->TakeDamage(ProjectileDamage);
+		IHealth* healthActor = Cast<IHealth>(OtherActor);
+		if (healthActor)
+		{
+			healthActor->TakeDamage(ProjectileDamage);
+		}
 	}
 
 	// End of the lifetime for this projectile

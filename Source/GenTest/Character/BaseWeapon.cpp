@@ -46,7 +46,8 @@ void UBaseWeapon::Fire()
 					const float randomSpread = ((static_cast<float>(FMath::RandRange(0, 100)) / 100.0f) * (ProjectileMaxSpread * 2)) - ProjectileMaxSpread;
 					FireRotation.Yaw += randomSpread;
 				}
-				World->SpawnActor<ABaseProjectile>(ProjectileType, SpawnLocation, FireRotation);
+				ABaseProjectile* proj = World->SpawnActor<ABaseProjectile>(ProjectileType, SpawnLocation, FireRotation);
+				proj->SetOwningActor(GetOwner());
 			}
 
 			UGameplayStatics::PlaySoundAtLocation(this, ShootSound, SpawnLocation, FireRotation);
