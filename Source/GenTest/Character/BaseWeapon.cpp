@@ -45,7 +45,7 @@ void UBaseWeapon::Fire()
 			{
 				if(ProjectileMaxSpread > FLT_EPSILON)
 				{
-					const float randomSpread = ((static_cast<float>(FMath::RandRange(0, 100)) / 100.0f) * (ProjectileMaxSpread * 2)) - ProjectileMaxSpread;
+					const float randomSpread = ((static_cast<float>(ProjectileMaxSpread) / static_cast<float>(ProjectilesToSpawnOnFire)) * i);
 					FireRotation.Yaw += randomSpread;
 				}
 				ABaseProjectile* proj = World->SpawnActor<ABaseProjectile>(ProjectileType, SpawnLocation, FireRotation);
