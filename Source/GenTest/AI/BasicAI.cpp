@@ -45,6 +45,7 @@ void ABasicAI::Attack() {
 void ABasicAI::OnDeath()
 {
 	UE_LOG(LogTemp, Display, TEXT("AI has died"));
+	this->Destroy();
 }
 
 void ABasicAI::TakeDamage(int value)

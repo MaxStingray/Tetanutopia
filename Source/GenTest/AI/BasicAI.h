@@ -35,7 +35,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable)
-		void Attack();
+	virtual	void Attack();
 
 	virtual void OnDeath() override;
 
