@@ -48,6 +48,8 @@ public:
 		TSubclassOf<class AMyActor> ToSpawn;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<AActor> Turret;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<AActor> Enemy;
 
 	UPROPERTY(EditAnywhere)
 		UHierarchicalInstancedStaticMeshComponent *Floors;
@@ -76,10 +78,19 @@ public:
 		TArray<FVector> wallCoords;
 
 	UPROPERTY(EditAnywhere)
+		bool playerInRoom;
+
+	UPROPERTY(EditAnywhere)
+		FVector playerLocation;
+
+	UPROPERTY(EditAnywhere)
 		TMap<FString, FVector> wallMap;
 
 	UFUNCTION(BlueprintCallable)
 		void Spawn(FVector location, TSubclassOf<AActor> actor);
+
+	UFUNCTION(BlueprintCallable)
+		void SpawnEnemies();
 
 	UFUNCTION(BlueprintCallable)
 		void DrawWall(int startX, int startY, int endX, int endY);
