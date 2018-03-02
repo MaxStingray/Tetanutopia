@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
+#include "GameFramework/Character.h"
 #include "Character/BaseWeapon.h"
 #include "Character/Health.h"
 #include "BasicAI.generated.h"
 
 UCLASS()
-class GENTEST_API ABasicAI : public APawn, public IHealth
+class GENTEST_API ABasicAI : public ACharacter, public IHealth
 {
 	GENERATED_BODY()
 

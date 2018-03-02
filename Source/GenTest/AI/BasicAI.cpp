@@ -16,10 +16,6 @@ ABasicAI::ABasicAI()
 void ABasicAI::BeginPlay()
 {
 	Super::BeginPlay();
-	UBaseWeapon* bw = new UBaseWeapon;
-	weapon = bw;
-	//weapon->SetupAttachment(RootComponent);
-	//weapon->AttachTo(RootComponent);
 }
 
 // Called every frame
