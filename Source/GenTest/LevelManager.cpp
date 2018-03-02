@@ -194,6 +194,9 @@ void ALevelManager::AddDoors(int x1, int y1, int x2, int y2) {
 		if (r <= 2) {
 			r += 2;
 		}
+		FTransform newDoor;
+		Rooms[x1][y1]->Walls->GetInstanceTransform(roomXSize + roomYSize + roomXSize + r, newDoor);
+		Rooms[x1][y1]->Spawn(FVector(newDoor.GetLocation().X - (unitSize / 2), newDoor.GetLocation().Y - (unitSize / 2), newDoor.GetLocation().Z), Door);
 		Rooms[x1][y1]->Walls->RemoveInstance(roomXSize + roomYSize + roomXSize + r);
 		Rooms[x1][y1]->Walls->RemoveInstance(roomXSize + roomYSize + roomXSize + r - 1);
 

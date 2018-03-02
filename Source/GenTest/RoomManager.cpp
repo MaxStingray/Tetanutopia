@@ -38,6 +38,43 @@ void ARoomManager::Spawn(FVector location, TSubclassOf<AActor> actor)
 		}
 	
 }
+//can probably refactor SpawnTurrets and SpawnEnemies to be one method. This is fine for now
+void ARoomManager::SpawnEnemies()
+{
+
+	//assign the room type
+	assignedRoomType = RoomType::RT_ENEMY;
+	ALevelManager* lm = new ALevelManager();
+	
+	for (TActorIterator<ALevelManager> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+		lm = *ActorItr;
+	}
+
+
+	Enemy = lm->_Enemy;
+	TArray<FString> positions;
+	int percentage = rand() % 100 + 1;
+
+	if (percentage < 50)
+	{
+		FString arr[] = { "13,4", "9,8", "17,8", "5,12", "21,12", "9,16", "17,16", "13,20" };
+		positions.Append(arr, ARRAY_COUNT(arr));
+	}
+	else if (percentage > 50)
+	{
+		FString arr[] = { "2,2", "24,24", "24,2", "2,24" };
+		positions.Append(arr, ARRAY_COUNT(arr));
+	}
+
+	for (int i = 0; i < positions.Num(); i++)
+	{
+		FVector nextPosition = floorMap.FindChecked(positions[i]);
+		Spawn(nextPosition, Enemy);
+	}
+
+}
 
 void ARoomManager::DrawWall(int startX, int startY, int endX, int endY)
 {
@@ -364,7 +401,7 @@ TMap<FString, FVector> ARoomManager::GetNodeNeighbors(FString startLocation, int
 void ARoomManager::BeginPlay()
 {
 	Super::BeginPlay();	
-
+	playerLocation = FVector(0, 0, 0);
 	ALevelManager* lm = new ALevelManager();
 	for (TActorIterator<ALevelManager> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
@@ -424,7 +461,7 @@ void ARoomManager::BeginPlay()
 		{
 			if (lm->enemyRooms < 10)
 			{
-				assignedRoomType = RoomType::RT_ENEMY;
+				SpawnEnemies();
 				lm->enemyRooms++;
 			}
 			else
@@ -450,6 +487,15 @@ void ARoomManager::Tick(float DeltaTime)
 	if (time > 10) {
 		this->SetActorTransform(FTransform(FVector(0, 0, 0)));
 		time = 0;
+	}
+	try
+	{
+		//TODO: Get player location here somehow
+		//playerLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+	}
+	catch (const std::exception&)
+	{
+		playerLocation = FVector(0, 0, 0);
 	}
 }
 

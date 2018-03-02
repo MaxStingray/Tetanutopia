@@ -46,13 +46,17 @@ public:
 		TArray<TSubclassOf<AActor>> props;
 	//array of enemies WHEN WE GET ENEMIES
 	UPROPERTY(EditAnywhere)
-		TArray<TSubclassOf<AActor>> enemies;
+		TSubclassOf<AActor> _Enemy;
 	UPROPERTY(EditAnywhere)
 		UStaticMesh* Floor1;
 	UPROPERTY(EditAnywhere)
 		UStaticMesh* Floor2;
 	UPROPERTY(EditAnywhere)
 		UStaticMesh* Wall;
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<AActor> Door;
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<AActor> InteriorDoor;
 
 
 protected:
