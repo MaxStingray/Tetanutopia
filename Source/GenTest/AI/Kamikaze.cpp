@@ -33,6 +33,7 @@ void AKamikaze::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 }
 
 void AKamikaze::Attack() {
+	this->weapon->Fire();
 	OnDeath();
 	UE_LOG(LogTemp, Display, TEXT("Kamikaze exploded"));
 }
