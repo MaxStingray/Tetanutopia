@@ -69,7 +69,7 @@ void ABasicAI::EquipWeapon(TSubclassOf<UBaseWeapon> weaponType)
 {
 	if (weapon != nullptr)
 	{
-		weapon->DestroyComponent(weapon);
+		weapon->DestroyComponent();
 	}
 
 	weapon = NewObject<UBaseWeapon>(this, weaponType);
