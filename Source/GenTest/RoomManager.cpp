@@ -38,6 +38,16 @@ void ARoomManager::Spawn(FVector location, TSubclassOf<AActor> actor)
 		}
 	
 }
+void ARoomManager::SpawnTransform(FTransform position, TSubclassOf<AActor> actor)
+{
+	UWorld* world = GetWorld();
+	if (world)
+	{
+		FActorSpawnParameters spawnParams;
+		spawnParams.Owner = this;
+		world->SpawnActor<AActor>(actor, position.GetLocation(), FRotator(position.GetRotation()), spawnParams);
+	}
+}
 //can probably refactor SpawnTurrets and SpawnEnemies to be one method. This is fine for now
 void ARoomManager::SpawnEnemies()
 {
@@ -199,8 +209,36 @@ void ARoomManager::GenerateRoom(int sizeX, int sizeY)
 //creates a rectangular room of a specified height and width
 void ARoomManager::DrawInteriorRoom(int startX, int startY, int width, int height)
 {
+	ALevelManager* lm = new ALevelManager();
+
+	for (TActorIterator<ALevelManager> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+		lm = *ActorItr;
+	}
+
 	int endX = startX - width;//might need to be +
 	int endY = startY + height;//also might be wrong
+
+	//interior room center
+	int intCenterX = width / 2;
+	int intCenterY = height / 2;
+	FString intCoord = FString::FromInt(intCenterX) + "," + FString::FromInt(intCenterY);
+	FVector intRoomCenter = floorMap.FindChecked(intCoord);
+
+	//exterior room center
+	int extRoomCenterX = lm->roomXSize / 2;
+	int extRoomCenterY = lm->roomYSize / 2;
+	FString extCoord = FString::FromInt(extRoomCenterX) + "," + FString::FromInt(extRoomCenterY);
+	FVector extRoomCenter = floorMap.FindChecked(extCoord);
+
+	//find the distance between them
+	float distX = extRoomCenter.X - intRoomCenter.X;
+	float distY = extRoomCenter.Y - intRoomCenter.Y;
+	FVector dist = FVector(distX, distY, 0);
+	DebugDistance = dist;
+
+	//assign room type
 	assignedRoomType = RoomType::RT_WEAPON;
 	//draw lines between each point
 	for (int x = startX; x > (endX)-1; x--)//might need to flip loop!
@@ -256,6 +294,48 @@ void ARoomManager::DrawInteriorRoom(int startX, int startY, int width, int heigh
 			}
 		}
 	}
+
+	//check which distance is greater
+	if (FMath::Abs(distX) > FMath::Abs(distY))
+	{
+		//
+		if (distX < 0)
+		{
+			//spawn door on north wall on positive x axis
+			FTransform debug(FRotator(90), FVector(0, 0, 0), FVector(0, 0, 0));
+			Walls->GetInstanceTransform((lm->roomXSize * 2) + (lm->roomYSize * 2) + width + height + (width / 2), debug);
+			DebugDistance = debug.GetLocation();
+			Walls->RemoveInstance((lm->roomXSize * 2) + (lm->roomYSize * 2) + width + height + (width / 2));
+		}
+		else
+		{
+			//spawn on south wall
+			FTransform debug(FRotator(90), FVector(0, 0, 0), FVector(0, 0, 0));
+			Walls->GetInstanceTransform((lm->roomXSize * 2) + (lm->roomYSize * 2) + width + height + (width / 2), debug);
+			DebugDistance = debug.GetLocation();
+			Walls->RemoveInstance((lm->roomXSize * 2) + (lm->roomYSize * 2) + width / 2);
+		}
+	}
+	else
+	{
+		if (distY < 0)
+		{
+			//spawn on west wall
+			FTransform debug(FRotator(90), FVector(0, 0, 0), FVector(0, 0, 0));
+			Walls->GetInstanceTransform((lm->roomXSize * 2) + (lm->roomYSize * 2) + width + height + (width / 2), debug);
+			DebugDistance = debug.GetLocation();
+			Walls->RemoveInstance((lm->roomXSize * 2) + (lm->roomYSize * 2) + (width + height) + width + (height / 2));
+		}
+		else
+		{
+			//spawn on east wall
+			FTransform debug(FRotator(90), FVector(0, 0, 0), FVector(0, 0, 0));
+			Walls->GetInstanceTransform((lm->roomXSize * 2) + (lm->roomYSize * 2) + width + height + (width / 2), debug);
+			DebugDistance = debug.GetLocation();
+			Walls->RemoveInstance((lm->roomXSize * 2) + (lm->roomYSize * 2) + width + (height / 2));
+		}
+	}
+
 }
 
 void ARoomManager::PlaceAtCoOrdinate(int x, int y, TSubclassOf<AActor> actor)
