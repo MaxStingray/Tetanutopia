@@ -227,11 +227,10 @@ void ALevelManager::AddDoors(int x1, int y1, int x2, int y2) {
 			r += 2;
 		}
 		FTransform newDoor;
-		FRotator rot = FRotator((0,90,0));
-		FTransform newPosition = FTransform(rot, FVector(newDoor.GetLocation().X + (unitSize / 2), newDoor.
-								GetLocation().Y + (unitSize / 2), newDoor.GetLocation().Z), FVector(1, 1, 1));
 		Rooms[x1][y1]->Walls->GetInstanceTransform(r, newDoor);
-		//Rooms[x1][y1]->SpawnTransform(newPosition, Door);
+		FRotator rot(0,90,0);
+		FTransform newPosition = FTransform(rot, FVector(newDoor.GetLocation().X - (unitSize / 2), newDoor.GetLocation().Y - (unitSize / 2), newDoor.GetLocation().Z), FVector(1, 1, 1));
+		Rooms[x1][y1]->SpawnTransform(newPosition, Door);
 		Rooms[x1][y1]->Walls->RemoveInstance(r);
 		Rooms[x1][y1]->Walls->RemoveInstance(r - 1);
 
@@ -246,7 +245,9 @@ void ALevelManager::AddDoors(int x1, int y1, int x2, int y2) {
 		}
 		FTransform newDoor;
 		Rooms[x1][y1]->Walls->GetInstanceTransform(roomXSize + roomYSize + r, newDoor);
-		//Rooms[x1][y1]->Spawn(FVector(newDoor.GetLocation().X + (unitSize / 2), newDoor.GetLocation().Y + (unitSize / 2), newDoor.GetLocation().Z), Door);
+		FRotator rot(0, 90, 0);
+		FTransform newPosition = FTransform(rot, FVector(newDoor.GetLocation().X - (unitSize / 2), newDoor.GetLocation().Y + (unitSize / 2), newDoor.GetLocation().Z), FVector(1, 1, 1));
+		Rooms[x1][y1]->SpawnTransform(newPosition, Door);
 		Rooms[x1][y1]->Walls->RemoveInstance(roomXSize + roomYSize + r);
 		Rooms[x1][y1]->Walls->RemoveInstance(roomXSize + roomYSize + r - 1);
 

@@ -45,7 +45,7 @@ void ARoomManager::SpawnTransform(FTransform position, TSubclassOf<AActor> actor
 	{
 		FActorSpawnParameters spawnParams;
 		spawnParams.Owner = this;
-		world->SpawnActor<AActor>(actor, position.GetLocation(), FRotator(position.GetRotation()), spawnParams);
+		world->SpawnActor<AActor>(actor, position, spawnParams);
 	}
 }
 //can probably refactor SpawnTurrets and SpawnEnemies to be one method. This is fine for now
@@ -81,7 +81,8 @@ void ARoomManager::SpawnEnemies()
 	for (int i = 0; i < positions.Num(); i++)
 	{
 		FVector nextPosition = floorMap.FindChecked(positions[i]);
-		Spawn(nextPosition, Enemy);
+		nextPosition.Z += 100;
+		SpawnAI(nextPosition);
 	}
 
 }
@@ -159,7 +160,9 @@ void ARoomManager::GenerateRoom(int sizeX, int sizeY)
 			//string is the key value to access world coordinates from the TMap
 			FString locationString = (FString::FromInt(_x) + "," + FString::FromInt(_y));
 			//add coordinates to collection
+			
 			floorMap.Add(locationString, FVector(x, y, 0));
+
 			//see if we should place a prop
 			PlaceProps(locationString);
 			//spawn mesh
@@ -221,10 +224,13 @@ void ARoomManager::DrawInteriorRoom(int startX, int startY, int width, int heigh
 	int endY = startY + height;//also might be wrong
 
 	//interior room center
+	//this is wrong!
+	/*
 	int intCenterX = width / 2;
 	int intCenterY = height / 2;
 	FString intCoord = FString::FromInt(intCenterX) + "," + FString::FromInt(intCenterY);
 	FVector intRoomCenter = floorMap.FindChecked(intCoord);
+
 
 	//exterior room center
 	int extRoomCenterX = lm->roomXSize / 2;
@@ -237,37 +243,90 @@ void ARoomManager::DrawInteriorRoom(int startX, int startY, int width, int heigh
 	float distY = extRoomCenter.Y - intRoomCenter.Y;
 	FVector dist = FVector(distX, distY, 0);
 	DebugDistance = dist;
+	*/
 
 	//assign room type
 	assignedRoomType = RoomType::RT_WEAPON;
+
+	//matts draw loops
+	//bottom line made to the right
+	
+	for (int x = startX; x > startX - width; x--) {
+		FString nextSpawnX = FString::FromInt(x) + "," + FString::FromInt(startY);
+		if (floorMap.Contains(nextSpawnX))
+		{
+			FTransform t(FRotator(0, 90, 0), floorMap.FindChecked(nextSpawnX), FVector(1, 1, 1));
+			SpawnISM(t, InteriorWalls);
+		}
+	}
+
+	//right line made up
+	for (int y = startY; y < startY + height; y++) {
+		FString nextSpawnY = FString::FromInt(startX - width) + "," + FString::FromInt(y);
+		if (floorMap.Contains(nextSpawnY) && startX - width != 0)
+		{
+			FTransform t(FRotator(0, 180, 0), floorMap.FindChecked(nextSpawnY), FVector(1, 1, 1));
+			SpawnISM(t, InteriorWalls);
+		}
+	}
+
+	//top line made to the left
+	for (int x = startX - width; x < startX; x++) {
+		FString nextSpawnX = FString::FromInt(x) + "," + FString::FromInt(startY + height);
+		if (floorMap.Contains(nextSpawnX))
+		{
+			FTransform t(FRotator(0, 90, 0), floorMap.FindChecked(nextSpawnX), FVector(1, 1, 1));
+			SpawnISM(t, InteriorWalls);
+		}
+	}
+
+	//left line made down
+	for (int y = startY + height; y > startY; y--) {
+		FString nextSpawnY = FString::FromInt(startX) + "," + FString::FromInt(y);
+		if (floorMap.Contains(nextSpawnY))
+		{
+			FTransform t(FRotator(0, 180, 0), floorMap.FindChecked(nextSpawnY), FVector(1, 1, 1));
+			SpawnISM(t, InteriorWalls);
+		}
+	}
+	
+	if (FMath::RandBool()) {
+		InteriorWalls->RemoveInstance(width / 2);
+	}
+	else {
+		InteriorWalls->RemoveInstance(width + (height / 2));
+	}
+
+
 	//draw lines between each point
+	/*
 	for (int x = startX; x > (endX)-1; x--)//might need to flip loop!
 	{
-		//top line
+		//top line to the right
 		if (x != endX)
 		{
 			FString nextSpawnX = FString::FromInt(x) + "," + FString::FromInt(startY);
 			if (floorMap.Contains(nextSpawnX))
 			{
 				FTransform t(FRotator(0, 90, 0), floorMap.FindChecked(nextSpawnX), FVector(1, 1, 1));
-				SpawnISM(t, Walls);
+				SpawnISM(t, InteriorWalls);
 			}
 		}
 		else
 		{
-			//right line
+			//right line up
 			for (int y = (endY - height); y < endY + 1; y++)
 			{
 				FString nextSpawnY = FString::FromInt(endX) + "," + FString::FromInt(y);
 				if(floorMap.Contains(nextSpawnY))
 				{
 					FTransform t(FRotator(0, 180, 0), floorMap.FindChecked(nextSpawnY), FVector(1, 1, 1));
-					SpawnISM(t, Walls);
+					SpawnISM(t, InteriorWalls);
 				}
 			}
 		}
 
-		//bottom line in the other direction
+		//bottom line to the left
 		for (int x = endX; x < startX + 1; x++)
 		{
 			if (x != startX)
@@ -276,26 +335,30 @@ void ARoomManager::DrawInteriorRoom(int startX, int startY, int width, int heigh
 				if (floorMap.Contains(nextSpawnX))
 				{
 					FTransform t(FRotator(0, 270, 0), floorMap.FindChecked(nextSpawnX), FVector(1, 1, 1));
-					SpawnISM(t, Walls);
+					SpawnISM(t, InteriorWalls);
 				}
 			}
 			else
 			{
-				//left line
+				//left line down
 				for (int y = endY; y > startY - 1; y--)
 				{
 					FString nextSpawnY = FString::FromInt(startX) + "," + FString::FromInt(y);
 					if (floorMap.Contains(nextSpawnY))
 					{
 						FTransform t(FRotator(0, 180, 0), floorMap.FindChecked(nextSpawnY), FVector(1, 1, 1));
-						SpawnISM(t, Walls);
+						SpawnISM(t, InteriorWalls);
 					}
 				}
 			}
 		}
 	}
+	*/
+
+
 
 	//check which distance is greater
+	/*
 	if (FMath::Abs(distX) > FMath::Abs(distY))
 	{
 		//
@@ -334,7 +397,7 @@ void ARoomManager::DrawInteriorRoom(int startX, int startY, int width, int heigh
 			DebugDistance = debug.GetLocation();
 			Walls->RemoveInstance((lm->roomXSize * 2) + (lm->roomYSize * 2) + width + (height / 2));
 		}
-	}
+	}*/
 
 }
 
@@ -501,6 +564,12 @@ void ARoomManager::BeginPlay()
 	Walls->SetStaticMesh(lm->Wall);
 	Walls->SetFlags(RF_Transactional);
 	this->AddInstanceComponent(Walls);
+
+	InteriorWalls = NewObject<UHierarchicalInstancedStaticMeshComponent>(this);
+	InteriorWalls->RegisterComponent();
+	InteriorWalls->SetStaticMesh(lm->Wall);
+	InteriorWalls->SetFlags(RF_Transactional);
+	this->AddInstanceComponent(InteriorWalls);
 	
 	GenerateRoom(lm->roomXSize, lm->roomYSize);
 
@@ -526,9 +595,18 @@ void ARoomManager::BeginPlay()
 		{
 			if (lm->weaponRooms < 3)
 			{
-				int w = rand() % 20 + 5;
-				int h = rand() % 20 + 5;
-				DrawInteriorRoom(20, 10, w, h);
+				int centerX = 20;
+				int centerY = 10;
+				int w = FMath::RandRange(5, centerX);
+				int h = FMath::RandRange(5, lm->roomYSize - centerY);
+
+				if (w >= centerX - 2 && w != centerX) {
+					w -= 3;
+				}
+				if (h >= lm->roomYSize - centerY - 2 && h != lm->roomYSize - centerY) {
+					h -= 3;
+				}
+				DrawInteriorRoom(centerX, centerY, w, h);
 				lm->weaponRooms++;
 			}
 			else
