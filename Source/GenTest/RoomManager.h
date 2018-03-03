@@ -57,6 +57,9 @@ public:
 	UPROPERTY(EditAnywhere)
 		UHierarchicalInstancedStaticMeshComponent *Walls;
 
+	UPROPERTY(EditAnywhere)
+		UHierarchicalInstancedStaticMeshComponent *InteriorWalls;
+
 	bool visited = false;
 	int x;
 	int y;
@@ -119,6 +122,10 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "GameDev|RoomManager")
 		void DeleteISM(int32 index);
+
+	//This is not final. need ability to set weapon BT and others.
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "GameDev|RoomManager")
+		void SpawnAI(FVector pos);
 
 protected:
 	// Called when the game starts or when spawned
