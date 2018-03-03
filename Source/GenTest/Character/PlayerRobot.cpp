@@ -205,7 +205,6 @@ void APlayerRobot::UseActiveItem()
 {
 	if (bIsUsingItem)
 	{
-		UE_LOG(LogTemp, Display, TEXT("IsUsingItem"));
 		if(ItemActive)
 		{
 			ItemActive->Fire();

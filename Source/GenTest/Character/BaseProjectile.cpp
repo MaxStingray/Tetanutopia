@@ -49,7 +49,6 @@ void ABaseProjectile::InitialiseProjectileMove()
 void ABaseProjectile::SetOwningActor(AActor* owner)
 {
 	Owner = owner;
-	UE_LOG(LogTemp, Warning, TEXT("OWNER SET"));
 }
 
 void ABaseProjectile::BeginPlay()
