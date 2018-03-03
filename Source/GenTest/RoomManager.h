@@ -76,6 +76,8 @@ public:
 	//collection of wall tile locations for this room
 	UPROPERTY(EditAnywhere)
 		TArray<FVector> wallCoords;
+	UPROPERTY(EditAnywhere)
+		FVector DebugDistance;
 
 	UPROPERTY(EditAnywhere)
 		bool playerInRoom;
@@ -88,6 +90,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void Spawn(FVector location, TSubclassOf<AActor> actor);
+	UFUNCTION(BlueprintCallable)
+		void SpawnTransform(FTransform position, TSubclassOf<AActor> actor);
 
 	UFUNCTION(BlueprintCallable)
 		void SpawnEnemies();
