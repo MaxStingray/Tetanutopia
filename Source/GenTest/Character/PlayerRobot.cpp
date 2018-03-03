@@ -117,9 +117,6 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 	const FVector MoveDirection = FVector(MoveForward, MoveRight, 0.f).GetClampedToMaxSize(1.0f);	// Clamp to ensure we cant travel faster diagonally
 	FVector movement = MoveDirection * MoveSpeed * deltaSeconds;
 
-	// Make the player look slightly down int he direction we are moving
-	const FRotator MoveRotation = MoveDirection.Rotation().GetNormalized();
-	SetActorRotation(MoveRotation);
 
 	if (bUseCameraForward)
 	{
@@ -133,6 +130,15 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 		FHitResult Hit(1.f);
 		AddActorWorldOffset(movement, true, &Hit);
 
+		// Make the player look in the direction of movement
+		const FRotator MoveRotation = MoveDirection.Rotation().GetNormalized();
+		SetActorRotation(MoveRotation);
+		
+		// Tilt the player because we are moving
+		FRotator current = GetActorRotation();
+		current.Pitch = -10;
+		SetActorRotation(current);
+
 		// Collision Handling
 		if (Hit.IsValidBlockingHit())
 		{
@@ -140,6 +146,13 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 			const FVector Deflection = FVector::VectorPlaneProject(movement, Normal2D) * (1.f - Hit.Time);
 			AddActorWorldOffset(Deflection, true);
 		}
+	}
+	else
+	{
+		// Stop tilting the player
+		FRotator current = GetActorRotation();
+		current.Pitch = 0;
+		SetActorRotation(current);
 	}
 }
 
