@@ -58,6 +58,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	USoundCue* EquipSound;
 
+	// The sound that plays when a you take damage
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	USoundCue* HurtSound;
+
 	// The Active Use Item
 	// TODO: Item Implementation
 
