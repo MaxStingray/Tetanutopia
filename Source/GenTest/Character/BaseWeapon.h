@@ -22,6 +22,7 @@ protected:
 	FTimerHandle TimerHandle_TimeUntilCanFire;
 
 	// The actual sound
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	USoundCue* ShootSound;
 	
 	// The name of the weapon

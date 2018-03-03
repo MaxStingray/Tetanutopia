@@ -55,6 +55,7 @@ private:
 	FVector ItemOffset;
 
 	// The sound that plays when you equip something
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	USoundCue* EquipSound;
 
 	// The Active Use Item
