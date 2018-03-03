@@ -200,6 +200,12 @@ public:
 	// Returns the Camera Boom component of this Actor
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
+	UFUNCTION(BluePrintCallable)
+	UBaseWeapon* GetPrimaryWeapon() { return WeaponPrimary; };
+
+	UFUNCTION(BluePrintCallable)
+	UBaseWeapon* GetAlternateWeapon() { return WeaponAlternate; };
+
 	// Call this whenever you want to update the equipped weapon
 	void EquipWeaponPrimary();
 	void EquipWeaponPrimary(TSubclassOf<UStaticMeshComponent> weapon);
@@ -216,7 +222,7 @@ public:
 	// Method for taking damage
 	UFUNCTION(BlueprintCallable)
 	void TakeDamage(int amount);
-
+	
 	// Method for healing health
 	// In theory you could use negative take damage, but for the sake of readability both are included
 	UFUNCTION(BlueprintCallable)
