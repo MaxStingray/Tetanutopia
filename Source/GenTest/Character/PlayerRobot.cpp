@@ -117,6 +117,10 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 	const FVector MoveDirection = FVector(MoveForward, MoveRight, 0.f).GetClampedToMaxSize(1.0f);	// Clamp to ensure we cant travel faster diagonally
 	FVector movement = MoveDirection * MoveSpeed * deltaSeconds;
 
+	// Make the player look slightly down int he direction we are moving
+	const FRotator MoveRotation = MoveDirection.Rotation().GetNormalized();
+	SetActorRotation(MoveRotation);
+
 	if (bUseCameraForward)
 	{
 		// Apply Correction to movement so that the direction is relative to the camera, not the player model
