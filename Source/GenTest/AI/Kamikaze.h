@@ -29,5 +29,4 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	virtual void Attack() override;
-	
 };

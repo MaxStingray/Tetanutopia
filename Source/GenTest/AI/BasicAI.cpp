@@ -7,7 +7,6 @@ ABasicAI::ABasicAI()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 
@@ -66,3 +65,14 @@ void ABasicAI::Heal(int value)
 	}
 }
 
+void ABasicAI::EquipWeapon(TSubclassOf<UBaseWeapon> weaponType)
+{
+	if (weapon)
+	{
+		weapon->DestroyComponent(weapon);
+	}
+
+	weapon = NewObject<UBaseWeapon>(this, weaponType);
+	weapon->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+	weapon->SetOffset(FVector(0.0f, 0.0f, 0.0f));
+}

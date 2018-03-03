@@ -17,8 +17,8 @@ public:
 	// Sets default values for this pawn's properties
 	ABasicAI();
 
-	UPROPERTY(Category = "Weapons", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		UBaseWeapon* weapon;
+	// I dont expose this because it only works if you set it through the function
+	UBaseWeapon* weapon;
 
 
 protected:
@@ -42,4 +42,7 @@ public:
 	virtual void TakeDamage(int value) override;
 
 	virtual void Heal(int value) override;
+
+	UFUNCTION(BlueprintCallable)
+	void EquipWeapon(TSubclassOf<UBaseWeapon> weaponType);
 };
