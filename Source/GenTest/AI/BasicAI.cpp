@@ -67,7 +67,7 @@ void ABasicAI::Heal(int value)
 
 void ABasicAI::EquipWeapon(TSubclassOf<UBaseWeapon> weaponType)
 {
-	if (weapon)
+	if (weapon != nullptr)
 	{
 		weapon->DestroyComponent(weapon);
 	}
