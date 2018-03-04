@@ -600,10 +600,10 @@ void ARoomManager::BeginPlay()
 				int w = FMath::RandRange(5, centerX);
 				int h = FMath::RandRange(5, lm->roomYSize - centerY);
 
-				if (w >= centerX - 3 && w != centerX) {
+				if (w >= centerX - 4 && w != centerX) {
 					w -= 3;
 				}
-				if (h >= lm->roomYSize - centerY - 3 && h != lm->roomYSize - centerY) {
+				if (h >= lm->roomYSize - centerY - 4 && h != lm->roomYSize - centerY) {
 					h -= 3;
 				}
 				DrawInteriorRoom(centerX, centerY, w, h);

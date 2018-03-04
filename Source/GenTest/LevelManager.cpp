@@ -197,7 +197,7 @@ ARoomManager* ALevelManager::CheckNeighbours(int x, int y) {
 void ALevelManager::AddDoors(int x1, int y1, int x2, int y2) {
 	int x = x1 - x2;
 	if (x == 1) {
-		int r = rand() % (roomYSize - 3);
+		int r = FMath::RandRange(roomYSize / 4, roomYSize - (roomYSize / 4));
 		if (r <= 2) {
 			r += 2;
 		}
@@ -219,7 +219,7 @@ void ALevelManager::AddDoors(int x1, int y1, int x2, int y2) {
 
 	}
 	else if (x == -1) {
-		int r = rand() % (roomYSize - 3);
+		int r = FMath::RandRange(roomYSize/4, roomYSize - (roomYSize/4));
 		if (r <= 2) {
 			r += 2;
 		}
@@ -242,7 +242,7 @@ void ALevelManager::AddDoors(int x1, int y1, int x2, int y2) {
 
 	int y = y1 - y2;
 	if (y == 1) {
-		int r = rand() % (roomXSize - 3);
+		int r = FMath::RandRange(roomXSize / 4, roomXSize - (roomXSize / 4));
 		if (r <= 2) {
 			r += 2;
 		}
@@ -265,7 +265,7 @@ void ALevelManager::AddDoors(int x1, int y1, int x2, int y2) {
 
 	}
 	else if (y == -1) {
-		int r = rand() % (roomXSize - 3);
+		int r = FMath::RandRange(roomXSize / 4, roomXSize - (roomXSize / 4));
 		if (r <= 2) {
 			r += 2;
 		}
