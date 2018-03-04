@@ -19,9 +19,12 @@ APlayerRobot::APlayerRobot()
 	InitialiseCamera();
 	InitialiseWeapons();
 
-	// Setup SOunds
+	// Setup Sounds
 	static ConstructorHelpers::FObjectFinder<USoundCue> shootCue(TEXT("/Game/Audio/pickup_cue"));
 	EquipSound = shootCue.Object;
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> hurtCue(TEXT("/Game/Audio/classic_hurt_Cue"));
+	HurtSound = hurtCue.Object;
 }
 
 void APlayerRobot::InitialiseControls()
@@ -55,8 +58,8 @@ void APlayerRobot::InitialiseCamera()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->bAbsoluteRotation = true; // Prevents the arm from rotating as the robot rotates
 	CameraBoom->bDoCollisionTest = false; // Prevents the camera from pulling when it colliders with terrain
-	CameraBoom->TargetArmLength = 1600.f; // The distance from the Robot that the camera is positioned
-	CameraBoom->RelativeRotation = FRotator(-60.f, 0.f, 0.f); // The angle of the camera
+	CameraBoom->TargetArmLength = 600.0f; // The distance from the Robot that the camera is positioned
+	CameraBoom->RelativeRotation = FRotator(-45.f, 0.f, 0.f); // The angle of the camera
 
 	// Camera
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -66,7 +69,7 @@ void APlayerRobot::InitialiseCamera()
 	// Sets Up Camera Lag
 	// This means the player will not always be at the center, feels more dynamic
 	CameraBoom->bEnableCameraLag = true;
-	CameraBoom->CameraLagMaxDistance = -50;	// The furthest additional distance the camera will be from the player
+	CameraBoom->CameraLagMaxDistance = 100;	// The furthest additional distance the camera will be from the player
 	CameraBoom->CameraLagSpeed = 5;	// The speed of the camera at catching the minimum distance from the player
 }
 
@@ -95,8 +98,8 @@ void APlayerRobot::InitialiseStaticMesh()
 
 void APlayerRobot::InitialiseWeapons()
 {
-	WeaponPrimaryOffset = FVector(0, 100, 0);
-	WeaponAlternateOffset = FVector(0, -100, 0);
+	WeaponPrimaryOffset = FVector(10, 25, 0);
+	WeaponAlternateOffset = FVector(10, -25, 0);
 	ItemOffset = FVector(0, 0, 0);
 
 	WeaponPrimary = nullptr;
@@ -138,6 +141,21 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 		FRotator current = GetActorRotation();
 		current.Pitch = -10;
 		SetActorRotation(current);
+
+		// Adjust the weapon to not be pitched
+		if(WeaponPrimary)
+		{
+			FRotator currentRotation = WeaponPrimary->GetComponentRotation();
+			currentRotation.Pitch = 0;
+			WeaponPrimary->SetWorldRotation(currentRotation);
+		}
+
+		if (WeaponAlternate)
+		{
+			FRotator currentRotation = WeaponAlternate->GetComponentRotation();
+			currentRotation.Pitch = 0;
+			WeaponAlternate->SetWorldRotation(currentRotation);
+		}
 
 		// Collision Handling
 		if (Hit.IsValidBlockingHit())
@@ -379,6 +397,8 @@ void APlayerRobot::TakeDamage(int amount)
 {
 	if(amount > 0)
 	{
+		UGameplayStatics::PlaySoundAtLocation(this, HurtSound, GetActorLocation(), GetActorRotation());
+
 		CurrentHealth -= amount;
 
 		if (CurrentHealth <= 0)

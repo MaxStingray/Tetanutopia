@@ -21,12 +21,19 @@ protected:
 	// The handle for the timer until the next shot can be fired
 	FTimerHandle TimerHandle_TimeUntilCanFire;
 
-	// The actual sound
+	// The sound that plays when a bullet is fired
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	USoundCue* ShootSound;
 	
 	// The name of the weapon
 	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	FString WeaponName;
+
+	// The muzzle flash particle effect
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UParticleSystem* MuzzleFlashTemplate;
+
+	class UParticleSystemComponent* MuzzleFlash;
 
 	// Setup the Shoot Sound
 	void InitialiseSounds();
