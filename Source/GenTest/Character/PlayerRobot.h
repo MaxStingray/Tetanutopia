@@ -62,9 +62,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	USoundCue* HurtSound;
 
-	// The Active Use Item
-	// TODO: Item Implementation
-
 	// The following input cannot be done through just a repeat as this had a major delay that is noticable during gameplay
 	// Whether the primary fire button is being pressed
 	bool bIsFiringPrimary;

@@ -29,6 +29,12 @@ protected:
 	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	FString WeaponName;
 
+	// The muzzle flash particle effect
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UParticleSystem* MuzzleFlashTemplate;
+
+	class UParticleSystemComponent* MuzzleFlash;
+
 	// Setup the Shoot Sound
 	void InitialiseSounds();
 

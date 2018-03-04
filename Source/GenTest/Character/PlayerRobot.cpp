@@ -19,7 +19,7 @@ APlayerRobot::APlayerRobot()
 	InitialiseCamera();
 	InitialiseWeapons();
 
-	// Setup SOunds
+	// Setup Sounds
 	static ConstructorHelpers::FObjectFinder<USoundCue> shootCue(TEXT("/Game/Audio/pickup_cue"));
 	EquipSound = shootCue.Object;
 
@@ -141,6 +141,21 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 		FRotator current = GetActorRotation();
 		current.Pitch = -10;
 		SetActorRotation(current);
+
+		// Adjust the weapon to not be pitched
+		if(WeaponPrimary)
+		{
+			FRotator currentRotation = WeaponPrimary->GetComponentRotation();
+			currentRotation.Pitch = 0;
+			WeaponPrimary->SetWorldRotation(currentRotation);
+		}
+
+		if (WeaponAlternate)
+		{
+			FRotator currentRotation = WeaponAlternate->GetComponentRotation();
+			currentRotation.Pitch = 0;
+			WeaponAlternate->SetWorldRotation(currentRotation);
+		}
 
 		// Collision Handling
 		if (Hit.IsValidBlockingHit())
