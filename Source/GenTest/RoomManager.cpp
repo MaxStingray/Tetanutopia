@@ -82,7 +82,7 @@ void ARoomManager::SpawnEnemies()
 	{
 		FVector nextPosition = floorMap.FindChecked(positions[i]);
 		nextPosition.Z += 100;
-		SpawnAI(nextPosition);
+		SpawnAI(nextPosition, (int)AIType::Kamikaze);
 	}
 
 }
@@ -600,10 +600,10 @@ void ARoomManager::BeginPlay()
 				int w = FMath::RandRange(5, centerX);
 				int h = FMath::RandRange(5, lm->roomYSize - centerY);
 
-				if (w >= centerX - 2 && w != centerX) {
+				if (w >= centerX - 3 && w != centerX) {
 					w -= 3;
 				}
-				if (h >= lm->roomYSize - centerY - 2 && h != lm->roomYSize - centerY) {
+				if (h >= lm->roomYSize - centerY - 3 && h != lm->roomYSize - centerY) {
 					h -= 3;
 				}
 				DrawInteriorRoom(centerX, centerY, w, h);
@@ -656,6 +656,8 @@ void ARoomManager::Tick(float DeltaTime)
 		playerLocation = FVector(0, 0, 0);
 	}
 }
+
+
 
 
 

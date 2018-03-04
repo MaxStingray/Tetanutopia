@@ -29,6 +29,13 @@ enum class RoomType : uint8
 	RT_GENERIC		UMETA(DisplayName = "generic room (placeholder roomtype)")//remove this eventually
 };
 
+enum class AIType : uint8
+{
+	Basic		UMETA(DisplayName = "Basic"),
+	Kamikaze		UMETA(DisplayName = "Kamikaze"),
+	Cannon			UMETA(DisplayName = "Cannon"),
+};
+
 UCLASS(Blueprintable)
 class GENTEST_API ARoomManager : public AActor
 {
@@ -69,6 +76,7 @@ public:
 		UStaticMesh* Floor1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UStaticMesh* Wall;
+
 
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* Mesh;
@@ -118,6 +126,9 @@ public:
 		void PlaceProps(FString location);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "GameDev|RoomManager")
+		void AddEndNode();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "GameDev|RoomManager")
 		void SpawnISM(FTransform trans, UHierarchicalInstancedStaticMeshComponent* targetMesh);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "GameDev|RoomManager")
@@ -125,7 +136,7 @@ public:
 
 	//This is not final. need ability to set weapon BT and others.
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "GameDev|RoomManager")
-		void SpawnAI(FVector pos);
+		void SpawnAI(FVector pos, int AIType);
 
 protected:
 	// Called when the game starts or when spawned

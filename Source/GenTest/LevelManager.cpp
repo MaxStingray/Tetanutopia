@@ -89,7 +89,8 @@ void ALevelManager::CreatePath() {
 	bool unvisited = true;
 	int stackCounter = 0;
 	ARoomManager* stack[roomsX*roomsY];
-
+	int longestStack = 0;
+	ARoomManager* endRoom = nullptr;
 	while (unvisited) {
 		unvisited = false;
 		current->visited = true;
@@ -101,6 +102,9 @@ void ALevelManager::CreatePath() {
 			next->visited = true;
 			current = next;
 			stackCounter++;
+			if (stackCounter > longestStack) {
+				endRoom = current;
+			}
 		}
 		else if (stackCounter > 0) {
 			stack[stackCounter] = nullptr;
@@ -119,6 +123,9 @@ void ALevelManager::CreatePath() {
 			}
 		}
 	}
+
+	endRoom->assignedRoomType = RoomType::RT_END;
+	endRoom->AddEndNode();
 }
 
 ARoomManager* ALevelManager::CheckNeighbours(int x, int y) {
@@ -197,11 +204,18 @@ void ALevelManager::AddDoors(int x1, int y1, int x2, int y2) {
 		FTransform newDoor;
 		Rooms[x1][y1]->Walls->GetInstanceTransform(roomXSize + roomYSize + roomXSize + r, newDoor);
 		Rooms[x1][y1]->Spawn(FVector(newDoor.GetLocation().X - (unitSize / 2), newDoor.GetLocation().Y - (unitSize / 2), newDoor.GetLocation().Z), Door);
-		Rooms[x1][y1]->Walls->RemoveInstance(roomXSize + roomYSize + roomXSize + r);
-		Rooms[x1][y1]->Walls->RemoveInstance(roomXSize + roomYSize + roomXSize + r - 1);
 
-		Rooms[x2][y2]->Walls->RemoveInstance(roomXSize + r);
-		Rooms[x2][y2]->Walls->RemoveInstance(roomXSize + r - 1);
+		FVector moveLoc = newDoor.GetLocation();
+		moveLoc.Z -= 300;
+		newDoor.SetLocation(moveLoc);
+		newDoor.SetScale3D(FVector(0, 0, 0));
+
+
+		Rooms[x1][y1]->Walls->UpdateInstanceTransform(roomXSize + roomYSize + roomXSize + r, newDoor, true, false, true);
+		Rooms[x1][y1]->Walls->UpdateInstanceTransform(roomXSize + roomYSize + roomXSize + r - 1, newDoor, true, false, true);
+
+		Rooms[x2][y2]->Walls->UpdateInstanceTransform(roomXSize + r, newDoor, true, false, true);
+		Rooms[x2][y2]->Walls->UpdateInstanceTransform(roomXSize + r - 1, newDoor, true, false, true);
 
 	}
 	else if (x == -1) {
@@ -212,11 +226,17 @@ void ALevelManager::AddDoors(int x1, int y1, int x2, int y2) {
 		FTransform newDoor;
 		Rooms[x1][y1]->Walls->GetInstanceTransform(roomXSize + r, newDoor);
 		Rooms[x1][y1]->Spawn(FVector(newDoor.GetLocation().X + (unitSize / 2), newDoor.GetLocation().Y - (unitSize / 2), newDoor.GetLocation().Z), Door);
-		Rooms[x1][y1]->Walls->RemoveInstance(roomXSize + r);
-		Rooms[x1][y1]->Walls->RemoveInstance(roomXSize + r - 1);
 
-		Rooms[x2][y2]->Walls->RemoveInstance(roomXSize + roomYSize + roomXSize + r);
-		Rooms[x2][y2]->Walls->RemoveInstance(roomXSize + roomYSize + roomXSize + r - 1);
+		FVector moveLoc = newDoor.GetLocation();
+		moveLoc.Z -= 300;
+		newDoor.SetLocation(moveLoc);
+		newDoor.SetScale3D(FVector(0, 0, 0));
+
+		Rooms[x1][y1]->Walls->UpdateInstanceTransform(roomXSize + r, newDoor, true, false, true);
+		Rooms[x1][y1]->Walls->UpdateInstanceTransform(roomXSize + r - 1, newDoor, true, false, true);
+
+		Rooms[x2][y2]->Walls->UpdateInstanceTransform(roomXSize + roomYSize + roomXSize + r, newDoor, true, false, true);
+		Rooms[x2][y2]->Walls->UpdateInstanceTransform(roomXSize + roomYSize + roomXSize + r - 1, newDoor, true, false, true);
 
 	}
 
@@ -231,11 +251,17 @@ void ALevelManager::AddDoors(int x1, int y1, int x2, int y2) {
 		FRotator rot(0,90,0);
 		FTransform newPosition = FTransform(rot, FVector(newDoor.GetLocation().X - (unitSize / 2), newDoor.GetLocation().Y - (unitSize / 2), newDoor.GetLocation().Z), FVector(1, 1, 1));
 		Rooms[x1][y1]->SpawnTransform(newPosition, Door);
-		Rooms[x1][y1]->Walls->RemoveInstance(r);
-		Rooms[x1][y1]->Walls->RemoveInstance(r - 1);
 
-		Rooms[x2][y2]->Walls->RemoveInstance(roomXSize + roomYSize + r);
-		Rooms[x2][y2]->Walls->RemoveInstance(roomXSize + roomYSize + r - 1);
+		FVector moveLoc = newDoor.GetLocation();
+		moveLoc.Z -= 300;
+		newDoor.SetLocation(moveLoc);
+		newDoor.SetScale3D(FVector(0, 0, 0));
+
+		Rooms[x1][y1]->Walls->UpdateInstanceTransform(r, newDoor, true, false, true);
+		Rooms[x1][y1]->Walls->UpdateInstanceTransform(r - 1, newDoor, true, false, true);
+
+		Rooms[x2][y2]->Walls->UpdateInstanceTransform(roomXSize + roomYSize + r, newDoor, true, false, true);;
+		Rooms[x2][y2]->Walls->UpdateInstanceTransform(roomXSize + roomYSize + r - 1, newDoor, true, false, true);
 
 	}
 	else if (y == -1) {
@@ -248,11 +274,17 @@ void ALevelManager::AddDoors(int x1, int y1, int x2, int y2) {
 		FRotator rot(0, 90, 0);
 		FTransform newPosition = FTransform(rot, FVector(newDoor.GetLocation().X - (unitSize / 2), newDoor.GetLocation().Y + (unitSize / 2), newDoor.GetLocation().Z), FVector(1, 1, 1));
 		Rooms[x1][y1]->SpawnTransform(newPosition, Door);
-		Rooms[x1][y1]->Walls->RemoveInstance(roomXSize + roomYSize + r);
-		Rooms[x1][y1]->Walls->RemoveInstance(roomXSize + roomYSize + r - 1);
 
-		Rooms[x2][y2]->Walls->RemoveInstance(r);
-		Rooms[x2][y2]->Walls->RemoveInstance(r - 1);
+		FVector moveLoc = newDoor.GetLocation();
+		moveLoc.Z -= 300;
+		newDoor.SetLocation(moveLoc);
+		newDoor.SetScale3D(FVector(0, 0, 0));
+
+		Rooms[x1][y1]->Walls->UpdateInstanceTransform(roomXSize + roomYSize + r, newDoor, true, false, true);
+		Rooms[x1][y1]->Walls->UpdateInstanceTransform(roomXSize + roomYSize + r - 1, newDoor, true, false, true);
+
+		Rooms[x2][y2]->Walls->UpdateInstanceTransform(r, newDoor, true, false, true);
+		Rooms[x2][y2]->Walls->UpdateInstanceTransform(r - 1, newDoor, true, false, true);
 
 	}
 }
