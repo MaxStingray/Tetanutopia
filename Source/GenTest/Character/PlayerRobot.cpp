@@ -8,6 +8,8 @@
 #include "Engine/CollisionProfile.h"
 #include "Engine/StaticMesh.h"
 #include "Kismet/GameplayStatics.h"
+#include "Classes/Particles/ParticleSystemComponent.h"
+#include "Classes/Particles/ParticleSystem.h"
 
 APlayerRobot::APlayerRobot()
 {
@@ -270,6 +272,17 @@ void APlayerRobot::BeginPlay()
 void APlayerRobot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);	// Required by Unreal
+
+	if (ThrusterTemplate && !LeftThruster)
+	{
+		LeftThruster = UGameplayStatics::SpawnEmitterAttached(ThrusterTemplate, RootComponent, NAME_None, FVector(-10.0f,-30.0f,5.0f));
+		//LeftThruster->bSuppressSpawning = true;
+	}
+	if (ThrusterTemplate && !RightThruster)
+	{
+		RightThruster = UGameplayStatics::SpawnEmitterAttached(ThrusterTemplate, RootComponent, NAME_None, FVector(-10.0f,30.0f,5.0f));
+		//RightThruster->bSuppressSpawning = true;
+	}
 
 	ApplyMovement(DeltaTime);
 	ApplyLook(DeltaTime);

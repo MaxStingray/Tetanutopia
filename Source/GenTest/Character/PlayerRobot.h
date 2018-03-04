@@ -42,6 +42,13 @@ private:
 	UPROPERTY(Category = "Weapons", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	FVector WeaponPrimaryOffset;
 
+	// The muzzle flash particle effect
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UParticleSystem* ThrusterTemplate;
+
+	class UParticleSystemComponent* LeftThruster;
+	class UParticleSystemComponent* RightThruster;
+
 	// The actual alternate weapon equipped
 	UBaseWeapon* WeaponAlternate;
 

@@ -33,6 +33,7 @@ void UBaseWeapon::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	// This doesnt work in beginplay for some reason
 	if (MuzzleFlashTemplate && !MuzzleFlash)
 	{
 		MuzzleFlash = UGameplayStatics::SpawnEmitterAttached(MuzzleFlashTemplate, this, NAME_None, ProjectileSpawnOffset);
