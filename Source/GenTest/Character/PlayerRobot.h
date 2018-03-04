@@ -42,6 +42,13 @@ private:
 	UPROPERTY(Category = "Weapons", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	FVector WeaponPrimaryOffset;
 
+	// The muzzle flash particle effect
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UParticleSystem* ThrusterTemplate;
+
+	class UParticleSystemComponent* LeftThruster;
+	class UParticleSystemComponent* RightThruster;
+
 	// The actual alternate weapon equipped
 	UBaseWeapon* WeaponAlternate;
 
@@ -55,10 +62,12 @@ private:
 	FVector ItemOffset;
 
 	// The sound that plays when you equip something
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	USoundCue* EquipSound;
 
-	// The Active Use Item
-	// TODO: Item Implementation
+	// The sound that plays when a you take damage
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	USoundCue* HurtSound;
 
 	// The following input cannot be done through just a repeat as this had a major delay that is noticable during gameplay
 	// Whether the primary fire button is being pressed

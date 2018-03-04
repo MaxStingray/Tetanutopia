@@ -3,6 +3,8 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/CollisionProfile.h"
 #include "Components/StaticMeshComponent.h"
+#include "Classes/Particles/ParticleSystemComponent.h"
+#include "Classes/Particles/ParticleSystem.h"
 #include "TimerManager.h"
 #include <string>
 #include "Kismet/GameplayStatics.h"
@@ -17,6 +19,9 @@ UBaseWeapon::UBaseWeapon()
 	InitialiseWeaponStats();
 	InitialiseStaticMesh();
 	InitialiseSounds();
+
+	MuzzleFlashTemplate = nullptr;
+	MuzzleFlash = nullptr;
 }
 
 void UBaseWeapon::BeginPlay()
@@ -27,6 +32,13 @@ void UBaseWeapon::BeginPlay()
 void UBaseWeapon::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// This doesnt work in beginplay for some reason
+	if (MuzzleFlashTemplate && !MuzzleFlash)
+	{
+		MuzzleFlash = UGameplayStatics::SpawnEmitterAttached(MuzzleFlashTemplate, this, NAME_None, ProjectileSpawnOffset);
+		MuzzleFlash->bSuppressSpawning = true;
+	}
 }
 
 void UBaseWeapon::Fire()
@@ -53,6 +65,7 @@ void UBaseWeapon::Fire()
 			}
 
 			UGameplayStatics::PlaySoundAtLocation(this, ShootSound, SpawnLocation, FireRotation);
+			MuzzleFlash->bSuppressSpawning = false;
 
 			World->GetTimerManager().SetTimer(TimerHandle_TimeUntilCanFire, this, &UBaseWeapon::ReEnableCanFire, FireInterval);
 		}
@@ -72,6 +85,7 @@ void UBaseWeapon::SetOffset(FVector offset)
 void UBaseWeapon::ReEnableCanFire()
 {
 	bCanFire = true;
+	MuzzleFlash->bSuppressSpawning = true; //TODO: Might have some issues with slower firing weapons turn it off here and not sooner
 }
 
 void UBaseWeapon::InitialiseSounds()
@@ -87,7 +101,7 @@ void UBaseWeapon::InitialiseStaticMesh()
 
 	SetCollisionProfileName(UCollisionProfile::NoCollision_ProfileName);
 	AddLocalOffset(WeaponPositionOffset, false);
-	SetWorldScale3D(FVector(0.75, 0.75, 0.75)); // TODO: Temporary
+	SetWorldScale3D(FVector(0.75, 0.75, 0.75));
 }
 
 void UBaseWeapon::InitialiseWeaponStats()

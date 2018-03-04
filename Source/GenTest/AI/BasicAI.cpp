@@ -1,5 +1,6 @@
-
 #include "BasicAI.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -7,6 +8,10 @@ ABasicAI::ABasicAI()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	// Setup the Hurt Sound
+	static ConstructorHelpers::FObjectFinder<USoundCue> hurtCue(TEXT("/Game/Audio/classic_hurt_Cue"));
+	HurtSound = hurtCue.Object;
 }
 
 
@@ -50,6 +55,8 @@ void ABasicAI::OnDeath()
 void ABasicAI::TakeDamage(int value)
 {
 	UE_LOG(LogTemp, Display, TEXT("AI took damage"));
+
+	UGameplayStatics::PlaySoundAtLocation(this, HurtSound, GetActorLocation(), GetActorRotation());
 
 	health -= value;
 	if (health < 0) {
