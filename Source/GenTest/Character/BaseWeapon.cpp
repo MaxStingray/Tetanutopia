@@ -8,6 +8,7 @@
 #include "TimerManager.h"
 #include <string>
 #include "Kismet/GameplayStatics.h"
+#include "Engine/World.h"
 
 UBaseWeapon::UBaseWeapon()
 {
@@ -65,7 +66,10 @@ void UBaseWeapon::Fire()
 			}
 
 			UGameplayStatics::PlaySoundAtLocation(this, ShootSound, SpawnLocation, FireRotation);
-			MuzzleFlash->bSuppressSpawning = false;
+			if(MuzzleFlash)
+			{
+				MuzzleFlash->bSuppressSpawning = false;
+			}
 
 			World->GetTimerManager().SetTimer(TimerHandle_TimeUntilCanFire, this, &UBaseWeapon::ReEnableCanFire, FireInterval);
 		}
@@ -85,12 +89,16 @@ void UBaseWeapon::SetOffset(FVector offset)
 void UBaseWeapon::ReEnableCanFire()
 {
 	bCanFire = true;
-	MuzzleFlash->bSuppressSpawning = true; //TODO: Might have some issues with slower firing weapons turn it off here and not sooner
+	
+	if(MuzzleFlash)
+	{
+		MuzzleFlash->bSuppressSpawning = true; //TODO: Might have some issues with slower firing weapons turn it off here and not sooner
+	}
 }
 
 void UBaseWeapon::InitialiseSounds()
 {
-	static ConstructorHelpers::FObjectFinder<USoundCue> shootCue(TEXT("/Game/Audio/pew_cue"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> shootCue(TEXT("/Game/Audio/Sounds/Hit_Shorter1_Cue"));
 	ShootSound = shootCue.Object;
 }
 

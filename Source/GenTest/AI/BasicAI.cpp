@@ -10,7 +10,7 @@ ABasicAI::ABasicAI()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Setup the Hurt Sound
-	static ConstructorHelpers::FObjectFinder<USoundCue> hurtCue(TEXT("/Game/Audio/classic_hurt_Cue"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> hurtCue(TEXT("/Game/Audio/Sounds/Hit_Short_Cue"));
 	HurtSound = hurtCue.Object;
 }
 

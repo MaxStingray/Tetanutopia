@@ -22,10 +22,10 @@ APlayerRobot::APlayerRobot()
 	InitialiseWeapons();
 
 	// Setup Sounds
-	static ConstructorHelpers::FObjectFinder<USoundCue> shootCue(TEXT("/Game/Audio/pickup_cue"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> shootCue(TEXT("/Game/Audio/Sounds/Equip_Weapon_Cue"));
 	EquipSound = shootCue.Object;
 
-	static ConstructorHelpers::FObjectFinder<USoundCue> hurtCue(TEXT("/Game/Audio/classic_hurt_Cue"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> hurtCue(TEXT("/Game/Audio/Sounds/Hit_Short_Cue"));
 	HurtSound = hurtCue.Object;
 }
 
