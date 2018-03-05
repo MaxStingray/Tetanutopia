@@ -33,7 +33,7 @@ enum class AIType : uint8
 {
 	Basic		UMETA(DisplayName = "Basic"),
 	Kamikaze		UMETA(DisplayName = "Kamikaze"),
-	Cannon			UMETA(DisplayName = "Cannon"),
+	CrowdAI			UMETA(DisplayName = "CrowdAI"),
 };
 
 UCLASS(Blueprintable)

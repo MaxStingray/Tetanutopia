@@ -82,7 +82,7 @@ void ARoomManager::SpawnEnemies()
 	{
 		FVector nextPosition = floorMap.FindChecked(positions[i]);
 		nextPosition.Z += 100;
-		SpawnAI(nextPosition, (int)AIType::Kamikaze);
+		SpawnAI(nextPosition, (int)AIType::CrowdAI);
 	}
 
 }
