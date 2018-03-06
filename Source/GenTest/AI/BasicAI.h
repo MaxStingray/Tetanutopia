@@ -18,6 +18,7 @@ public:
 	ABasicAI();
 
 	// I dont expose this because it only works if you set it through the function
+	UPROPERTY(BlueprintReadOnly)
 	UBaseWeapon* weapon;
 
 
