@@ -29,7 +29,10 @@ void ABSP::BeginPlay()
 	this->AddInstanceComponent(Walls);
 	
 	CreateLevel();
-	DrawMap();
+	//DrawMap();
+	AddRoomManagers();
+	DrawRooms();
+	AddDoors();
 }
 
 
@@ -42,7 +45,7 @@ void ABSP::Tick(float DeltaTime)
 
 
 void ABSP::CreateLevel() {
-	FChunk master = { nullptr, nullptr, nullptr, nullptr, nullptr, FVector(levelWidth*unitSize / 2, levelHeight*unitSize/2, 0), levelWidth, levelHeight, 0, 0, false };
+	FChunk master = { -1, -1, -1, -1, -1, FVector(levelWidth*unitSize / 2, levelHeight*unitSize/2, 0), levelWidth, levelHeight, 0, 0, false };
 	chunks.Add(master);
 	Split(0);
 	
@@ -62,20 +65,20 @@ bool ABSP::Split(int i) {
 		//r = FMath::RandRange(minWidth, chunks[i].chunkWidth - minWidth);
 		r = 2 * (rand() % (minWidth / 2)) + ((chunks[i].chunkWidth - minWidth) / 2);
 
-		FChunk rightChild = { &chunks[i], nullptr, nullptr, nullptr, nullptr, 
+		FChunk rightChild = { i, -1, -1, -1, -1, 
 			FVector((chunks[i].chunkCenter.X - ((chunks[i].chunkWidth/2)*unitSize) + (r/2)*unitSize), chunks[i].chunkCenter.Y, 0),
-			r, chunks[i].chunkHeight, 0, 0, true };
+			r, chunks[i].chunkHeight, -1, -1, true };
 
-		FChunk leftChild = { &chunks[i], nullptr, nullptr, nullptr, nullptr, 
+		FChunk leftChild = { i, -1, -1, -1, -1, 
 			FVector(rightChild.chunkCenter.X+(chunks[i].chunkWidth/2)*unitSize, chunks[i].chunkCenter.Y, 0),
-			chunks[i].chunkWidth - r, chunks[i].chunkHeight, 0, 0, true };
+			chunks[i].chunkWidth - r, chunks[i].chunkHeight, -1, -1, true };
 
 
 		chunks.Add(rightChild);
 		chunks.Add(leftChild);
 
-		chunks[i].RightChild = &rightChild;
-		chunks[i].LeftChild = &leftChild;
+		chunks[i].RightChild = i+1;
+		chunks[i].LeftChild = i+2;
 		chunks[i].splitX = r;
 		chunks[i].splitY = chunks[i].chunkHeight / 2;
 		return true;
@@ -84,20 +87,20 @@ bool ABSP::Split(int i) {
 		//r = FMath::RandRange(minHeight, chunks[i].chunkHeight - minHeight);
 		r = 2 * (rand() % (minHeight / 2)) + ((chunks[i].chunkHeight - minHeight) / 2);
 
-		FChunk bottomChild = { &chunks[i], nullptr, nullptr, nullptr, nullptr,
+		FChunk bottomChild = { i, -1, -1, -1, -1,
 			FVector(chunks[i].chunkCenter.X, (chunks[i].chunkCenter.Y - ((chunks[i].chunkHeight/2)*unitSize) + (r / 2)*unitSize), 0),
-			chunks[i].chunkWidth, r, 0, 0, false };
+			chunks[i].chunkWidth, r, -1, -1, false };
 
-		FChunk topChild = { &chunks[i], nullptr, nullptr, nullptr, nullptr,
+		FChunk topChild = { i, -1, -1, -1, -1,
 			FVector(chunks[i].chunkCenter.X, bottomChild.chunkCenter.Y + ((chunks[i].chunkHeight / 2)*unitSize), 0),
-			chunks[i].chunkWidth, chunks[i].chunkHeight - r, 0, 0, false };
+			chunks[i].chunkWidth, chunks[i].chunkHeight - r, -1, -1, false };
 
 
 		chunks.Add(bottomChild);
 		chunks.Add(topChild);
 
-		chunks[i].BottomChild = &bottomChild;
-		chunks[i].TopChild = &topChild;
+		chunks[i].BottomChild = i+1;
+		chunks[i].TopChild = i+2;
 		chunks[i].splitX = chunks[i].chunkWidth / 2;
 		chunks[i].splitY = r;
 		return true;
@@ -146,6 +149,149 @@ void ABSP::DrawMap() {
 			}
 
 		}
+	}
+}
+
+void ABSP::AddRoomManagers() {
+	TArray<FChunk> leaf;
+
+	//get all leaf nodes from chunks. These are the rooms that have not been sub divided. 
+	for (int i = 0; i < chunks.Num(); i++) {
+		if (chunks[i].BottomChild == -1 && chunks[i].TopChild == -1 && chunks[i].RightChild == -1 && chunks[i].LeftChild == -1) {
+			leaf.Add(chunks[i]);
+		}
+	}
+
+	for (int i = 0; i < leaf.Num(); i++) {
+		rms.Add(SpawnRM(leaf[i].chunkCenter));
+		rms[rms.Num() - 1]->location = leaf[i].chunkCenter;
+		rms[rms.Num() - 1]->width = leaf[i].chunkWidth;
+		rms[rms.Num() - 1]->height = leaf[i].chunkHeight;
+	}
+}
+
+void ABSP::DrawRooms() {
+	for (int i = 0; i < rms.Num(); i++) {
+		rms[i]->DrawRoom();
+	}
+}
+
+ABSPRoomManager* ABSP::SpawnRM(FVector location)
+{
+	if (rm)
+	{
+		UWorld* world = GetWorld();
+		if (world)
+		{
+			FActorSpawnParameters spawnParams;
+			spawnParams.Owner = this;
+			return world->SpawnActor<ABSPRoomManager>(rm, location, FRotator::ZeroRotator, spawnParams);
+		}
+	}
+	return nullptr;
+}
+
+void ABSP::AddDoors() {
+	/*TArray<FChunk> leafTemp;
+	//get all leaf nodes from chunks. These are the rooms that have not been sub divided. 
+	for (int i = 0; i < chunks.Num(); i++) {
+		if (chunks[i].BottomChild == -1 && chunks[i].TopChild == -1 && chunks[i].RightChild == -1 && chunks[i].LeftChild == -1) {
+			leafTemp.Add(chunks[i]);
+		}
+	}
+
+	for (int i = 0; i < leafTemp.Num(); i++) {
+		FChunk parent = chunks[leafTemp[i].parent];
+		if (parent.BottomChild != -1 && parent.BottomChild != -1) {
+			FVector loc(parent.chunkCenter.X, chunks[parent.BottomChild].chunkCenter.Y + chunks[parent.BottomChild].chunkHeight / 2, 0);
+			Spawn(loc, Door);
+			//leafTemp.RemoveAt(i);
+			//leafTemp.RemoveAt(i+1);
+		}
+		else if (parent.LeftChild != -1 && parent.RightChild != -1) {
+			FVector loc(chunks[parent.RightChild].chunkCenter.X + chunks[parent.RightChild].chunkWidth/2, parent.chunkCenter.Y, 0);
+			Spawn(loc, Door);
+			//leafTemp.RemoveAt(i);
+			//leafTemp.RemoveAt(i+1);
+		}
+
+		FChunk pparent = chunks[parent.parent];
+		if (pparent.BottomChild != -1 && pparent.TopChild != -1) {
+			FVector loc(pparent.chunkCenter.X, chunks[pparent.BottomChild].chunkCenter.Y + chunks[pparent.BottomChild].chunkHeight / 2, 0);
+			Spawn(loc, Door);
+		}
+		else if (pparent.LeftChild != -1 && pparent.RightChild != -1){
+			FVector loc(chunks[pparent.RightChild].chunkCenter.X + chunks[pparent.RightChild].chunkWidth / 2, pparent.chunkCenter.Y, 0);
+			Spawn(loc, Door);
+		}
+		
+	}*/
+
+	for (int i = 0; i < chunks.Num(); i++) {
+		if (chunks[i].BottomChild != -1 && chunks[i].TopChild != -1) {
+			FVector loc(chunks[i].chunkCenter.X, (chunks[i].chunkCenter.Y - (chunks[i].chunkHeight*unitSize) / 2) + chunks[i].splitY*unitSize, 0);
+
+			int bottomSplit = chunks[chunks[i].BottomChild].splitX;
+			int topSplit = chunks[chunks[i].TopChild].splitX;
+
+			if (((chunks[i].chunkWidth - bottomSplit) + (chunks[i].chunkWidth - topSplit)) > bottomSplit + topSplit) {
+				loc.X = chunks[i].chunkCenter.X + (chunks[i].chunkWidth*unitSize / 2) - ((minWidth-2)*unitSize / 2);
+			}
+			else {
+				loc.X = chunks[i].chunkCenter.X - (chunks[i].chunkWidth*unitSize / 2) + ((minWidth-2)*unitSize / 2);
+			}
+			
+			loc.X = loc.X - (unitSize / 2);
+			loc.Y = loc.Y - (unitSize / 2);
+
+			FTransform trans(FRotator(0, 90, 0), loc, FVector(1, 1, 1));
+			SpawnTransform(trans, Door);
+		}
+		else if (chunks[i].LeftChild != -1 && chunks[i].RightChild != -1) {
+			FVector loc((chunks[i].chunkCenter.X - (chunks[i].chunkWidth*unitSize) / 2) + chunks[i].splitX*unitSize, chunks[i].chunkCenter.Y, 0);
+
+			int rightSplit = chunks[chunks[i].RightChild].splitY;
+			int leftSplit = chunks[chunks[i].LeftChild].splitY;
+
+			if (((chunks[i].chunkHeight - rightSplit) + (chunks[i].chunkHeight - leftSplit)) > rightSplit + leftSplit) {
+				loc.Y = chunks[i].chunkCenter.Y + (chunks[i].chunkHeight*unitSize / 2) - ((minHeight-2)*unitSize / 2);
+			}
+			else {
+				loc.Y = chunks[i].chunkCenter.Y - (chunks[i].chunkHeight*unitSize / 2) + ((minHeight-2)*unitSize / 2);
+			}
+			
+			loc.X = loc.X - (unitSize / 2);
+			loc.Y = loc.Y - (unitSize / 2);
+
+			FTransform trans(FRotator(0, 0, 0), loc, FVector(1, 1, 1));
+			SpawnTransform(trans, Door);
+		}
+	}
+
+	
+}
+
+void ABSP::Spawn(FVector location, TSubclassOf<AActor> actor)
+{
+
+	UWorld* world = GetWorld();
+	if (world)
+	{
+		FActorSpawnParameters spawnParams;
+		spawnParams.Owner = this;
+		world->SpawnActor<AActor>(actor, location, FRotator::ZeroRotator, spawnParams);
+	}
+
+}
+
+void ABSP::SpawnTransform(FTransform position, TSubclassOf<AActor> actor)
+{
+	UWorld* world = GetWorld();
+	if (world)
+	{
+		FActorSpawnParameters spawnParams;
+		spawnParams.Owner = this;
+		world->SpawnActor<AActor>(actor, position, spawnParams);
 	}
 }
 

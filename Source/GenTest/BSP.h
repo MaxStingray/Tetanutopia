@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/HierarchicalInstancedStaticMeshComponent.h"
+#include "BSPRoomManager.h"
 #include "BSP.generated.h"
 
 USTRUCT(BlueprintType)
@@ -12,11 +13,11 @@ struct FChunk
 {
 	GENERATED_BODY()
 public:
-	FChunk* parent;
-	FChunk* TopChild;
-	FChunk* BottomChild;
-	FChunk* RightChild;
-	FChunk* LeftChild;
+	int parent;
+	int TopChild;
+	int BottomChild;
+	int RightChild;
+	int LeftChild;
 	FVector chunkCenter;
 	int chunkWidth;
 	int chunkHeight;
@@ -34,13 +35,13 @@ public:
 	ABSP();
 	// Sets default values for this actor's properties
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int levelWidth = 50;
+		int levelWidth = 100;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int levelHeight = 50;
+		int levelHeight = 100;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int minWidth = 10;
+		int minWidth = 16;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int minHeight = 10;
+		int minHeight = 16;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int subDivisions = 10;
@@ -48,6 +49,7 @@ public:
 		int unitSize = 100;
 
 	TArray<FChunk> chunks;
+	TArray<ABSPRoomManager*> rms;
 
 	UPROPERTY(EditAnywhere)
 		UHierarchicalInstancedStaticMeshComponent *Floors;
@@ -57,9 +59,20 @@ public:
 		UStaticMesh* Floor;
 	UPROPERTY(EditAnywhere)
 		UStaticMesh* Wall;
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<AActor> Door;
+
+	UFUNCTION(BlueprintCallable, Category = "GameDev|BSP")
+		ABSPRoomManager* SpawnRM(FVector location);
+	UFUNCTION(BlueprintCallable)
+		void Spawn(FVector location, TSubclassOf<AActor> actor);
+	UFUNCTION(BlueprintCallable)
+		void SpawnTransform(FTransform position, TSubclassOf<AActor> actor);
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "GameDev|BSP")
 		void SpawnISM(FTransform trans, UHierarchicalInstancedStaticMeshComponent* targetMesh);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class ABSPRoomManager> rm;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -74,6 +87,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GameDev|BSP")
 		void DrawMap();
 
-
-
+	void AddRoomManagers();
+	void DrawRooms();
+	void AddDoors();
 };
