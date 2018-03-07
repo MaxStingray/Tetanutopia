@@ -54,18 +54,21 @@ void ABSP::CreateLevel() {
 
 //splits are always draw left and up respectivly
 bool ABSP::Split(int i) {
-
+	if (i > chunks.Num() - 1) {
+		return false;
+	}
 	int r = 0;
 	if (!chunks[i].horizontal && chunks[i].chunkWidth >= minWidth*2) {
-		r = FMath::RandRange(minWidth, chunks[i].chunkWidth - minWidth);
+		//r = FMath::RandRange(minWidth, chunks[i].chunkWidth - minWidth);
+		r = 2 * (rand() % (minWidth / 2)) + ((chunks[i].chunkWidth - minWidth) / 2);
 
 		FChunk rightChild = { &chunks[i], nullptr, nullptr, nullptr, nullptr, 
 			FVector((chunks[i].chunkCenter.X - ((chunks[i].chunkWidth/2)*unitSize) + (r/2)*unitSize), chunks[i].chunkCenter.Y, 0),
-			r, chunks[i].chunkHeight, 0, 0, false };
+			r, chunks[i].chunkHeight, 0, 0, true };
 
 		FChunk leftChild = { &chunks[i], nullptr, nullptr, nullptr, nullptr, 
 			FVector(rightChild.chunkCenter.X+(chunks[i].chunkWidth/2)*unitSize, chunks[i].chunkCenter.Y, 0),
-			chunks[i].chunkWidth - r, chunks[i].chunkHeight, 0, 0, false };
+			chunks[i].chunkWidth - r, chunks[i].chunkHeight, 0, 0, true };
 
 
 		chunks.Add(rightChild);
@@ -78,15 +81,16 @@ bool ABSP::Split(int i) {
 		return true;
 	}
 	else if (chunks[i].horizontal && chunks[i].chunkHeight >= minHeight * 2) {
-		r = FMath::RandRange(minHeight, chunks[i].chunkHeight - minHeight);
-		
+		//r = FMath::RandRange(minHeight, chunks[i].chunkHeight - minHeight);
+		r = 2 * (rand() % (minHeight / 2)) + ((chunks[i].chunkHeight - minHeight) / 2);
+
 		FChunk bottomChild = { &chunks[i], nullptr, nullptr, nullptr, nullptr,
 			FVector(chunks[i].chunkCenter.X, (chunks[i].chunkCenter.Y - ((chunks[i].chunkHeight/2)*unitSize) + (r / 2)*unitSize), 0),
-			chunks[i].chunkWidth, r, 0, 0, true };
+			chunks[i].chunkWidth, r, 0, 0, false };
 
 		FChunk topChild = { &chunks[i], nullptr, nullptr, nullptr, nullptr,
 			FVector(chunks[i].chunkCenter.X, bottomChild.chunkCenter.Y + ((chunks[i].chunkHeight / 2)*unitSize), 0),
-			chunks[i].chunkWidth, chunks[i].chunkHeight - r, 0, 0, true };
+			chunks[i].chunkWidth, chunks[i].chunkHeight - r, 0, 0, false };
 
 
 		chunks.Add(bottomChild);
@@ -105,39 +109,39 @@ bool ABSP::Split(int i) {
 
 void ABSP::DrawMap() {
 	if (chunks.Num() != 0) {
-		for (int i = chunks.Num() - 1; i >= 0; i--) {
-			//Remember this is tiles! it has not been * by unit size.
-			FVector br(chunks[i].chunkCenter.X - (chunks[i].chunkWidth / 2), chunks[i].chunkCenter.Y - (chunks[i].chunkHeight / 2), 0);
-			//Draw floor
-			for (int y = 0; y < chunks[i].chunkHeight; y++) {
-				for (int x = 0; x < chunks[i].chunkWidth; x++) {
-					FTransform ft(FRotator(0, 0, 0), FVector((br.X + x)*unitSize, (br.Y + y)*unitSize, 0), FVector(1,1,1));
-					SpawnISM(ft, Floors);
-				}
+		FVector br(chunks[0].chunkCenter.X - ((chunks[0].chunkWidth*unitSize) / 2), chunks[0].chunkCenter.Y - ((chunks[0].chunkHeight*unitSize) / 2), 0);
+		//Draw floor
+		for (int y = 0; y < chunks[0].chunkHeight; y++) {
+			for (int x = 0; x < chunks[0].chunkWidth; x++) {
+				FTransform ft(FRotator(0, 0, 0), FVector(br.X + (x*unitSize), br.Y + (y*unitSize), 0), FVector(1, 1, 1));
+				SpawnISM(ft, Floors);
 			}
-
+		}
+		for (int i = chunks.Num() - 1; i >= 0; i--) {
+			FVector br(chunks[i].chunkCenter.X - ((chunks[i].chunkWidth*unitSize) / 2), chunks[i].chunkCenter.Y - ((chunks[i].chunkHeight*unitSize) / 2), 0);
+			
 			//draw walls
 			//right wall up
 			for (int j = 0; j < chunks[i].chunkHeight; j++) {
-				FTransform wt(FRotator(0, 0, 0), FVector(br.X*unitSize, (br.Y + j)*unitSize, 0), FVector(1, 1, 1));
+				FTransform wt(FRotator(0, 0, 0), FVector(br.X, br.Y + (j*unitSize), 0), FVector(1, 1, 1));
 				SpawnISM(wt, Walls);
 			}
 
 			//top wall left
 			for (int j = 0; j < chunks[i].chunkWidth; j++) {
-				FTransform wt(FRotator(0, 0, 0), FVector((br.X + j)*unitSize, (br.Y + chunks[i].chunkHeight)*unitSize, 0), FVector(1, 1, 1));
+				FTransform wt(FRotator(0, 0, 0), FVector(br.X + (j*unitSize), br.Y + (chunks[i].chunkHeight*unitSize), 0), FVector(1, 1, 1));
 				SpawnISM(wt, Walls);
 			}
 
 			//left wall down
 			for (int j = chunks[i].chunkHeight; j > 0; j--) {
-				FTransform wt(FRotator(0, 0, 0), FVector((br.X + chunks[i].chunkWidth)*unitSize, (br.Y + j)*unitSize, 0), FVector(1, 1, 1));
+				FTransform wt(FRotator(0, 0, 0), FVector(br.X + (chunks[i].chunkWidth*unitSize), br.Y + (j*unitSize), 0), FVector(1, 1, 1));
 				SpawnISM(wt, Walls);
 			}
 
 			//bottom wall right
 			for (int j = chunks[i].chunkWidth; j > 0; j--) {
-				FTransform wt(FRotator(0, 0, 0), FVector((br.X + j)*unitSize, br.Y*unitSize, 0), FVector(1, 1, 1));
+				FTransform wt(FRotator(0, 0, 0), FVector(br.X + (j*unitSize), br.Y, 0), FVector(1, 1, 1));
 				SpawnISM(wt, Walls);
 			}
 

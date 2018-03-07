@@ -34,16 +34,16 @@ public:
 	ABSP();
 	// Sets default values for this actor's properties
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int levelWidth = 100;
+		int levelWidth = 50;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int levelHeight = 100;
+		int levelHeight = 50;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int minWidth = 4;
+		int minWidth = 10;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int minHeight = 4;
+		int minHeight = 10;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int subDivisions = 6;
+		int subDivisions = 10;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int unitSize = 100;
 
