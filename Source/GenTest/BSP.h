@@ -44,7 +44,7 @@ public:
 		int minHeight = 16;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int subDivisions = 10;
+		int subDivisions = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int unitSize = 100;
 
@@ -61,6 +61,10 @@ public:
 		UStaticMesh* Wall;
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<AActor> Door;
+
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<AActor> Barrels;
 
 	UFUNCTION(BlueprintCallable, Category = "GameDev|BSP")
 		ABSPRoomManager* SpawnRM(FVector location);

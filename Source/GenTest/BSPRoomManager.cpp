@@ -36,6 +36,10 @@ void ABSPRoomManager::BeginPlay()
 	Walls->SetFlags(RF_Transactional);
 	this->AddInstanceComponent(Walls);
 
+	for (int i = 0; i < width * height; i++) {
+		Tiles.Add(0);
+	}
+
 }
 
 // Called every frame
@@ -61,6 +65,7 @@ void ABSPRoomManager::DrawRoom() {
 		for (int x = 0; x < width; x++) {
 			FTransform ft(FRotator(0, 0, 0), FVector(br.X + (x*bsp->unitSize), br.Y + (y*bsp->unitSize), 0), FVector(1, 1, 1));
 			bsp->SpawnISM(ft, Floors);
+			//SetAvb(x, y, (int)Avb::EMPTY);
 		}
 	}
 
@@ -69,24 +74,42 @@ void ABSPRoomManager::DrawRoom() {
 	for (int j = 0; j < height; j++) {
 		FTransform wt(FRotator(0, 0, 0), FVector(br.X, br.Y + (j*bsp->unitSize), 0), FVector(1, 1, 1));
 		bsp->SpawnISM(wt, Walls);
+		//SetAvb(wt.GetLocation().X / bsp->unitSize, wt.GetLocation().Y / bsp->unitSize, (int)Avb::WALL);
 	}
 
 	//top wall left
 	for (int j = 0; j < width; j++) {
 		FTransform wt(FRotator(0, 0, 0), FVector(br.X + (j*bsp->unitSize), br.Y + (height*bsp->unitSize) - bsp->unitSize, 0), FVector(1, 1, 1));
 		bsp->SpawnISM(wt, Walls);
+		//SetAvb(wt.GetLocation().X / bsp->unitSize, wt.GetLocation().Y / bsp->unitSize, (int)Avb::WALL);
 	}
 
 	//left wall down
 	for (int j = height - 1; j > 0; j--) {
 		FTransform wt(FRotator(0, 0, 0), FVector(br.X + (width*bsp->unitSize) - bsp->unitSize, br.Y + (j*bsp->unitSize), 0), FVector(1, 1, 1));
 		bsp->SpawnISM(wt, Walls);
+		//SetAvb(wt.GetLocation().X / bsp->unitSize, wt.GetLocation().Y / bsp->unitSize, (int)Avb::WALL);
 	}
 
 	//bottom wall right
 	for (int j = width - 1; j > 0; j--) {
 		FTransform wt(FRotator(0, 0, 0), FVector(br.X + (j*bsp->unitSize), br.Y, 0), FVector(1, 1, 1));
 		bsp->SpawnISM(wt, Walls);
+		//SetAvb(wt.GetLocation().X / bsp->unitSize, wt.GetLocation().Y / bsp->unitSize, (int)Avb::WALL);
 	}
+}
+
+void ABSPRoomManager::PlaceProps() {
+
+}
+
+void ABSPRoomManager::SetAvb(int row, int col, int value)
+{
+	Tiles[width * row + col] = value;
+}
+
+int ABSPRoomManager::GetAvb(int row, int col)
+{
+	return Tiles[width * row + col];
 }
 
