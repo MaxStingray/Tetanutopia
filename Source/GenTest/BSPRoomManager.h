@@ -53,4 +53,7 @@ public:
 	void PlaceProps();
 	void SetAvb(int row, int col, int value);
 	int GetAvb(int row, int col);
+	void PopulateRoom();
+	bool TestPropPlacement(int x, int y, int sizeX, int sizeY);
+	void SetPropPlacement(int x, int y, int sizeX, int sizeY);
 };

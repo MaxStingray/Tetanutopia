@@ -33,6 +33,9 @@ void ABSP::BeginPlay()
 	AddRoomManagers();
 	DrawRooms();
 	AddDoors();
+	for (int i = 0; i < rms.Num(); i++) {
+		rms[i]->PopulateRoom();
+	}
 }
 
 

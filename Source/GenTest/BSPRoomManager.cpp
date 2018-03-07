@@ -41,9 +41,7 @@ void ABSPRoomManager::init() {
 	for (int i = 0; i < width * height; i++) {
 		Tiles.Add(0);
 	}
-	for (int i = 0; i < 3; i++) {
-		PlaceProps();
-	}
+	
 }
 
 // Called every frame
@@ -115,12 +113,9 @@ void ABSPRoomManager::PlaceProps() {
 	int x = FMath::RandRange(0, width);
 	int y = FMath::RandRange(0, height);
 
-	if (GetAvb(x, y) == 0 && GetAvb(x + 1, y) == 0 && GetAvb(x, y + 1) == 0 && GetAvb(x + 1, y + 1) == 0) {
+	if (TestPropPlacement(x, y, 2, 2)) {
 		bsp->Spawn(FVector((x*bsp->unitSize) + (location.X - ((width / 2)*bsp->unitSize)), (y*bsp->unitSize) + (location.Y - ((height / 2)*bsp->unitSize)), 0), bsp->Barrels);
-		SetAvb(x, y, (int)Avb::PROP);
-		SetAvb(x+1, y, (int)Avb::PROP);
-		SetAvb(x, y+1, (int)Avb::PROP);
-		SetAvb(x+1, y+1, (int)Avb::PROP);
+		SetPropPlacement(x, y, 2, 2);
 	}
 }
 
@@ -134,6 +129,10 @@ void ABSPRoomManager::SetAvb(int x, int y, int value)
 
 int ABSPRoomManager::GetAvb(int x, int y)
 {
+	if (x < 0 || y < 0) {
+		return -1;
+	}
+
 	if (width * y + x < Tiles.Num())
 	{
 		return Tiles[width * y + x];
@@ -142,5 +141,43 @@ int ABSPRoomManager::GetAvb(int x, int y)
 		return -1;
 	}
 
+}
+
+void ABSPRoomManager::PopulateRoom()
+{
+	for (int i = 0; i < 20; i++) {
+		PlaceProps();
+	}
+	
+}
+
+bool ABSPRoomManager::TestPropPlacement(int x, int y, int sizeX, int sizeY)
+{
+	for (int ty = y; ty < y + sizeY; ty++) {
+		for (int tx = x; tx < x + sizeX; tx++) {
+			if (GetAvb(tx, ty) != 0) {
+				return false;
+			}
+		}
+	}
+
+	for (int ty = y - 3; ty < y + sizeY + 3; ty++) {
+		for (int tx = x - 3; tx < x + sizeX + 3; tx++) {
+			if (GetAvb(tx, ty) != 0 ) {
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+void ABSPRoomManager::SetPropPlacement(int x, int y, int sizeX, int sizeY)
+{
+	for (int ty = y; ty < y + sizeY; ty++) {
+		for (int tx = x; tx < x + sizeX; tx++) {
+			SetAvb(tx, ty, (int)Avb::PROP);
+		}
+	}
 }
 
