@@ -14,7 +14,8 @@ enum class Avb : uint8
 {
 	EMPTY		UMETA(DisplayName = "Empty tile"),
 	WALL		UMETA(DisplayName = "Wall tile"),
-	DOOR			UMETA(DisplayName = "Door tile")
+	DOOR			UMETA(DisplayName = "Door tile"),
+	PROP		UMETA(DisplayName = "Prop tile")
 };
 
 UCLASS()
@@ -25,6 +26,8 @@ class GENTEST_API ABSPRoomManager : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ABSPRoomManager();
+
+	void init();
 
 	FVector location;
 

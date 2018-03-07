@@ -167,6 +167,7 @@ void ABSP::AddRoomManagers() {
 		rms[rms.Num() - 1]->location = leaf[i].chunkCenter;
 		rms[rms.Num() - 1]->width = leaf[i].chunkWidth;
 		rms[rms.Num() - 1]->height = leaf[i].chunkHeight;
+		rms[rms.Num() - 1]->init();
 	}
 }
 
@@ -261,6 +262,9 @@ void ABSP::AddDoors() {
 						wallLoc.SetLocation(FVector(loc.X, loc.Y, -300));
 						wallLoc.SetScale3D(FVector(0, 0, 0));
 						rms[j]->Walls->UpdateInstanceTransform(k, wallLoc, true, false, true);
+						int x = (wallLoc.GetLocation().X - (rms[j]->location.X - ((rms[j]->width / 2)*unitSize))) / unitSize;
+						int y = (wallLoc.GetLocation().Y - (rms[j]->location.Y - ((rms[j]->height / 2)*unitSize))) / unitSize;
+						rms[j]->SetAvb(x, y, (int)Avb::DOOR);
 					}
 				}
 			}
@@ -303,6 +307,9 @@ void ABSP::AddDoors() {
 						wallLoc.SetLocation(FVector(loc.X, loc.Y, -300));
 						wallLoc.SetScale3D(FVector(0, 0, 0));
 						rms[j]->Walls->UpdateInstanceTransform(k, wallLoc, true, false, true);
+						int x = (wallLoc.GetLocation().X - (rms[j]->location.X - ((rms[j]->width / 2)*unitSize))) / unitSize;
+						int y = (wallLoc.GetLocation().Y - (rms[j]->location.Y - ((rms[j]->height / 2)*unitSize))) / unitSize;
+						rms[j]->SetAvb(x, y, (int)Avb::DOOR);
 					}
 				}
 			}
