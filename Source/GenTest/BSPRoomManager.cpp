@@ -181,3 +181,46 @@ void ABSPRoomManager::SetPropPlacement(int x, int y, int sizeX, int sizeY)
 	}
 }
 
+FVector ABSPRoomManager::GetTileLocation_int(int x, int y)
+{
+	ABSP* bsp = nullptr;
+
+	for (TActorIterator<ABSP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+		bsp = *ActorItr;
+	}
+
+	FVector templocaction(0, 0, 0);
+	if (x > 0 && x < width && y > 0 && y < height) {
+		templocaction.X = ((location.X - ((width / 2)*bsp->unitSize)) + (x*bsp->unitSize));
+		templocaction.Y = ((location.Y - ((height / 2)*bsp->unitSize)) + (y*bsp->unitSize));
+	}
+	return templocaction;
+}
+
+FVector ABSPRoomManager::GetTileLocation_str(FString coords)
+{
+	FString xs;
+	FString ys;
+	coords.Split(",", &xs, &ys);
+
+	int x = FCString::Atoi(*xs);
+	int y = FCString::Atoi(*ys);
+
+	ABSP* bsp = nullptr;
+
+	for (TActorIterator<ABSP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+		bsp = *ActorItr;
+	}
+
+	FVector templocaction(0, 0, 0);
+	if (x > 0 && x < width && y > 0 && y < height) {
+		templocaction.X = ((location.X - ((width / 2)*bsp->unitSize)) + (x*bsp->unitSize));
+		templocaction.Y = ((location.Y - ((height / 2)*bsp->unitSize)) + (y*bsp->unitSize));
+	}
+	return templocaction;
+}
+
