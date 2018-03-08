@@ -15,9 +15,7 @@ ABSPRoomManager::ABSPRoomManager()
 void ABSPRoomManager::BeginPlay()
 {
 	Super::BeginPlay();
-<<<<<<< HEAD
 	initialSpawnDone = false;
-=======
 
 	ABSP* bsp = nullptr;
 
@@ -29,7 +27,7 @@ void ABSPRoomManager::BeginPlay()
 
 	br.X = (location.X - ((width / 2)*bsp->unitSize));
 	br.Y = (location.Y - ((height / 2)*bsp->unitSize));
->>>>>>> 8e21ea4a1aec2e6c1598385a3b5781c93d827a4f
+	
 }
 
 void ABSPRoomManager::init() {
@@ -60,7 +58,6 @@ void ABSPRoomManager::init() {
 	
 }
 
-<<<<<<< HEAD
 void ABSPRoomManager::CheckPlayerInRoom()
 {
 	ABSP* bsp = nullptr;
@@ -91,27 +88,25 @@ void ABSPRoomManager::Tick(float DeltaTime)
 		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
 		bsp = *ActorItr;
 	}
-	playerPosRaw = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
-	FVector playerPos = FVector(playerPosRaw.X, playerPosRaw.Y, 0);
-	FVector roomPos = FVector(GetActorLocation().X, GetActorLocation().Y, 0);
-	dist = FVector(playerPos - roomPos).Size();
-	//less than 2000 so we can only check nearby rooms
-	if (dist < 2000)
-	{
-		bsp->distances.Add(dist);
-		CheckPlayerInRoom();
-	}
-	
-	if (PlayerInRoom && roomType == BSPRoomType::RT_ENEMY && !initialSpawnDone)
-	{
-		SpawnEnemy();
-		initialSpawnDone = true;
-	}
+	/*if (GetWorld()->GetFirstPlayerController() != NULL) {
+		playerPosRaw = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+		FVector playerPos = FVector(playerPosRaw.X, playerPosRaw.Y, 0);
+		FVector roomPos = FVector(GetActorLocation().X, GetActorLocation().Y, 0);
+		dist = FVector(playerPos - roomPos).Size();
+		//less than 2000 so we can only check nearby rooms
+		if (dist < 2000)
+		{
+			bsp->distances.Add(dist);
+			CheckPlayerInRoom();
+		}
 
-=======
-// Called every frame
-void ABSPRoomManager::Tick(float DeltaTime)
-{
+		if (PlayerInRoom && roomType == BSPRoomType::RT_ENEMY && !initialSpawnDone)
+		{
+			SpawnEnemy();
+			initialSpawnDone = true;
+		}
+	}*/
+
 	Super::Tick(DeltaTime);
 	/*
 	FVector playerPos = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
@@ -120,7 +115,7 @@ void ABSPRoomManager::Tick(float DeltaTime)
 		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Player Location: %s"),
 			*playerPos.ToString()));
 	}*/
->>>>>>> 8e21ea4a1aec2e6c1598385a3b5781c93d827a4f
+	this->SetActorTransform(FTransform(FVector(0, 0, 0)));
 }
 
 void ABSPRoomManager::DrawRoom() {
