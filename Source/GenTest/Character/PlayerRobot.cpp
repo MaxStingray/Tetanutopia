@@ -122,7 +122,6 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 	const FVector MoveDirection = FVector(MoveForward, MoveRight, 0.f).GetClampedToMaxSize(1.0f);	// Clamp to ensure we cant travel faster diagonally
 	FVector movement = MoveDirection * MoveSpeed * deltaSeconds;
 
-
 	if (bUseCameraForward)
 	{
 		// Apply Correction to movement so that the direction is relative to the camera, not the player model
@@ -135,9 +134,17 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 		FHitResult Hit(1.f);
 		AddActorWorldOffset(movement, true, &Hit);
 
-		// Make the player look in the direction of movement
-		const FRotator MoveRotation = MoveDirection.Rotation().GetNormalized();
-		SetActorRotation(MoveRotation);
+		const float LookForward = GetInputAxisValue(BindingLookForward);
+		const float LookRight = GetInputAxisValue(BindingLookRight);
+
+		const FVector LookDirection = FVector(LookForward, LookRight, 0.f);
+
+		if (LookDirection.SizeSquared() < FLT_EPSILON)
+		{
+			// Make the player look in the direction of movement if not looking actively
+			const FRotator MoveRotation = FMath::Lerp(GetActorRotation(), MoveDirection.Rotation().GetNormalized(), 0.5f);
+			SetActorRotation(MoveRotation);
+		}
 		
 		// Tilt the player because we are moving
 		FRotator current = GetActorRotation();
@@ -199,7 +206,7 @@ void APlayerRobot::ApplyLook(const float deltaSeconds)
 
 	if (LookDirection.SizeSquared() > FLT_EPSILON)
 	{
-		FRotator lookRotation = LookDirection.Rotation(); // Get the rotation from the joystick
+		FRotator lookRotation = FMath::Lerp(GetActorRotation(), LookDirection.Rotation(), 0.5f); // Get the rotation from the joystick
 
 		if (bUseCameraForward)
 		{
