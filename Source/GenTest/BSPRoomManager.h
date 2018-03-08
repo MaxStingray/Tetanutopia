@@ -18,6 +18,17 @@ enum class Avb : uint8
 	PROP		UMETA(DisplayName = "Prop tile")
 };
 
+UENUM(BlueprintType)
+enum class BSPRoomType : uint8
+{
+	RT_TURRET		UMETA(DisplayName = "turret room"),
+	RT_START		UMETA(DisplayName = "start room"),
+	RT_END			UMETA(DisplayName = "end room"),
+	RT_ENEMY		UMETA(DisplayName = "enemy room"),
+	RT_WEAPON		UMETA(DisplayName = "weapon room"),
+	RT_GENERIC		UMETA(DisplayName = "generic room (placeholder roomtype)")//remove this eventually
+};
+
 UCLASS()
 class GENTEST_API ABSPRoomManager : public AActor
 {
@@ -35,6 +46,12 @@ public:
 
 	int width;
 	int height;
+	
+	UPROPERTY(EditAnywhere)
+	int roomType;
+
+	//UPROPERTY(EditAnywhere)
+		//bool PlayerInRoom();
 
 	UPROPERTY(EditAnywhere)
 		UHierarchicalInstancedStaticMeshComponent *Floors;
@@ -51,6 +68,12 @@ public:
 
 	void DrawRoom();
 	void PlaceProps();
+	bool PlaceProp(int x, int y, TSubclassOf<AActor> prop, int sizeX, int sizeY);
 	void SetAvb(int row, int col, int value);
 	int GetAvb(int row, int col);
+	void PopulateRoom();
+	bool TestPropPlacement(int x, int y, int sizeX, int sizeY);
+	void SetPropPlacement(int x, int y, int sizeX, int sizeY);
+	FVector GetTileLocation_int(int x, int y);
+	FVector GetTileLocation_str(FString coords);
 };
