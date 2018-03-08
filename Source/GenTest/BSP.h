@@ -65,6 +65,8 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<AActor> Barrels;
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<AActor> corner;
 
 	UFUNCTION(BlueprintCallable, Category = "GameDev|BSP")
 		ABSPRoomManager* SpawnRM(FVector location);

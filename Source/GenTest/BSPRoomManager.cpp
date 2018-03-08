@@ -55,17 +55,17 @@ void ABSPRoomManager::init() {
 }
 
 // Called every frame
-/*void ABSPRoomManager::Tick(float DeltaTime)
+void ABSPRoomManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	/*
 	FVector playerPos = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Player Location: %s"),
 			*playerPos.ToString()));
-	}
-}*/
+	}*/
+}
 
 void ABSPRoomManager::DrawRoom() {
 
@@ -135,6 +135,30 @@ void ABSPRoomManager::PlaceProps() {
 	}
 }
 
+bool ABSPRoomManager::PlaceProp(int x, int y, TSubclassOf<AActor> prop, int sizeX, int sizeY)
+{
+	ABSP* bsp = nullptr;
+
+	for (TActorIterator<ABSP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+		bsp = *ActorItr;
+	}
+
+	if (TestPropPlacement(x, y, sizeX, sizeY)) {
+		bsp->Spawn(FVector((x*bsp->unitSize) + (location.X - ((width / 2)*bsp->unitSize)), (y*bsp->unitSize) + (location.Y - ((height / 2)*bsp->unitSize)), 0), prop);
+		SetPropPlacement(x, y, 2, 2);
+		return true;
+	}
+	else {
+		return false;
+	}
+
+
+
+}
+
+
 void ABSPRoomManager::SetAvb(int x, int y, int value)
 {
 	if (width * y + x < Tiles.Num())
@@ -161,6 +185,14 @@ int ABSPRoomManager::GetAvb(int x, int y)
 
 void ABSPRoomManager::PopulateRoom()
 {
+	ABSP* bsp = nullptr;
+
+	for (TActorIterator<ABSP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+		bsp = *ActorItr;
+	}
+	PlaceProp(1, 1, bsp->corner, 3, 2);
 	for (int i = 0; i < 20; i++) {
 		PlaceProps();
 	}
@@ -176,7 +208,7 @@ bool ABSPRoomManager::TestPropPlacement(int x, int y, int sizeX, int sizeY)
 			}
 		}
 	}
-
+	/*
 	for (int ty = y - 3; ty < y + sizeY + 3; ty++) {
 		for (int tx = x - 3; tx < x + sizeX + 3; tx++) {
 			if (GetAvb(tx, ty) != 0 ) {
@@ -184,7 +216,7 @@ bool ABSPRoomManager::TestPropPlacement(int x, int y, int sizeX, int sizeY)
 			}
 		}
 	}
-
+	*/
 	return true;
 }
 

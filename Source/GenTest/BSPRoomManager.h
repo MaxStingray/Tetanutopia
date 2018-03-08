@@ -68,6 +68,7 @@ public:
 
 	void DrawRoom();
 	void PlaceProps();
+	bool PlaceProp(int x, int y, TSubclassOf<AActor> prop, int sizeX, int sizeY);
 	void SetAvb(int row, int col, int value);
 	int GetAvb(int row, int col);
 	void PopulateRoom();
