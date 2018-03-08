@@ -50,8 +50,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	int roomType;
 
-	UPROPERTY(EditAnywhere)
-		bool PlayerInRoom();
+	//UPROPERTY(EditAnywhere)
+		//bool PlayerInRoom();
 
 	UPROPERTY(EditAnywhere)
 		UHierarchicalInstancedStaticMeshComponent *Floors;

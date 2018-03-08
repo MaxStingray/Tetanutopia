@@ -1,7 +1,6 @@
 
 #include "BSPRoomManager.h"
 #include "EngineUtils.h"
-#include "Engine.h"
 
 // Sets default values
 ABSPRoomManager::ABSPRoomManager()
@@ -11,7 +10,7 @@ ABSPRoomManager::ABSPRoomManager()
 
 }
 
-bool ABSPRoomManager::PlayerInRoom()
+/*bool ABSPRoomManager::PlayerInRoom()
 {
 	FVector playerPos = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
 	if (GEngine)
@@ -19,7 +18,7 @@ bool ABSPRoomManager::PlayerInRoom()
 		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Player Location: %s"),
 			*playerPos.ToString()));
 	}
-}
+}*/
 
 // Called when the game starts or when spawned
 void ABSPRoomManager::BeginPlay()
@@ -56,7 +55,7 @@ void ABSPRoomManager::init() {
 }
 
 // Called every frame
-void ABSPRoomManager::Tick(float DeltaTime)
+/*void ABSPRoomManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -66,7 +65,7 @@ void ABSPRoomManager::Tick(float DeltaTime)
 		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Player Location: %s"),
 			*playerPos.ToString()));
 	}
-}
+}*/
 
 void ABSPRoomManager::DrawRoom() {
 
