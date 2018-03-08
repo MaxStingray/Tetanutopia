@@ -41,6 +41,8 @@ public:
 	void init();
 
 	FVector location;
+	//means the bottom right corner of the room. helps for offsets.
+	FVector br;
 
 	TArray<int32> Tiles;
 
@@ -68,11 +70,11 @@ public:
 
 	void DrawRoom();
 	void PlaceProps();
-	bool PlaceProp(int x, int y, TSubclassOf<AActor> prop, int sizeX, int sizeY);
+	bool PlaceProp(int x, int y, TSubclassOf<AActor> prop, int sizeX, int sizeY, int rotZ);
 	void SetAvb(int row, int col, int value);
 	int GetAvb(int row, int col);
 	void PopulateRoom();
-	bool TestPropPlacement(int x, int y, int sizeX, int sizeY);
+	bool TestPropPlacement(int x, int y, int sizeX, int sizeY, int rotationZ);
 	void SetPropPlacement(int x, int y, int sizeX, int sizeY);
 	FVector GetTileLocation_int(int x, int y);
 	FVector GetTileLocation_str(FString coords);
