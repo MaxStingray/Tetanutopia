@@ -37,6 +37,9 @@ public:
 	int height;
 
 	UPROPERTY(EditAnywhere)
+		bool PlayerInRoom();
+
+	UPROPERTY(EditAnywhere)
 		UHierarchicalInstancedStaticMeshComponent *Floors;
 	UPROPERTY(EditAnywhere)
 		UHierarchicalInstancedStaticMeshComponent *Walls;

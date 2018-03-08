@@ -1,6 +1,7 @@
 
 #include "BSPRoomManager.h"
 #include "EngineUtils.h"
+#include "Engine.h"
 
 // Sets default values
 ABSPRoomManager::ABSPRoomManager()
@@ -8,6 +9,16 @@ ABSPRoomManager::ABSPRoomManager()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+}
+
+bool ABSPRoomManager::PlayerInRoom()
+{
+	FVector playerPos = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Player Location: %s"),
+			*playerPos.ToString()));
+	}
 }
 
 // Called when the game starts or when spawned
@@ -49,6 +60,12 @@ void ABSPRoomManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	FVector playerPos = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Player Location: %s"),
+			*playerPos.ToString()));
+	}
 }
 
 void ABSPRoomManager::DrawRoom() {
