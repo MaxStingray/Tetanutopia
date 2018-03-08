@@ -8,7 +8,7 @@
 ABSP::ABSP()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 }
 // Called when the game starts or when spawned
@@ -35,24 +35,24 @@ void ABSP::BeginPlay()
 	AddDoors();
 	for (int i = 0; i < rms.Num(); i++) {
 		if (i == 0) {
-			rms[i]->roomType = (int)BSPRoomType::RT_START;
+			rms[i]->roomType = BSPRoomType::RT_START;
 		}
 		else if (i == rms.Num() - 1) {
-			rms[i]->roomType = (int)BSPRoomType::RT_END;
+			rms[i]->roomType = BSPRoomType::RT_END;
 		}
 		else {
 			int r = FMath::RandRange(0, 100);
 
 			if (r < 70) {
-				rms[i]->roomType = (int)BSPRoomType::RT_ENEMY;
+				rms[i]->roomType = BSPRoomType::RT_ENEMY;
 			}
 			else if (r < 50)
 			{
-				rms[i]->roomType = (int)BSPRoomType::RT_TURRET;
+				rms[i]->roomType = BSPRoomType::RT_TURRET;
 			}
 			else if (r < 25)
 			{
-				rms[i]->roomType = (int)BSPRoomType::RT_GENERIC;
+				rms[i]->roomType = BSPRoomType::RT_GENERIC;
 			}
 		}
 		rms[i]->PopulateRoom();
@@ -65,6 +65,24 @@ void ABSP::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (distances.Num() > 0)
+	{
+		//not 100% if this is correct
+		smallestDistance = distances[0];
+		for (int i = 1; i < distances.Num(); i++)
+		{
+			if (distances[i] < smallestDistance)
+			{
+				smallestDistance = distances[i];
+			}
+		}
+
+		distances.Empty();
+	}
+	else
+	{
+		smallestDistance = 0;
+	}
 }
 
 

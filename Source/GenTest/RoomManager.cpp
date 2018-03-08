@@ -62,7 +62,6 @@ void ARoomManager::SpawnEnemies()
 		lm = *ActorItr;
 	}
 
-
 	Enemy = lm->_Enemy;
 	TArray<FString> positions;
 	int percentage = rand() % 100 + 1;
@@ -476,13 +475,6 @@ void ARoomManager::PlaceProps(FString location)
 //returns array of neighboring nodes to a given start point
 TMap<FString, FVector> ARoomManager::GetNodeNeighbors(FString startLocation, int numTiles)//change to location string, add number of tiles
 {
-	/*TODO: give getnodeNeighbors a number of tiles in each direction to check
-	only one press and one fire pit per room
-	place barrels and pallets close to walls
-
-	then roomgen is DONE*/
-
-
 	//split the given string into two integers
 	FString _x;
 	FString _y;

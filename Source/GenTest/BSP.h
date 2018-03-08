@@ -61,7 +61,12 @@ public:
 		UStaticMesh* Wall;
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<AActor> Door;
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<AActor> Enemy;
 
+
+	TArray<float> distances;
+	float smallestDistance;
 
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<AActor> Barrels;
