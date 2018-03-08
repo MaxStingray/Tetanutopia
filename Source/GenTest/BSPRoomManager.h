@@ -29,6 +29,13 @@ enum class BSPRoomType : uint8
 	RT_GENERIC		UMETA(DisplayName = "generic room (placeholder roomtype)")//remove this eventually
 };
 
+enum class BSPAIType : uint8
+{
+	Basic			UMETA(DisplayName = "Basic"),
+	Kamikaze		UMETA(DisplayName = "Kamikaze"),
+	CrowdAI			UMETA(DisplayName = "CrowdAI"),
+};
+
 UCLASS()
 class GENTEST_API ABSPRoomManager : public AActor
 {
@@ -50,15 +57,31 @@ public:
 	int height;
 	
 	UPROPERTY(EditAnywhere)
-	int roomType;
+	bool PlayerInRoom;
 
-	//UPROPERTY(EditAnywhere)
-		//bool PlayerInRoom();
+	bool roomVisited;
+	bool initialSpawnDone;
+
+
+	void CheckPlayerInRoom();
+
+	UPROPERTY(EditAnywhere)
+	BSPRoomType roomType;
+
+	UPROPERTY(EditAnywhere)
+		FVector playerPosRaw;
+
+	UPROPERTY(EditAnywhere)
+		float dist;
 
 	UPROPERTY(EditAnywhere)
 		UHierarchicalInstancedStaticMeshComponent *Floors;
 	UPROPERTY(EditAnywhere)
 		UHierarchicalInstancedStaticMeshComponent *Walls;
+
+	//This is not final. need ability to set weapon BT and others.
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "GameDev|BSPRoomManager")
+		void SpawnAI(FVector pos, int AIType);
 
 protected:
 	// Called when the game starts or when spawned
@@ -76,6 +99,7 @@ public:
 	void PopulateRoom();
 	bool TestPropPlacement(int x, int y, int sizeX, int sizeY, int rotationZ);
 	void SetPropPlacement(int x, int y, int sizeX, int sizeY);
+	void SpawnEnemy();
 	FVector GetTileLocation_int(int x, int y);
 	FVector GetTileLocation_str(FString coords);
 };

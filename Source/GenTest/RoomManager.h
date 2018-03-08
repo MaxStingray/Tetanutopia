@@ -31,7 +31,7 @@ enum class RoomType : uint8
 
 enum class AIType : uint8
 {
-	Basic		UMETA(DisplayName = "Basic"),
+	Basic			UMETA(DisplayName = "Basic"),
 	Kamikaze		UMETA(DisplayName = "Kamikaze"),
 	CrowdAI			UMETA(DisplayName = "CrowdAI"),
 };

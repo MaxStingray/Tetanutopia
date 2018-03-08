@@ -1,29 +1,23 @@
 
 #include "BSPRoomManager.h"
 #include "EngineUtils.h"
+//#include "Engine.h"
 
 // Sets default values
 ABSPRoomManager::ABSPRoomManager()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
-
-/*bool ABSPRoomManager::PlayerInRoom()
-{
-	FVector playerPos = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Player Location: %s"),
-			*playerPos.ToString()));
-	}
-}*/
 
 // Called when the game starts or when spawned
 void ABSPRoomManager::BeginPlay()
 {
 	Super::BeginPlay();
+<<<<<<< HEAD
+	initialSpawnDone = false;
+=======
 
 	ABSP* bsp = nullptr;
 
@@ -35,6 +29,7 @@ void ABSPRoomManager::BeginPlay()
 
 	br.X = (location.X - ((width / 2)*bsp->unitSize));
 	br.Y = (location.Y - ((height / 2)*bsp->unitSize));
+>>>>>>> 8e21ea4a1aec2e6c1598385a3b5781c93d827a4f
 }
 
 void ABSPRoomManager::init() {
@@ -46,7 +41,7 @@ void ABSPRoomManager::init() {
 		bsp = *ActorItr;
 	}
 
-
+	//intialSpawnComplete = false;
 	Floors = NewObject<UHierarchicalInstancedStaticMeshComponent>(this);
 	Floors->RegisterComponent();
 	Floors->SetStaticMesh(bsp->Floor);
@@ -65,6 +60,55 @@ void ABSPRoomManager::init() {
 	
 }
 
+<<<<<<< HEAD
+void ABSPRoomManager::CheckPlayerInRoom()
+{
+	ABSP* bsp = nullptr;
+
+	for (TActorIterator<ABSP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+		bsp = *ActorItr;
+	}
+	if (dist == bsp->smallestDistance)
+	{
+		PlayerInRoom = true;
+		roomVisited = true;
+	}
+	else
+	{
+		PlayerInRoom = false;
+	}
+}
+
+
+void ABSPRoomManager::Tick(float DeltaTime)
+{
+	ABSP* bsp = nullptr;
+
+	for (TActorIterator<ABSP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+		bsp = *ActorItr;
+	}
+	playerPosRaw = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+	FVector playerPos = FVector(playerPosRaw.X, playerPosRaw.Y, 0);
+	FVector roomPos = FVector(GetActorLocation().X, GetActorLocation().Y, 0);
+	dist = FVector(playerPos - roomPos).Size();
+	//less than 2000 so we can only check nearby rooms
+	if (dist < 2000)
+	{
+		bsp->distances.Add(dist);
+		CheckPlayerInRoom();
+	}
+	
+	if (PlayerInRoom && roomType == BSPRoomType::RT_ENEMY && !initialSpawnDone)
+	{
+		SpawnEnemy();
+		initialSpawnDone = true;
+	}
+
+=======
 // Called every frame
 void ABSPRoomManager::Tick(float DeltaTime)
 {
@@ -76,6 +120,7 @@ void ABSPRoomManager::Tick(float DeltaTime)
 		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Player Location: %s"),
 			*playerPos.ToString()));
 	}*/
+>>>>>>> 8e21ea4a1aec2e6c1598385a3b5781c93d827a4f
 }
 
 void ABSPRoomManager::DrawRoom() {
@@ -267,6 +312,19 @@ void ABSPRoomManager::SetPropPlacement(int x, int y, int sizeX, int sizeY)
 			SetAvb(tx, ty, (int)Avb::PROP);
 		}
 	}
+}
+
+void ABSPRoomManager::SpawnEnemy()
+{
+	ABSP* bsp = nullptr;
+
+	for (TActorIterator<ABSP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+		bsp = *ActorItr;
+	}
+	
+	SpawnAI(GetTileLocation_str("5,5"), (int)BSPAIType::CrowdAI);
 }
 
 FVector ABSPRoomManager::GetTileLocation_int(int x, int y)
