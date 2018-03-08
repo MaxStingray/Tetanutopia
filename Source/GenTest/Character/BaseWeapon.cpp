@@ -10,6 +10,9 @@
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "Engine/World.h"
 
+// I hope you don't have to mess with this class. I am very sorry if you do
+// - Alex
+
 UBaseWeapon::UBaseWeapon()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -56,15 +59,14 @@ void UBaseWeapon::Fire()
 
 			ProjectileMaxSpread = FGenericPlatformMath::Abs(ProjectileMaxSpread);
 			const float ProjectileSpreadSeperation = ProjectileMaxSpread / ProjectilesToSpawnOnFire;
-			const float ProjectileSpreadStartOffset = (-1.0f * (ProjectileMaxSpread)) + (ProjectileSpreadSeperation / 2);
+			const float ProjectileSpreadStartOffset = (-1.0f * (ProjectileMaxSpread / 2)) - (ProjectileSpreadSeperation / 2);
 			FireRotation.Yaw += ProjectileSpreadStartOffset;
 
 			for(auto i = 0; i < ProjectilesToSpawnOnFire; i++)
 			{
 				if(ProjectileMaxSpread > FLT_EPSILON)
 				{
-					const float spread = i * ProjectileSpreadSeperation;
-					FireRotation.Yaw += spread;
+					FireRotation.Yaw += ProjectileSpreadSeperation;
 
 					if (bSpreadImpactsOffset)
 					{
@@ -142,9 +144,9 @@ void UBaseWeapon::InitialiseWeaponStats()
 	WeaponName = "Gun";
 	bSpreadImpactsOffset = false;
 
-	FireInterval = 0.2f;
-	ProjectileMaxSpread = 360;
-	ProjectilesToSpawnOnFire = 8;
+	FireInterval = 1.0f;
+	ProjectileMaxSpread = 0;
+	ProjectilesToSpawnOnFire = 1;
 	ProjectileSpawnOffset = FVector(10, 0, 0);
 	WeaponPositionOffset = FVector(0, 0, 0);
 }
