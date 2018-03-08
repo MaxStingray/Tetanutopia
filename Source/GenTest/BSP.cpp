@@ -235,41 +235,6 @@ ABSPRoomManager* ABSP::SpawnRM(FVector location)
 }
 
 void ABSP::AddDoors() {
-	/*TArray<FChunk> leafTemp;
-	//get all leaf nodes from chunks. These are the rooms that have not been sub divided. 
-	for (int i = 0; i < chunks.Num(); i++) {
-		if (chunks[i].BottomChild == -2 && chunks[i].TopChild == -2 && chunks[i].RightChild == -2 && chunks[i].LeftChild == -2) {
-			leafTemp.Add(chunks[i]);
-		}
-	}
-
-	for (int i = 0; i < leafTemp.Num(); i++) {
-		FChunk parent = chunks[leafTemp[i].parent];
-		if (parent.BottomChild != 0 && parent.BottomChild != 0) {
-			FVector loc(parent.chunkCenter.X, chunks[parent.BottomChild].chunkCenter.Y + chunks[parent.BottomChild].chunkHeight / 2, 0);
-			Spawn(loc, Door);
-			//leafTemp.RemoveAt(i);
-			//leafTemp.RemoveAt(i+1);
-		}
-		else if (parent.LeftChild != 0 && parent.RightChild != 0) {
-			FVector loc(chunks[parent.RightChild].chunkCenter.X + chunks[parent.RightChild].chunkWidth/2, parent.chunkCenter.Y, 0);
-			Spawn(loc, Door);
-			//leafTemp.RemoveAt(i);
-			//leafTemp.RemoveAt(i+1);
-		}
-
-		FChunk pparent = chunks[parent.parent];
-		if (pparent.BottomChild != 0 && pparent.TopChild != 0) {
-			FVector loc(pparent.chunkCenter.X, chunks[pparent.BottomChild].chunkCenter.Y + chunks[pparent.BottomChild].chunkHeight / 2, 0);
-			Spawn(loc, Door);
-		}
-		else if (pparent.LeftChild != 0 && pparent.RightChild != 0){
-			FVector loc(chunks[pparent.RightChild].chunkCenter.X + chunks[pparent.RightChild].chunkWidth / 2, pparent.chunkCenter.Y, 0);
-			Spawn(loc, Door);
-		}
-		
-	}*/
-
 	for (int i = 0; i < chunks.Num(); i++) {
 
 		if (chunks[i].BottomChild != -2 && chunks[i].TopChild != -2) {
