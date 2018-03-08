@@ -148,7 +148,7 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 		
 		// Tilt the player because we are moving
 		FRotator current = GetActorRotation();
-		current.Pitch = -10;
+		current.Pitch = FMath::Lerp(current.Pitch, -20.0f, 0.5f);
 		SetActorRotation(current);
 
 		// Adjust the weapon to not be pitched
@@ -178,7 +178,7 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 	{
 		// Stop tilting the player
 		FRotator current = GetActorRotation();
-		current.Pitch = 0;
+		current.Pitch = FMath::Lerp(current.Pitch, 0.0f, 0.5f);
 		SetActorRotation(current);
 
 		if (WeaponPrimary)
