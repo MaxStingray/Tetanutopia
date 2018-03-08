@@ -5,6 +5,9 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/CollisionProfile.h"
 #include "Engine/StaticMesh.h"
+#include "Kismet/GameplayStatics.h"
+#include "Classes/Particles/ParticleSystemComponent.h"
+#include "Classes/Particles/ParticleSystem.h"
 
 ABaseProjectile::ABaseProjectile()
 {
@@ -14,6 +17,7 @@ ABaseProjectile::ABaseProjectile()
 
 	bProjectilePiercesActors = false;
 	ProjectileDamage = 20;
+
 	ActorWhichFired = nullptr;
 
 	InitialiseStaticMesh();
