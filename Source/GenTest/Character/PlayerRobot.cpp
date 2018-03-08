@@ -173,6 +173,20 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 		FRotator current = GetActorRotation();
 		current.Pitch = 0;
 		SetActorRotation(current);
+
+		if (WeaponPrimary)
+		{
+			FRotator currentRotation = WeaponPrimary->GetComponentRotation();
+			currentRotation.Pitch = 0;
+			WeaponPrimary->SetWorldRotation(currentRotation);
+		}
+
+		if (WeaponAlternate)
+		{
+			FRotator currentRotation = WeaponAlternate->GetComponentRotation();
+			currentRotation.Pitch = 0;
+			WeaponAlternate->SetWorldRotation(currentRotation);
+		}
 	}
 }
 

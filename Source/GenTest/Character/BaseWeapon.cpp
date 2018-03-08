@@ -6,8 +6,8 @@
 #include "Classes/Particles/ParticleSystemComponent.h"
 #include "Classes/Particles/ParticleSystem.h"
 #include "TimerManager.h"
-#include <string>
 #include "Kismet/GameplayStatics.h"
+#include "GenericPlatform/GenericPlatformMath.h"
 #include "Engine/World.h"
 
 UBaseWeapon::UBaseWeapon()
@@ -15,11 +15,11 @@ UBaseWeapon::UBaseWeapon()
 	PrimaryComponentTick.bCanEverTick = true;
 	RegisterComponentWithWorld(GetWorld());	// If we use the CreateObject method we must register with the world for the render to work
 
-	WeaponName = "Unnamed Weapon";
-
 	InitialiseWeaponStats();
 	InitialiseStaticMesh();
 	InitialiseSounds();
+
+	ProjectileType = ABaseProjectile::StaticClass();
 
 	MuzzleFlashTemplate = nullptr;
 	MuzzleFlash = nullptr;
@@ -44,7 +44,7 @@ void UBaseWeapon::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
 void UBaseWeapon::Fire()
 {
-	if (bCanFire && ProjectileType)
+	if (bCanFire && ProjectileType != nullptr)
 	{
 		UWorld* const World = GetWorld();
 		if (World != NULL)
@@ -54,21 +54,44 @@ void UBaseWeapon::Fire()
 			FRotator FireRotation = GetComponentRotation();
 			FVector SpawnLocation = GetComponentLocation() + FireRotation.RotateVector(ProjectileSpawnOffset);
 
+			ProjectileMaxSpread = FGenericPlatformMath::Abs(ProjectileMaxSpread);
+			const float ProjectileSpreadSeperation = ProjectileMaxSpread / ProjectilesToSpawnOnFire;
+			const float ProjectileSpreadStartOffset = (-1.0f * (ProjectileMaxSpread)) + (ProjectileSpreadSeperation / 2);
+			FireRotation.Yaw += ProjectileSpreadStartOffset;
+
 			for(auto i = 0; i < ProjectilesToSpawnOnFire; i++)
 			{
 				if(ProjectileMaxSpread > FLT_EPSILON)
 				{
-					const float randomSpread = ((static_cast<float>(ProjectileMaxSpread) / static_cast<float>(ProjectilesToSpawnOnFire)) * i);
-					FireRotation.Yaw += randomSpread;
-				}
-				ABaseProjectile* proj = World->SpawnActor<ABaseProjectile>(ProjectileType, SpawnLocation, FireRotation);
-				proj->SetOwningActor(GetOwner());
-			}
+					const float spread = i * ProjectileSpreadSeperation;
+					FireRotation.Yaw += spread;
 
-			UGameplayStatics::PlaySoundAtLocation(this, ShootSound, SpawnLocation, FireRotation);
-			if(MuzzleFlash)
-			{
-				MuzzleFlash->bSuppressSpawning = false;
+					if (bSpreadImpactsOffset)
+					{
+						SpawnLocation = GetComponentLocation() + FireRotation.RotateVector(ProjectileSpawnOffset);
+					}
+				}
+
+				ABaseProjectile* proj = World->SpawnActorDeferred<ABaseProjectile>(ProjectileType, FTransform(FireRotation, SpawnLocation));				
+				if (proj)
+				{
+					proj->SetFiringActor(GetOwner());
+
+					if (ShootSound != nullptr)
+					{
+						UGameplayStatics::PlaySoundAtLocation(this, ShootSound, SpawnLocation, FireRotation);
+					}
+					if (MuzzleFlash != nullptr)
+					{
+						MuzzleFlash->bSuppressSpawning = false;
+					}
+
+					proj->FinishSpawning(FTransform(FireRotation, SpawnLocation));
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("There was an issue registering the owner of the projectile"));
+				}
 			}
 
 			World->GetTimerManager().SetTimer(TimerHandle_TimeUntilCanFire, this, &UBaseWeapon::ReEnableCanFire, FireInterval);
@@ -104,7 +127,7 @@ void UBaseWeapon::InitialiseSounds()
 
 void UBaseWeapon::InitialiseStaticMesh()
 {
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> WeaponMesh(TEXT("/Game/Geometry/Meshes/1M_Cube"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> WeaponMesh(TEXT("/Game/Geometry/Meshes/Gun"));
 	SetStaticMesh(WeaponMesh.Object);
 
 	SetCollisionProfileName(UCollisionProfile::NoCollision_ProfileName);
@@ -116,15 +139,12 @@ void UBaseWeapon::InitialiseWeaponStats()
 {
 	bCanFire = true;
 
+	WeaponName = "Gun";
+	bSpreadImpactsOffset = false;
+
 	FireInterval = 0.2f;
-	ProjectileMaxSpread = 0;
-	ProjectilesToSpawnOnFire = 1;
-	ProjectileSpawnOffset = FVector(0, 0, 0);
+	ProjectileMaxSpread = 360;
+	ProjectilesToSpawnOnFire = 8;
+	ProjectileSpawnOffset = FVector(10, 0, 0);
 	WeaponPositionOffset = FVector(0, 0, 0);
-}
-
-
-void * UBaseWeapon::operator new(std::size_t count)
-{
-	return nullptr;
 }

@@ -8,11 +8,13 @@
 
 ABaseProjectile::ABaseProjectile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
+	bGenerateOverlapEventsDuringLevelStreaming = false;
+
+	bProjectilePiercesActors = false;
 	ProjectileDamage = 20;
-	Owner = nullptr;
+	ActorWhichFired = nullptr;
 
 	InitialiseStaticMesh();
 	InitialiseProjectileMove();
@@ -20,15 +22,18 @@ ABaseProjectile::ABaseProjectile()
 
 void ABaseProjectile::InitialiseStaticMesh()
 {
-	// Setup the Static Mesh Component
-	ProjectileMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh"));
-
-	// Find the mesh and apply it to the Static Mesh Component
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> ProjectileMesh(TEXT("/Game/Geometry/Meshes/1M_Cube"));
+
+	ProjectileMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh"));
 	ProjectileMeshComponent->SetStaticMesh(ProjectileMesh.Object);
+	ProjectileMeshComponent->SetWorldScale3D(FVector(0.25, 0.25, 0.25));
+
 	ProjectileMeshComponent->SetCollisionProfileName(FName("Projectile"));
-	ProjectileMeshComponent->OnComponentHit.AddDynamic(this, &ABaseProjectile::OnHit); // Callback Event for When Collision Occurs
-	ProjectileMeshComponent->SetWorldScale3D(FVector(0.25, 0.25, 0.25)); // TODO: Temporary
+	ProjectileMeshComponent->OnComponentHit.AddDynamic(this, &ABaseProjectile::OnHit);
+	ProjectileMeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ABaseProjectile::OnOverlapBegin);
+
+	ProjectileMeshComponent->bGenerateOverlapEvents = true;
+	ProjectileMeshComponent->SetNotifyRigidBodyCollision(true);
 
 	RootComponent = ProjectileMeshComponent;
 }
@@ -41,38 +46,43 @@ void ABaseProjectile::InitialiseProjectileMove()
 	ProjectileMovement->MaxSpeed = 3000.f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = false;
-	ProjectileMovement->ProjectileGravityScale = 0.f; // Disables Gravity
-
-	InitialLifeSpan = 3.0f;	// Lifetime of the projectile
+	ProjectileMovement->ProjectileGravityScale = 0.f;
+	
+	InitialLifeSpan = 2.0f;
 }
 
-void ABaseProjectile::SetOwningActor(AActor* owner)
+void ABaseProjectile::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	Owner = owner;
-}
-
-void ABaseProjectile::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void ABaseProjectile::OnHit(UPrimitiveComponent * HitComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, FVector NormalImpulse, const FHitResult & Hit)
-{
-	if(OtherActor != Owner)
+	if (OtherActor != ActorWhichFired)
 	{
 		IHealth* healthActor = Cast<IHealth>(OtherActor);
 		if (healthActor)
 		{
 			healthActor->TakeDamage(ProjectileDamage);
 		}
-	}
 
-	// End of the lifetime for this projectile
+		if (!bProjectilePiercesActors)
+		{
+			Destroy();
+		}
+	}
+}
+
+void ABaseProjectile::OnHit(UPrimitiveComponent * HitComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, FVector NormalImpulse, const FHitResult & Hit)
+{
 	Destroy();
 }
 
-void ABaseProjectile::Tick(float DeltaTime)
+void ABaseProjectile::SetFiringActor(AActor* owner)
 {
-	Super::Tick(DeltaTime);
+	if (owner != nullptr)
+	{
+		ActorWhichFired = owner;
+	}
+}
+
+void ABaseProjectile::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
 }
 
