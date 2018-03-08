@@ -21,6 +21,9 @@ protected:
 	// The handle for the timer until the next shot can be fired
 	FTimerHandle TimerHandle_TimeUntilCanFire;
 
+	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bSpreadImpactsOffset;
+
 	// The sound that plays when a bullet is fired
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	USoundCue* ShootSound;
@@ -86,7 +89,4 @@ public:
 	// How fast the weapon fires each shot
 	UPROPERTY(Category = "Weapon|Stats", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float FireInterval;
-
-
-	void* operator new  (std::size_t count);
 };
