@@ -34,6 +34,27 @@ void ABSP::BeginPlay()
 	DrawRooms();
 	AddDoors();
 	for (int i = 0; i < rms.Num(); i++) {
+		if (i == 0) {
+			rms[i]->roomType = (int)BSPRoomType::RT_START;
+		}
+		else if (i == rms.Num() - 1) {
+			rms[i]->roomType = (int)BSPRoomType::RT_END;
+		}
+		else {
+			int r = FMath::RandRange(0, 100);
+
+			if (r < 70) {
+				rms[i]->roomType = (int)BSPRoomType::RT_ENEMY;
+			}
+			else if (r < 50)
+			{
+				rms[i]->roomType = (int)BSPRoomType::RT_TURRET;
+			}
+			else if (r < 25)
+			{
+				rms[i]->roomType = (int)BSPRoomType::RT_GENERIC;
+			}
+		}
 		rms[i]->PopulateRoom();
 	}
 }
