@@ -412,5 +412,10 @@ void APlayerRobot::SetInputActive(bool value)
 	else
 	{
 		DisableInput(Cast<APlayerController>(this));
+
+		// We have to manually false out bools or else the input ends up locking
+		bIsUsingItem = false;
+		bIsFiringAlternate = false;
+		bIsFiringPrimary = false;
 	}
 }

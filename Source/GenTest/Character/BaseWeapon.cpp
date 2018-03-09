@@ -10,9 +10,6 @@
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "Engine/World.h"
 
-// I hope you don't have to mess with this class. I am very sorry if you do
-// - Alex
-
 UBaseWeapon::UBaseWeapon()
 {
 	PrimaryComponentTick.bCanEverTick = true;
