@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/Collectable.h"
+#include "BaseItem.h"
 #include "ItemCollectable.generated.h"
 
 UCLASS()

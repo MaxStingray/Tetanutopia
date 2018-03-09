@@ -87,7 +87,6 @@ void UBaseWeapon::Fire()
 					{
 						MuzzleFlash->bSuppressSpawning = false;
 					}
-
 					proj->FinishSpawning(FTransform(FireRotation, SpawnLocation));
 				}
 				else
@@ -103,7 +102,15 @@ void UBaseWeapon::Fire()
 
 FString UBaseWeapon::GetWeaponName()
 {
-	return WeaponName;
+	if (WeaponName.Len() > 0)
+	{
+		return WeaponName;
+	}
+	else
+	{
+		return "";
+	}
+	
 }
 
 void UBaseWeapon::SetOffset(FVector offset)

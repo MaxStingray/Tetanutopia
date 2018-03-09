@@ -20,12 +20,11 @@ APlayerRobot::APlayerRobot()
 	InitialiseControls();
 	InitialiseCamera();
 	InitialiseWeapons();
+	InitialiseSounds();
+}
 
-	bIsVulnerable = true;
-	bIsMoving = false;
-	MoveSpeedMult = 1;
-
-	// Setup Sounds
+void APlayerRobot::InitialiseSounds()
+{
 	static ConstructorHelpers::FObjectFinder<USoundCue> shootCue(TEXT("/Game/Audio/Sounds/Equip_Weapon_Cue"));
 	EquipSound = shootCue.Object;
 
@@ -48,6 +47,7 @@ void APlayerRobot::InitialiseControls()
 
 	bShootWithLook = false;
 	bUseCameraForward = true;
+	bLookWithMove = false;
 
 	bIsFiringPrimary = false;
 	bIsFiringAlternate = false;
@@ -81,7 +81,11 @@ void APlayerRobot::InitialiseCamera()
 
 void APlayerRobot::InitialisePlayerStats()
 {
+	bIsMoving = false;
 	MoveSpeed = 1000.0f;
+	MoveSpeedMult = 1;
+
+	bIsVulnerable = true;
 
 	MaxHealth = 100;
 	CurrentHealth = MaxHealth;
@@ -106,16 +110,10 @@ void APlayerRobot::InitialiseWeapons()
 {
 	WeaponPrimaryOffset = FVector(10, 25, 0);
 	WeaponAlternateOffset = FVector(10, -25, 0);
-	ItemOffset = FVector(0, 0, 0);
 
 	WeaponPrimary = nullptr;
-	ItemActive = nullptr;
 	WeaponAlternate = nullptr;
-
-	// Equip the weapons of the correct type
-	// IMPORTANT: For this to work correctly it cant be done in the constructor! instead they are called in beingplayer
-	//EquipWeaponPrimary();
-	//EquipWeaponAlternate();
+	Item = nullptr;
 }
 
 void APlayerRobot::ApplyMovement(const float deltaSeconds)
@@ -145,7 +143,7 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 
 		const FVector LookDirection = FVector(LookForward, LookRight, 0.f);
 
-		if (LookDirection.SizeSquared() < FLT_EPSILON)
+		if (bLookWithMove && LookDirection.SizeSquared() < FLT_EPSILON)
 		{
 			// Make the player look in the direction of movement if not looking actively
 			 
@@ -162,14 +160,14 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 		// Adjust the weapon to not be pitched
 		if(WeaponPrimary)
 		{
-			FRotator currentRotation = GetActorRotation(); //WeaponPrimary->GetComponentRotation();
+			FRotator currentRotation = GetActorRotation();
 			currentRotation.Pitch = 0;
 			WeaponPrimary->SetWorldRotation(currentRotation);
 		}
 
 		if (WeaponAlternate)
 		{
-			FRotator currentRotation = GetActorRotation(); //WeaponAlternate->GetComponentRotation();
+			FRotator currentRotation = GetActorRotation();
 			currentRotation.Pitch = 0;
 			WeaponAlternate->SetWorldRotation(currentRotation);
 		}
@@ -216,7 +214,6 @@ void APlayerRobot::ApplyLook(const float deltaSeconds)
 
 	if (LookDirection.SizeSquared() > FLT_EPSILON)
 	{
-		//FRotator lookRotation = FMath::Lerp(GetActorRotation(), LookDirection.Rotation(), 0.5f); // Get the rotation from the joystick
 		FRotator lookRotation = GetActorRotation();
 		lookRotation.Yaw = FMath::Lerp(lookRotation.Yaw, LookDirection.Rotation().Yaw, 0.5f);
 
@@ -243,85 +240,60 @@ void APlayerRobot::ApplyLook(const float deltaSeconds)
 
 void APlayerRobot::FirePrimary()
 {
-	if (bIsFiringPrimary)
+	if (bIsFiringPrimary && WeaponPrimary)
 	{
-		if (WeaponPrimary)
-		{
-			WeaponPrimary->Fire();
-		}
-		else
-		{
-			UE_LOG(LogTemp, Display, TEXT("No Primary Weapon"));
-		}
+		WeaponPrimary->Fire();
 	}
 }
 
 void APlayerRobot::FireAlternate()
 {
-	if (bIsFiringAlternate)
+	if (bIsFiringAlternate && WeaponAlternate)
 	{
-		if (WeaponAlternate)
-		{
-			WeaponAlternate->Fire();
-		}
-		else
-		{
-			UE_LOG(LogTemp, Display, TEXT("No Alternate Weapon"));
-		}
+		WeaponAlternate->Fire();
 	}
 }
 
-void APlayerRobot::UseActiveItem()
+void APlayerRobot::UseItem()
 {
-	if (bIsUsingItem)
+	if (bIsUsingItem && Item)
 	{
-		if(ItemActive)
-		{
-			ItemActive->Use();
-		}
-		else
-		{
-			UE_LOG(LogTemp, Display, TEXT("No Item"));
-		}
+		Item->Use();
 	}
 }
 
 void APlayerRobot::OnDeath()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Player had died!"));
-	Destroy(); // TODO: Other stuff
+	// TODO: Other stuff
+	UE_LOG(LogTemp, Warning, TEXT("**** PLAYER HAS DIED ****"));
+	Destroy(); 
 }
 
 void APlayerRobot::BeginPlay()
 {
-	Super::BeginPlay();	// Required by Unreal
-
-	// Equip the correct weapons as the weapontype says to.
-	EquipItemActive();
-	EquipWeaponPrimary();
-	EquipWeaponAlternate();
+	Super::BeginPlay();
 }
 
 void APlayerRobot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);	// Required by Unreal
 
-	if (ThrusterTemplate && !LeftThruster)
+	if (Thruster && !LeftThruster)
 	{
-		LeftThruster = UGameplayStatics::SpawnEmitterAttached(ThrusterTemplate, RootComponent, NAME_None, FVector(-10.0f,-30.0f,5.0f));
-		//LeftThruster->bSuppressSpawning = true;
+		LeftThruster = UGameplayStatics::SpawnEmitterAttached(Thruster, RootComponent, NAME_None, FVector(-10.0f,-30.0f,5.0f));
+		FinishAndRegisterComponent(LeftThruster);
 	}
-	if (ThrusterTemplate && !RightThruster)
+	if (Thruster && !RightThruster)
 	{
-		RightThruster = UGameplayStatics::SpawnEmitterAttached(ThrusterTemplate, RootComponent, NAME_None, FVector(-10.0f,30.0f,5.0f));
-		//RightThruster->bSuppressSpawning = true;
+		RightThruster = UGameplayStatics::SpawnEmitterAttached(Thruster, RootComponent, NAME_None, FVector(-10.0f,30.0f,5.0f));
+		FinishAndRegisterComponent(RightThruster);
 	}
 
 	ApplyMovement(DeltaTime);
 	ApplyLook(DeltaTime);
 	FirePrimary();
 	FireAlternate();
-	UseActiveItem();
+	UseItem();
 }
 
 void APlayerRobot::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -353,88 +325,43 @@ void APlayerRobot::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction(BindingEquipItem, EInputEvent::IE_Released, this, &APlayerRobot::StopPickingItem);
 }
 
-void APlayerRobot::EquipWeaponPrimary()
+void APlayerRobot::EquipWeaponPrimary(TSubclassOf<UBaseWeapon> weapon)
 {
-	if (WeaponPrimaryType)
+	if (WeaponPrimary) { WeaponPrimary->DestroyComponent(); };
+	if (weapon)
 	{
-		WeaponPrimary = NewObject<UBaseWeapon>(this, WeaponPrimaryType);
-		WeaponPrimary->SetupAttachment(RootComponent);
+		WeaponPrimary = NewObject<UBaseWeapon>(this, weapon);
 		WeaponPrimary->SetOffset(WeaponPrimaryOffset);
 		WeaponPrimary->AttachTo(RootComponent);
+		WeaponPrimary->SetupAttachment(RootComponent);
 
 		UGameplayStatics::PlaySoundAtLocation(this, EquipSound, GetActorLocation(), GetActorRotation());
 	}
 }
 
-void APlayerRobot::EquipWeaponPrimary(TSubclassOf<UStaticMeshComponent> weapon)
+void APlayerRobot::EquipWeaponAlternate(TSubclassOf<UBaseWeapon> weapon)
 {
-	UnequipWeaponPrimary();
-	WeaponPrimaryType = weapon;
-	EquipWeaponPrimary();
-}
-
-void APlayerRobot::EquipWeaponAlternate()
-{
-	if (WeaponAlternateType)
+	if (WeaponAlternate) { WeaponAlternate->DestroyComponent(); };
+	if (weapon)
 	{
-		WeaponAlternate = NewObject<UBaseWeapon>(this, WeaponAlternateType);
-		WeaponAlternate->SetupAttachment(RootComponent);
+		WeaponAlternate = NewObject<UBaseWeapon>(this, weapon);
 		WeaponAlternate->SetOffset(WeaponAlternateOffset);
 		WeaponAlternate->AttachTo(RootComponent);
+		WeaponAlternate->SetupAttachment(RootComponent);
 
 		UGameplayStatics::PlaySoundAtLocation(this, EquipSound, GetActorLocation(), GetActorRotation());
 	}
 }
 
-void APlayerRobot::EquipWeaponAlternate(TSubclassOf<UStaticMeshComponent> weapon)
+void APlayerRobot::EquipItem(TSubclassOf<UBaseItem> item)
 {
-	UnequipWeaponAlternate();
-	WeaponAlternateType = weapon;
-	EquipWeaponAlternate();
-}
-
-void APlayerRobot::EquipItemActive()
-{
-	if(ItemType)
+	if (Item) { Item->DestroyComponent(); };
+	if (item)
 	{
-		ItemActive = NewObject<UBaseItem>(this, ItemType);
-		FinishAndRegisterComponent(ItemActive);
-		AddOwnedComponent(ItemActive);
+		Item = NewObject<UBaseItem>(this, item);
+		FinishAndRegisterComponent(Item);
 
 		UGameplayStatics::PlaySoundAtLocation(this, EquipSound, GetActorLocation(), GetActorRotation());
-	}
-}
-
-void APlayerRobot::EquipItemActive(TSubclassOf<UStaticMeshComponent> weapon)
-{
-	UnequipItemActive();
-	ItemType = weapon;
-	EquipItemActive();
-}
-
-void APlayerRobot::UnequipWeaponPrimary()
-{
-	if (WeaponPrimary)
-	{
-		// Delete the current component
-		WeaponPrimary->DestroyComponent();
-	}
-}
-
-void APlayerRobot::UnequipWeaponAlternate()
-{
-	if (WeaponAlternate)
-	{
-		// Delete the current component
-		WeaponAlternate->DestroyComponent();
-	}
-}
-
-void APlayerRobot::UnequipItemActive()
-{
-	if(ItemActive)
-	{
-		ItemActive->DestroyComponent();
 	}
 }
 

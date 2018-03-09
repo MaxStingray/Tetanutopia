@@ -9,99 +9,65 @@
 #include "BaseItem.h"
 #include "PlayerRobot.generated.h"
 
-// I'm sorry for this class too
-// - Alex
-
 UCLASS()
 class GENTEST_API APlayerRobot : public APawn, public IHealth
 {
 	GENERATED_BODY()
 
 private:
-	// The max health the player can have at a single time
-	UPROPERTY(Category = "Character", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	int MaxHealth;
 
-	// The current health the player has. When the player dies (reaches 0) on death will be called.
-	UPROPERTY(Category = "Character", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "_Character", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	int MaxHealth;
+	UPROPERTY(Category = "_Character", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int CurrentHealth;
 
-	// The visible representation of the player
-	// This is the actual robot that will physically move around the environment
 	UPROPERTY(Category = Mesh, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* RobotMeshComponent;
-
-	// The attached camera for this player
 	UPROPERTY(Category = Camera, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* CameraComponent;
-
-	// The Camera Boom positions the attatched Camera Component above the Player
-	// The options within the boom are how we affect the perspective
 	UPROPERTY(Category = Camera, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
+	class USpringArmComponent* CameraBoom;	// The Camera Boom positions the attatched Camera Component above the Player
 
-	// The actual reference to the weapon
+	// The equipment being used 
 	UBaseWeapon* WeaponPrimary;
+	UBaseWeapon* WeaponAlternate;
+	UBaseItem* Item;
 
-	UPROPERTY(Category = "Weapons", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	// The offsets givin to the weapons position
+	UPROPERTY(Category = "_Character|Weapons", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	FVector WeaponPrimaryOffset;
+	UPROPERTY(Category = "_Character|Weapons", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FVector WeaponAlternateOffset;
 
-	// The muzzle flash particle effect
+	// The particle effect that spawns at the thrusters
+	// This can NOT be changed at runtime
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	UParticleSystem* ThrusterTemplate;
-
+	UParticleSystem* Thruster;
 	class UParticleSystemComponent* LeftThruster;
 	class UParticleSystemComponent* RightThruster;
 
-	// The actual alternate weapon equipped
-	UBaseWeapon* WeaponAlternate;
-
-	UPROPERTY(Category = "Weapons", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	FVector WeaponAlternateOffset;
-
-	// The active item equipped
-	UBaseItem* ItemActive;
-
-	UPROPERTY(Category = "Weapons", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	FVector ItemOffset;
-
-	// The sound that plays when you equip something
+	// The sounds that the player will play
+	// This can NOT be changed at runtime
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	USoundCue* EquipSound;
 
-	// The sound that plays when a you take damage
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	USoundCue* HurtSound;
 
 	// The following input cannot be done through just a repeat as this had a major delay that is noticable during gameplay
-	// Whether the primary fire button is being pressed
+	// Therefore, we have bools for when actions should be taking place. Which are toggled by events fired when input is pressed
+	
 	bool bIsFiringPrimary;
-
-	// Whether the secondary fire button is being pressed
 	bool bIsFiringAlternate;
-
-	// Whether the item use button is being pressed
 	bool bIsUsingItem;
 
-	// Initialises the Binding strings
-	// These should relate to an existing axis or action button setup within Project Settings -> Input
-	void InitialiseControls();
-
-	// Initialises the Camera and Camera Boom
-	// The options within the boom are how we affect the perspective
-	void InitialiseCamera();
-
-	// Initialises the Player Stats
-	// MoveSpeed, AttackPower, etc.
-	void InitialisePlayerStats();
-
-	// Sets up the Mesh by loading it from file
-	// Additionally sets up the Static Mesh Component
-	void InitialiseStaticMesh();
-
-	// Sets up the Weapons
-	// Provides some default starting weapons
-	void InitialiseWeapons();
+	// The following functions setup their specific niche when the playerrobot is constructed
+	void InitialiseControls();	// These should relate to an existing axis or action button setup within Project Settings -> Input
+	void InitialiseCamera();	// The options within the boom are how we affect the perspective
+	void InitialisePlayerStats();	// MoveSpeed, AttackPower, etc.
+	void InitialiseStaticMesh();	// The mesh we use, etc
+	void InitialiseWeapons();	// Sets up the weapons and item as nullptr so we dont experiecne crashes
+	void InitialiseSounds();	// The sounds the player calls in code
 
 	// Calculates how much we should move depending on the axis and then does so
 	void ApplyMovement(const float deltaSeconds);
@@ -109,15 +75,19 @@ private:
 	// Calculate the angle the robot should currently be looking at and then sets us to that angle
 	void ApplyLook(const float deltaSeconds);
 
-	// The Primary Fire Action
+	// Each tick we fire this method and attempt to fire
+	// This will fail is bIsFiringIsPrimary isnt true
 	void FirePrimary();
 
-	// The Alternate Fire Action
+	// Each tick we fire this method and attempt to fire
+	// This will fail is bIsFiringIsAlternate isnt true
 	void FireAlternate();
 
-	// The Action to use the Active Item
-	void UseActiveItem();
+	// Each tick we fire this method and attempt to use the item
+	// This will fail is bIsUsingItem isnt true
+	void UseItem();
 
+	// The following functions are used on the input events to toggle our variables as mentioned above 
 	void StartFiringPrimary() { bIsFiringPrimary = true; };
 	void StopFiringPrimary() { bIsFiringPrimary = false; };
 
@@ -135,9 +105,39 @@ private:
 	void StartPickingItem() { bPickingUpItem = true; };
 	void StopPickingItem() { bPickingUpItem = false; };
 
-	// This function is called when the players health reaches 0
-	UFUNCTION(BlueprintCallable)
+	// When the player dies, this method is fire
+	// Allowing us to play effects and stuff before destroying
 	void OnDeath();
+
+	// Keybindings that are used within this actor
+	UPROPERTY(Category = "_Character|Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FName BindingMoveForward;
+	UPROPERTY(Category = "_Character|Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FName BindingMoveRight;
+	UPROPERTY(Category = "_Character|Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FName BindingLookForward;
+	UPROPERTY(Category = "_Character|Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FName BindingLookRight;
+	UPROPERTY(Category = "_Character|Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FName BindingPrimaryFire;
+	UPROPERTY(Category = "_Character|Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FName BindingAlternateFire;
+	UPROPERTY(Category = "_Character|Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FName BindingUseItem;
+	UPROPERTY(Category = "_Character|Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FName BindingEquipPrimary;
+	UPROPERTY(Category = "_Character|Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FName BindingEquipAlternate;
+	UPROPERTY(Category = "_Character|Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FName BindingEquipItem;
+
+	// The following provide options for how the character should behave
+	UPROPERTY(Category = "_Character|Controls|Options", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bShootWithLook;	// Whether to use Primary Fire when a direction is selected
+	UPROPERTY(Category = "_Character|Controls|Options", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bUseCameraForward;	// Whether forward should be in reltation to the camera, else the player
+	UPROPERTY(Category = "_Character|Controls|Options", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bLookWithMove;		// Whether we should look in the direction we are moving
 
 protected:
 	// Called when the game starts or when spawned
@@ -147,60 +147,13 @@ public:
 	// Sets default values for this pawn's properties
 	APlayerRobot();
 
-	// The type of Primary Weapon equipped
-	UPROPERTY(Category = "Weapons", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<UBaseWeapon> WeaponPrimaryType;
-
-	// The type of Alternate Weapon equiped
-	UPROPERTY(Category = "Weapons", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<UBaseWeapon> WeaponAlternateType;
-
-	// The type of item type equiped
-	UPROPERTY(Category = "Weapons", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<UBaseItem> ItemType;
-
 	// The speed which the player traverses the environment
-	UPROPERTY(Category = "Character", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "_Character", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float MoveSpeed;
 	
 	// The speed which the player traverses the environment
-	UPROPERTY(Category = "Character", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "_Character", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float MoveSpeedMult;
-
-	// Keybindings that are used within this actor
-	UPROPERTY(Category = "Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	FName BindingMoveForward;
-	UPROPERTY(Category = "Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	FName BindingMoveRight;
-	UPROPERTY(Category = "Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	FName BindingLookForward;
-	UPROPERTY(Category = "Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	FName BindingLookRight;
-	UPROPERTY(Category = "Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	FName BindingPrimaryFire;
-	UPROPERTY(Category = "Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	FName BindingAlternateFire;
-	UPROPERTY(Category = "Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	FName BindingUseItem;
-	UPROPERTY(Category = "Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	FName BindingEquipPrimary;
-	UPROPERTY(Category = "Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	FName BindingEquipAlternate;
-	UPROPERTY(Category = "Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	FName BindingEquipItem;
-
-	// Whether to use Primary Fire when a direction is selected
-	UPROPERTY(Category = "Controls|Options", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	bool bShootWithLook;
-
-	// Whether forward should be in reltation to the camera, else the player
-	UPROPERTY(Category = "Controls|Options", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	bool bUseCameraForward;
-
-	// Whether the player is trying to pickup a primary / alternate weapon
-	bool bPickingPrimaryWeapon;
-	bool bPickingAlternateWeapon;
-	bool bPickingUpItem;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -208,34 +161,21 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	// Returns the Robot mesh component of this Actor
-	FORCEINLINE class UStaticMeshComponent* GetRobotMeshComponent() const { return RobotMeshComponent; }
-
-	// Returns the Camera component of this Actor
-	FORCEINLINE class UCameraComponent* GetCameraComponent() const { return CameraComponent; }
-
-	// Returns the Camera Boom component of this Actor
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-
 	UFUNCTION(BluePrintCallable)
 	UBaseWeapon* GetPrimaryWeapon() { return WeaponPrimary; };
-
 	UFUNCTION(BluePrintCallable)
 	UBaseWeapon* GetAlternateWeapon() { return WeaponAlternate; };
+	UFUNCTION(BluePrintCallable)
+	UBaseItem* GetItem() { return Item; }
 
 	// Call this whenever you want to update the equipped weapon
-	void EquipWeaponPrimary();
-	void EquipWeaponPrimary(TSubclassOf<UStaticMeshComponent> weapon);
-	void EquipWeaponAlternate();
-	void EquipWeaponAlternate(TSubclassOf<UStaticMeshComponent> weapon);
-	void EquipItemActive();
-	void EquipItemActive(TSubclassOf<UStaticMeshComponent> weapon);
+	UFUNCTION(BluePrintCallable)
+	void EquipWeaponPrimary(TSubclassOf<UBaseWeapon> weapon);
+	UFUNCTION(BluePrintCallable)
+	void EquipWeaponAlternate(TSubclassOf<UBaseWeapon> weapon);
+	UFUNCTION(BluePrintCallable)
+	void EquipItem(TSubclassOf<UBaseItem> weapon);
 	
-	// Unequip Method
-	void UnequipWeaponPrimary();
-	void UnequipWeaponAlternate();
-	void UnequipItemActive();
-
 	// Method for taking damage
 	UFUNCTION(BlueprintCallable)
 	void TakeDamage(int amount);
@@ -251,9 +191,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int GetCurrentHealth();
 
+	UFUNCTION(BlueprintCallable)
 	void SetInputActive(bool value);
 
+	// Variables below this were added to quickly provide functionality.
+	// Not the best programming practices, but it would take time to refactor
 	bool bIsVulnerable;
-
 	bool bIsMoving;
+
+	// Whether the player is trying to pickup a primary / alternate weapon
+	bool bPickingPrimaryWeapon;
+	bool bPickingAlternateWeapon;
+	bool bPickingUpItem;
 };

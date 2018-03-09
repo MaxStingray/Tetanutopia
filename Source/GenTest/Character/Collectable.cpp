@@ -114,36 +114,36 @@ void ACollectable::OnOverlap()
 {
 	if (OverlappingActor)
 	{
-		APlayerRobot* player = Cast<APlayerRobot>(OverlappingActor);
-		if (player->bPickingPrimaryWeapon)
-		{
-			TSubclassOf<UStaticMeshComponent> temp = player->WeaponPrimaryType;
-			player->EquipWeaponPrimary(ItemType);
+		//APlayerRobot* player = Cast<APlayerRobot>(OverlappingActor);
+		//if (player->bPickingPrimaryWeapon)
+		//{
+		//	TSubclassOf<UStaticMeshComponent> temp = player->WeaponPrimaryType;
+		//	player->EquipWeaponPrimary(ItemType);
 
-			ItemType = temp;
-			SetItem();
-			bPickupAble = false;
+		//	ItemType = temp;
+		//	SetItem();
+		//	bPickupAble = false;
 
-			UWorld* const World = GetWorld();
-			World->GetTimerManager().SetTimer(TimerHandle_CollectCooldown, this, &ACollectable::EnablePickup, PickupCooldown);
-		}
-		else if (player->bPickingAlternateWeapon)
-		{
-			TSubclassOf<UStaticMeshComponent> temp = player->WeaponAlternateType;
-			player->EquipWeaponAlternate(ItemType);
+		//	UWorld* const World = GetWorld();
+		//	World->GetTimerManager().SetTimer(TimerHandle_CollectCooldown, this, &ACollectable::EnablePickup, PickupCooldown);
+		//}
+		//else if (player->bPickingAlternateWeapon)
+		//{
+		//	TSubclassOf<UStaticMeshComponent> temp = player->WeaponAlternateType;
+		//	player->EquipWeaponAlternate(ItemType);
 
-			ItemType = temp;
-			SetItem();
-			bPickupAble = false;
+		//	ItemType = temp;
+		//	SetItem();
+		//	bPickupAble = false;
 
-			UWorld* const World = GetWorld();
-			World->GetTimerManager().SetTimer(TimerHandle_CollectCooldown, this, &ACollectable::EnablePickup,  PickupCooldown);
-		}
-		else
-		{
-			const FString message = FString("Press A for Primary, B for Alternate");
-			GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, message);
-		}
+		//	UWorld* const World = GetWorld();
+		//	World->GetTimerManager().SetTimer(TimerHandle_CollectCooldown, this, &ACollectable::EnablePickup,  PickupCooldown);
+		//}
+		//else
+		//{
+		//	const FString message = FString("Press A for Primary, B for Alternate");
+		//	GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, message);
+		//}
 	}
 }
 
