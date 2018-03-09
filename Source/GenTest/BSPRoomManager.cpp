@@ -1,29 +1,33 @@
 
 #include "BSPRoomManager.h"
 #include "EngineUtils.h"
+//#include "Engine.h"
 
 // Sets default values
 ABSPRoomManager::ABSPRoomManager()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
-
-/*bool ABSPRoomManager::PlayerInRoom()
-{
-	FVector playerPos = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Player Location: %s"),
-			*playerPos.ToString()));
-	}
-}*/
 
 // Called when the game starts or when spawned
 void ABSPRoomManager::BeginPlay()
 {
 	Super::BeginPlay();
+	initialSpawnDone = false;
+
+	ABSP* bsp = nullptr;
+
+	for (TActorIterator<ABSP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+		bsp = *ActorItr;
+	}
+
+	br.X = (location.X - ((width / 2)*bsp->unitSize));
+	br.Y = (location.Y - ((height / 2)*bsp->unitSize));
+	
 }
 
 void ABSPRoomManager::init() {
@@ -35,7 +39,7 @@ void ABSPRoomManager::init() {
 		bsp = *ActorItr;
 	}
 
-
+	//intialSpawnComplete = false;
 	Floors = NewObject<UHierarchicalInstancedStaticMeshComponent>(this);
 	Floors->RegisterComponent();
 	Floors->SetStaticMesh(bsp->Floor);
@@ -54,9 +58,55 @@ void ABSPRoomManager::init() {
 	
 }
 
-// Called every frame
+void ABSPRoomManager::CheckPlayerInRoom()
+{
+	ABSP* bsp = nullptr;
+
+	for (TActorIterator<ABSP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+		bsp = *ActorItr;
+	}
+	if (dist == bsp->smallestDistance)
+	{
+		PlayerInRoom = true;
+		roomVisited = true;
+	}
+	else
+	{
+		PlayerInRoom = false;
+	}
+}
+
+
 void ABSPRoomManager::Tick(float DeltaTime)
 {
+	ABSP* bsp = nullptr;
+
+	for (TActorIterator<ABSP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+		bsp = *ActorItr;
+	}
+	/*if (GetWorld()->GetFirstPlayerController() != NULL) {
+		playerPosRaw = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+		FVector playerPos = FVector(playerPosRaw.X, playerPosRaw.Y, 0);
+		FVector roomPos = FVector(GetActorLocation().X, GetActorLocation().Y, 0);
+		dist = FVector(playerPos - roomPos).Size();
+		//less than 2000 so we can only check nearby rooms
+		if (dist < 2000)
+		{
+			bsp->distances.Add(dist);
+			CheckPlayerInRoom();
+		}
+
+		if (PlayerInRoom && roomType == BSPRoomType::RT_ENEMY && !initialSpawnDone)
+		{
+			SpawnEnemy();
+			initialSpawnDone = true;
+		}
+	}*/
+
 	Super::Tick(DeltaTime);
 	/*
 	FVector playerPos = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
@@ -65,6 +115,7 @@ void ABSPRoomManager::Tick(float DeltaTime)
 		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Player Location: %s"),
 			*playerPos.ToString()));
 	}*/
+	this->SetActorTransform(FTransform(FVector(0, 0, 0)));
 }
 
 void ABSPRoomManager::DrawRoom() {
@@ -77,7 +128,7 @@ void ABSPRoomManager::DrawRoom() {
 		bsp = *ActorItr;
 	}
 
-	FVector br(location.X - (width/2*bsp->unitSize), location.Y - (height/2*bsp->unitSize), 0);
+	br = FVector(location.X - (width/2*bsp->unitSize), location.Y - (height/2*bsp->unitSize), 0);
 	//draw floor
 	for (int y = 0; y < height; y++) {
 		for (int x = 0; x < width; x++) {
@@ -92,28 +143,28 @@ void ABSPRoomManager::DrawRoom() {
 	for (int j = 0; j < height; j++) {
 		FTransform wt(FRotator(0, 0, 0), FVector(br.X, br.Y + (j*bsp->unitSize), 0), FVector(1, 1, 1));
 		bsp->SpawnISM(wt, Walls);
-		SetAvb((wt.GetLocation().X - (location.X - ((width/2)*bsp->unitSize))) / bsp->unitSize, (wt.GetLocation().Y - (location.Y - ((height/2)*bsp->unitSize))) / bsp->unitSize, (int)Avb::WALL);
+		SetAvb((wt.GetLocation().X - br.X) / bsp->unitSize, (wt.GetLocation().Y - br.Y) / bsp->unitSize, (int)Avb::WALL);
 	}
 
 	//top wall left
 	for (int j = 0; j < width; j++) {
-		FTransform wt(FRotator(0, 0, 0), FVector(br.X + (j*bsp->unitSize), br.Y + (height*bsp->unitSize) - bsp->unitSize, 0), FVector(1, 1, 1));
+		FTransform wt(FRotator(0, 90, 0), FVector(br.X + (j*bsp->unitSize), br.Y + (height*bsp->unitSize) - bsp->unitSize, 0), FVector(1, 1, 1));
 		bsp->SpawnISM(wt, Walls);
-		SetAvb((wt.GetLocation().X - (location.X - ((width/2)*bsp->unitSize))) / bsp->unitSize, (wt.GetLocation().Y - (location.Y - ((height/2)*bsp->unitSize))) / bsp->unitSize, (int)Avb::WALL);
+		SetAvb((wt.GetLocation().X - br.X) / bsp->unitSize, (wt.GetLocation().Y - br.Y) / bsp->unitSize, (int)Avb::WALL);
 	}
 
 	//left wall down
 	for (int j = height - 1; j > 0; j--) {
 		FTransform wt(FRotator(0, 0, 0), FVector(br.X + (width*bsp->unitSize) - bsp->unitSize, br.Y + (j*bsp->unitSize), 0), FVector(1, 1, 1));
 		bsp->SpawnISM(wt, Walls);
-		SetAvb((wt.GetLocation().X - (location.X - ((width/2)*bsp->unitSize))) / bsp->unitSize, (wt.GetLocation().Y - (location.Y - ((height/2)*bsp->unitSize))) / bsp->unitSize, (int)Avb::WALL);
+		SetAvb((wt.GetLocation().X - br.X) / bsp->unitSize, (wt.GetLocation().Y - br.Y) / bsp->unitSize, (int)Avb::WALL);
 	}
 
 	//bottom wall right
 	for (int j = width - 1; j > 0; j--) {
-		FTransform wt(FRotator(0, 0, 0), FVector(br.X + (j*bsp->unitSize), br.Y, 0), FVector(1, 1, 1));
+		FTransform wt(FRotator(0, 90, 0), FVector(br.X + (j*bsp->unitSize), br.Y, 0), FVector(1, 1, 1));
 		bsp->SpawnISM(wt, Walls);
-		SetAvb((wt.GetLocation().X - (location.X - ((width/2)*bsp->unitSize))) / bsp->unitSize, (wt.GetLocation().Y - (location.Y - ((height/2)*bsp->unitSize))) / bsp->unitSize, (int)Avb::WALL);
+		SetAvb((wt.GetLocation().X - br.X) / bsp->unitSize, (wt.GetLocation().Y - br.Y) / bsp->unitSize, (int)Avb::WALL);
 	}
 }
 
@@ -129,13 +180,13 @@ void ABSPRoomManager::PlaceProps() {
 	int x = FMath::RandRange(0, width);
 	int y = FMath::RandRange(0, height);
 
-	if (TestPropPlacement(x, y, 2, 2)) {
-		bsp->Spawn(FVector((x*bsp->unitSize) + (location.X - ((width / 2)*bsp->unitSize)), (y*bsp->unitSize) + (location.Y - ((height / 2)*bsp->unitSize)), 0), bsp->Barrels);
+	if (TestPropPlacement(x, y, 2, 2, 0)) {
+		bsp->SpawnTransform(FTransform(FRotator(0,0,0), FVector((x*bsp->unitSize) + br.X, (y*bsp->unitSize) + br.Y, 0), FVector(1,1,1)), bsp->Barrels);
 		SetPropPlacement(x, y, 2, 2);
 	}
 }
 
-bool ABSPRoomManager::PlaceProp(int x, int y, TSubclassOf<AActor> prop, int sizeX, int sizeY)
+bool ABSPRoomManager::PlaceProp(int x, int y, TSubclassOf<AActor> prop, int sizeX, int sizeY, int rotZ)
 {
 	ABSP* bsp = nullptr;
 
@@ -145,8 +196,8 @@ bool ABSPRoomManager::PlaceProp(int x, int y, TSubclassOf<AActor> prop, int size
 		bsp = *ActorItr;
 	}
 
-	if (TestPropPlacement(x, y, sizeX, sizeY)) {
-		bsp->Spawn(FVector((x*bsp->unitSize) + (location.X - ((width / 2)*bsp->unitSize)), (y*bsp->unitSize) + (location.Y - ((height / 2)*bsp->unitSize)), 0), prop);
+	if (TestPropPlacement(x, y, sizeX, sizeY, rotZ)) {
+		bsp->SpawnTransform(FTransform(FRotator(0, rotZ, 0), FVector((x*bsp->unitSize) + br.X, (y*bsp->unitSize) + br.Y, 0), FVector(1,1,1)), prop);
 		SetPropPlacement(x, y, 2, 2);
 		return true;
 	}
@@ -192,31 +243,60 @@ void ABSPRoomManager::PopulateRoom()
 		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
 		bsp = *ActorItr;
 	}
-	PlaceProp(1, 1, bsp->corner, 3, 2);
+	PlaceProp(1, 1, bsp->corner, 3, 2, 0);
 	for (int i = 0; i < 20; i++) {
 		PlaceProps();
 	}
 	
 }
 
-bool ABSPRoomManager::TestPropPlacement(int x, int y, int sizeX, int sizeY)
+bool ABSPRoomManager::TestPropPlacement(int x, int y, int sizeX, int sizeY, int rotZ)
 {
-	for (int ty = y; ty < y + sizeY; ty++) {
-		for (int tx = x; tx < x + sizeX; tx++) {
-			if (GetAvb(tx, ty) != 0) {
-				return false;
+	if (rotZ == 0 || rotZ == 360) {
+		for (int ty = y; ty < y + sizeY; ty++) {
+			for (int tx = x; tx < x + sizeX; tx++) {
+				if (GetAvb(tx, ty) != 0) {
+					return false;
+				}
+			}
+		}
+
+		for (int ty = y - 2; ty < y + sizeY + 2; ty++) {
+			for (int tx = x - 2; tx < x + sizeX + 2; tx++) {
+				if (GetAvb(tx, ty) == (int)Avb::DOOR) {
+					return false;
+				}
 			}
 		}
 	}
-	/*
-	for (int ty = y - 3; ty < y + sizeY + 3; ty++) {
-		for (int tx = x - 3; tx < x + sizeX + 3; tx++) {
-			if (GetAvb(tx, ty) != 0 ) {
-				return false;
+	else if (rotZ == 90) {
+		for (int ty = y; ty < y + sizeY; ty++) {
+			for (int tx = x; tx > x - sizeX; tx--) {
+				if (GetAvb(tx, ty) != 0) {
+					return false;
+				}
 			}
 		}
 	}
-	*/
+	else if (rotZ == 180) {
+		for (int ty = y; ty > y - sizeY; ty--) {
+			for (int tx = x; tx > x - sizeX; tx--) {
+				if (GetAvb(tx, ty) != 0) {
+					return false;
+				}
+			}
+		}
+	}
+	else if (rotZ == 270) {
+		for (int ty = y; ty > y - sizeY; ty--) {
+			for (int tx = x; tx < x + sizeX; tx++) {
+				if (GetAvb(tx, ty) != 0) {
+					return false;
+				}
+			}
+		}
+	}
+	
 	return true;
 }
 
@@ -227,6 +307,19 @@ void ABSPRoomManager::SetPropPlacement(int x, int y, int sizeX, int sizeY)
 			SetAvb(tx, ty, (int)Avb::PROP);
 		}
 	}
+}
+
+void ABSPRoomManager::SpawnEnemy()
+{
+	ABSP* bsp = nullptr;
+
+	for (TActorIterator<ABSP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+		bsp = *ActorItr;
+	}
+	
+	SpawnAI(GetTileLocation_str("5,5"), (int)BSPAIType::CrowdAI);
 }
 
 FVector ABSPRoomManager::GetTileLocation_int(int x, int y)

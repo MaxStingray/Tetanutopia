@@ -12,5 +12,19 @@
 				"Engine"
 			]
 		}
+<<<<<<< HEAD
+=======
+	],
+	"Plugins": [
+		{
+			"Name": "Substance",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/2f6439c2f9584f49809d9b13b16c2ba4"
+		},
+		{
+			"Name": "ApexDestruction",
+			"Enabled": true
+		}
+>>>>>>> bcd960f256c0a7c82ef8492c73ea5927e3c72b4e
 	]
 }
