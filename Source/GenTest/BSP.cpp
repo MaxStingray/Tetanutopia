@@ -8,7 +8,7 @@
 ABSP::ABSP()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 }
 // Called when the game starts or when spawned
@@ -35,24 +35,24 @@ void ABSP::BeginPlay()
 	AddDoors();
 	for (int i = 0; i < rms.Num(); i++) {
 		if (i == 0) {
-			rms[i]->roomType = (int)BSPRoomType::RT_START;
+			rms[i]->roomType = BSPRoomType::RT_START;
 		}
 		else if (i == rms.Num() - 1) {
-			rms[i]->roomType = (int)BSPRoomType::RT_END;
+			rms[i]->roomType = BSPRoomType::RT_END;
 		}
 		else {
 			int r = FMath::RandRange(0, 100);
 
 			if (r < 70) {
-				rms[i]->roomType = (int)BSPRoomType::RT_ENEMY;
+				rms[i]->roomType = BSPRoomType::RT_ENEMY;
 			}
 			else if (r < 50)
 			{
-				rms[i]->roomType = (int)BSPRoomType::RT_TURRET;
+				rms[i]->roomType = BSPRoomType::RT_TURRET;
 			}
 			else if (r < 25)
 			{
-				rms[i]->roomType = (int)BSPRoomType::RT_GENERIC;
+				rms[i]->roomType = BSPRoomType::RT_GENERIC;
 			}
 		}
 		rms[i]->PopulateRoom();
@@ -65,6 +65,24 @@ void ABSP::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (distances.Num() > 0)
+	{
+		//not 100% if this is correct
+		smallestDistance = distances[0];
+		for (int i = 1; i < distances.Num(); i++)
+		{
+			if (distances[i] < smallestDistance)
+			{
+				smallestDistance = distances[i];
+			}
+		}
+
+		distances.Empty();
+	}
+	else
+	{
+		smallestDistance = 0;
+	}
 }
 
 
@@ -217,41 +235,6 @@ ABSPRoomManager* ABSP::SpawnRM(FVector location)
 }
 
 void ABSP::AddDoors() {
-	/*TArray<FChunk> leafTemp;
-	//get all leaf nodes from chunks. These are the rooms that have not been sub divided. 
-	for (int i = 0; i < chunks.Num(); i++) {
-		if (chunks[i].BottomChild == -2 && chunks[i].TopChild == -2 && chunks[i].RightChild == -2 && chunks[i].LeftChild == -2) {
-			leafTemp.Add(chunks[i]);
-		}
-	}
-
-	for (int i = 0; i < leafTemp.Num(); i++) {
-		FChunk parent = chunks[leafTemp[i].parent];
-		if (parent.BottomChild != 0 && parent.BottomChild != 0) {
-			FVector loc(parent.chunkCenter.X, chunks[parent.BottomChild].chunkCenter.Y + chunks[parent.BottomChild].chunkHeight / 2, 0);
-			Spawn(loc, Door);
-			//leafTemp.RemoveAt(i);
-			//leafTemp.RemoveAt(i+1);
-		}
-		else if (parent.LeftChild != 0 && parent.RightChild != 0) {
-			FVector loc(chunks[parent.RightChild].chunkCenter.X + chunks[parent.RightChild].chunkWidth/2, parent.chunkCenter.Y, 0);
-			Spawn(loc, Door);
-			//leafTemp.RemoveAt(i);
-			//leafTemp.RemoveAt(i+1);
-		}
-
-		FChunk pparent = chunks[parent.parent];
-		if (pparent.BottomChild != 0 && pparent.TopChild != 0) {
-			FVector loc(pparent.chunkCenter.X, chunks[pparent.BottomChild].chunkCenter.Y + chunks[pparent.BottomChild].chunkHeight / 2, 0);
-			Spawn(loc, Door);
-		}
-		else if (pparent.LeftChild != 0 && pparent.RightChild != 0){
-			FVector loc(chunks[pparent.RightChild].chunkCenter.X + chunks[pparent.RightChild].chunkWidth / 2, pparent.chunkCenter.Y, 0);
-			Spawn(loc, Door);
-		}
-		
-	}*/
-
 	for (int i = 0; i < chunks.Num(); i++) {
 
 		if (chunks[i].BottomChild != -2 && chunks[i].TopChild != -2) {

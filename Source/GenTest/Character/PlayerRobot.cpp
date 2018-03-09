@@ -21,6 +21,10 @@ APlayerRobot::APlayerRobot()
 	InitialiseCamera();
 	InitialiseWeapons();
 
+	bIsVulnerable = true;
+	bIsMoving = false;
+	MoveSpeedMult = 1;
+
 	// Setup Sounds
 	static ConstructorHelpers::FObjectFinder<USoundCue> shootCue(TEXT("/Game/Audio/Sounds/Equip_Weapon_Cue"));
 	EquipSound = shootCue.Object;
@@ -120,7 +124,7 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 	const float MoveRight = GetInputAxisValue(BindingMoveRight);
 
 	const FVector MoveDirection = FVector(MoveForward, MoveRight, 0.f).GetClampedToMaxSize(1.0f);	// Clamp to ensure we cant travel faster diagonally
-	FVector movement = MoveDirection * MoveSpeed * deltaSeconds;
+	FVector movement = MoveDirection * MoveSpeed * MoveSpeedMult * deltaSeconds;
 
 	if (bUseCameraForward)
 	{
@@ -131,6 +135,8 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 
 	if (movement.SizeSquared() > FLT_EPSILON)
 	{
+		bIsMoving = true;
+
 		FHitResult Hit(1.f);
 		AddActorWorldOffset(movement, true, &Hit);
 
@@ -142,7 +148,9 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 		if (LookDirection.SizeSquared() < FLT_EPSILON)
 		{
 			// Make the player look in the direction of movement if not looking actively
-			const FRotator MoveRotation = FMath::Lerp(GetActorRotation(), MoveDirection.Rotation().GetNormalized(), 0.5f);
+			 
+			FRotator MoveRotation = GetActorRotation();
+			MoveRotation.Yaw = FMath::Lerp(MoveRotation.Yaw, MoveDirection.Rotation().Yaw, 0.5f);
 			SetActorRotation(MoveRotation);
 		}
 		
@@ -154,14 +162,14 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 		// Adjust the weapon to not be pitched
 		if(WeaponPrimary)
 		{
-			FRotator currentRotation = WeaponPrimary->GetComponentRotation();
+			FRotator currentRotation = GetActorRotation(); //WeaponPrimary->GetComponentRotation();
 			currentRotation.Pitch = 0;
 			WeaponPrimary->SetWorldRotation(currentRotation);
 		}
 
 		if (WeaponAlternate)
 		{
-			FRotator currentRotation = WeaponAlternate->GetComponentRotation();
+			FRotator currentRotation = GetActorRotation(); //WeaponAlternate->GetComponentRotation();
 			currentRotation.Pitch = 0;
 			WeaponAlternate->SetWorldRotation(currentRotation);
 		}
@@ -176,6 +184,8 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 	}
 	else
 	{
+		bIsMoving = false;
+
 		// Stop tilting the player
 		FRotator current = GetActorRotation();
 		current.Pitch = FMath::Lerp(current.Pitch, 0.0f, 0.5f);
@@ -183,14 +193,14 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 
 		if (WeaponPrimary)
 		{
-			FRotator currentRotation = WeaponPrimary->GetComponentRotation();
+			FRotator currentRotation = GetActorRotation(); //WeaponPrimary->GetComponentRotation();
 			currentRotation.Pitch = 0;
 			WeaponPrimary->SetWorldRotation(currentRotation);
 		}
 
 		if (WeaponAlternate)
 		{
-			FRotator currentRotation = WeaponAlternate->GetComponentRotation();
+			FRotator currentRotation = GetActorRotation(); //WeaponAlternate->GetComponentRotation();
 			currentRotation.Pitch = 0;
 			WeaponAlternate->SetWorldRotation(currentRotation);
 		}
@@ -206,7 +216,9 @@ void APlayerRobot::ApplyLook(const float deltaSeconds)
 
 	if (LookDirection.SizeSquared() > FLT_EPSILON)
 	{
-		FRotator lookRotation = FMath::Lerp(GetActorRotation(), LookDirection.Rotation(), 0.5f); // Get the rotation from the joystick
+		//FRotator lookRotation = FMath::Lerp(GetActorRotation(), LookDirection.Rotation(), 0.5f); // Get the rotation from the joystick
+		FRotator lookRotation = GetActorRotation();
+		lookRotation.Yaw = FMath::Lerp(lookRotation.Yaw, LookDirection.Rotation().Yaw, 0.5f);
 
 		if (bUseCameraForward)
 		{
@@ -265,7 +277,7 @@ void APlayerRobot::UseActiveItem()
 	{
 		if(ItemActive)
 		{
-			ItemActive->Fire();
+			ItemActive->Use();
 		}
 		else
 		{
@@ -385,10 +397,9 @@ void APlayerRobot::EquipItemActive()
 {
 	if(ItemType)
 	{
-		ItemActive = NewObject<UBaseWeapon>(this, ItemType);
-		ItemActive->SetupAttachment(RootComponent);
-		ItemActive->SetOffset(ItemOffset);
-		ItemActive->AttachTo(RootComponent);
+		ItemActive = NewObject<UBaseItem>(this, ItemType);
+		FinishAndRegisterComponent(ItemActive);
+		AddOwnedComponent(ItemActive);
 
 		UGameplayStatics::PlaySoundAtLocation(this, EquipSound, GetActorLocation(), GetActorRotation());
 	}
@@ -429,7 +440,7 @@ void APlayerRobot::UnequipItemActive()
 
 void APlayerRobot::TakeDamage(int amount)
 {
-	if(amount > 0)
+	if(amount > 0 && bIsVulnerable)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, HurtSound, GetActorLocation(), GetActorRotation());
 
@@ -463,4 +474,16 @@ int APlayerRobot::GetMaxHealth()
 int APlayerRobot::GetCurrentHealth()
 {
 	return CurrentHealth;
+}
+
+void APlayerRobot::SetInputActive(bool value)
+{
+	if (value)
+	{
+		EnableInput(Cast<APlayerController>(this));
+	}
+	else
+	{
+		DisableInput(Cast<APlayerController>(this));
+	}
 }
