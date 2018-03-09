@@ -8,6 +8,7 @@
 #include "Engine/CollisionProfile.h"
 #include "Engine/StaticMesh.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Classes/Particles/ParticleSystemComponent.h"
 #include "Classes/Particles/ParticleSystem.h"
 
@@ -142,35 +143,15 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 		const float LookRight = GetInputAxisValue(BindingLookRight);
 
 		const FVector LookDirection = FVector(LookForward, LookRight, 0.f);
-
 		if (bLookWithMove && LookDirection.SizeSquared() < FLT_EPSILON)
 		{
-			// Make the player look in the direction of movement if not looking actively
-			 
 			FRotator MoveRotation = GetActorRotation();
+			// Make the player look in the direction of movement if not looking actively
 			MoveRotation.Yaw = FMath::Lerp(MoveRotation.Yaw, MoveDirection.Rotation().Yaw, 0.5f);
 			SetActorRotation(MoveRotation);
 		}
-		
-		// Tilt the player because we are moving
-		FRotator current = GetActorRotation();
-		current.Pitch = FMath::Lerp(current.Pitch, -20.0f, 0.5f);
-		SetActorRotation(current);
 
-		// Adjust the weapon to not be pitched
-		if(WeaponPrimary)
-		{
-			FRotator currentRotation = GetActorRotation();
-			currentRotation.Pitch = 0;
-			WeaponPrimary->SetWorldRotation(currentRotation);
-		}
-
-		if (WeaponAlternate)
-		{
-			FRotator currentRotation = GetActorRotation();
-			currentRotation.Pitch = 0;
-			WeaponAlternate->SetWorldRotation(currentRotation);
-		}
+		// TODO: Tilting
 
 		// Collision Handling
 		if (Hit.IsValidBlockingHit())
@@ -184,24 +165,7 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 	{
 		bIsMoving = false;
 
-		// Stop tilting the player
-		FRotator current = GetActorRotation();
-		current.Pitch = FMath::Lerp(current.Pitch, 0.0f, 0.5f);
-		SetActorRotation(current);
-
-		if (WeaponPrimary)
-		{
-			FRotator currentRotation = GetActorRotation(); //WeaponPrimary->GetComponentRotation();
-			currentRotation.Pitch = 0;
-			WeaponPrimary->SetWorldRotation(currentRotation);
-		}
-
-		if (WeaponAlternate)
-		{
-			FRotator currentRotation = GetActorRotation(); //WeaponAlternate->GetComponentRotation();
-			currentRotation.Pitch = 0;
-			WeaponAlternate->SetWorldRotation(currentRotation);
-		}
+		//	TODO: Stop Tilt
 	}
 }
 
