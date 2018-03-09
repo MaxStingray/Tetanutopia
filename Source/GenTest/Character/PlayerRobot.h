@@ -6,7 +6,11 @@
 #include "Collectable.h"
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Health.h"
+#include "BaseItem.h"
 #include "PlayerRobot.generated.h"
+
+// I'm sorry for this class too
+// - Alex
 
 UCLASS()
 class GENTEST_API APlayerRobot : public APawn, public IHealth
@@ -56,7 +60,7 @@ private:
 	FVector WeaponAlternateOffset;
 
 	// The active item equipped
-	UBaseWeapon* ItemActive;
+	UBaseItem* ItemActive;
 
 	UPROPERTY(Category = "Weapons", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	FVector ItemOffset;
@@ -153,11 +157,15 @@ public:
 
 	// The type of item type equiped
 	UPROPERTY(Category = "Weapons", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<UBaseWeapon> ItemType;
+	TSubclassOf<UBaseItem> ItemType;
 
 	// The speed which the player traverses the environment
 	UPROPERTY(Category = "Character", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float MoveSpeed;
+	
+	// The speed which the player traverses the environment
+	UPROPERTY(Category = "Character", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float MoveSpeedMult;
 
 	// Keybindings that are used within this actor
 	UPROPERTY(Category = "Controls|Bindings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
@@ -242,4 +250,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int GetCurrentHealth();
+
+	void SetInputActive(bool value);
+
+	bool bIsVulnerable;
+
+	bool bIsMoving;
 };
