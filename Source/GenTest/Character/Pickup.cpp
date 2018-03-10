@@ -43,9 +43,12 @@ void APickup::EnablePickup()
 
 void APickup::StartOverlap(UPrimitiveComponent* OverlappedComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	if (OtherActor->IsA(APlayerRobot::StaticClass()))
+	if (bPickupable)
 	{
-		OverlappingActor = OtherActor;
+		if (OtherActor->IsA(APlayerRobot::StaticClass()))
+		{
+			OverlappingActor = OtherActor;
+		}
 	}
 }
 
@@ -69,6 +72,7 @@ void APickup::BeginPlay()
 
 void APickup::StartPickupCooldown()
 {
+	OverlappingActor = nullptr;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_CollectCooldown, this, &APickup::EnablePickup, PickupCooldown);
 }
 

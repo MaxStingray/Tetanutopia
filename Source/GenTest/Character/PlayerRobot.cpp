@@ -293,6 +293,8 @@ void APlayerRobot::EquipWeaponPrimary(TSubclassOf<UBaseWeapon> weapon)
 	if (WeaponPrimary) { WeaponPrimary->DestroyComponent(); };
 	if (weapon)
 	{
+		WeaponPrimaryType = weapon;
+
 		WeaponPrimary = NewObject<UBaseWeapon>(this, weapon);
 		WeaponPrimary->SetOffset(WeaponPrimaryOffset);
 		WeaponPrimary->AttachTo(RootComponent);
@@ -307,6 +309,8 @@ void APlayerRobot::EquipWeaponAlternate(TSubclassOf<UBaseWeapon> weapon)
 	if (WeaponAlternate) { WeaponAlternate->DestroyComponent(); };
 	if (weapon)
 	{
+		WeaponAlternateType = weapon;
+
 		WeaponAlternate = NewObject<UBaseWeapon>(this, weapon);
 		WeaponAlternate->SetOffset(WeaponAlternateOffset);
 		WeaponAlternate->AttachTo(RootComponent);
@@ -321,6 +325,8 @@ void APlayerRobot::EquipItem(TSubclassOf<UBaseItem> item)
 	if (Item) { Item->DestroyComponent(); };
 	if (item)
 	{
+		ItemType = item;
+
 		Item = NewObject<UBaseItem>(this, item);
 		FinishAndRegisterComponent(Item);
 

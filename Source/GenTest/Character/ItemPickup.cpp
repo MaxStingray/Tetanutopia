@@ -11,7 +11,7 @@ void AItemPickup::WhileOverlap(AActor * OtherActor)
 	APlayerRobot* player = Cast<APlayerRobot>(OtherActor);
 	if (player->bPickingUpItem)
 	{
-		TSubclassOf<UBaseItem> temp = player->GetItem()->StaticClass();
+		TSubclassOf<UBaseItem> temp = player->GetItemType();
 		player->EquipItem(Item);
 		SetItem(temp);
 	}
@@ -24,4 +24,10 @@ AItemPickup::AItemPickup()
 void AItemPickup::SetItem(TSubclassOf<UBaseItem> newItem)
 {
 	Item = newItem;
+	StartPickupCooldown();
+
+	if (Item == nullptr)
+	{
+		Destroy();
+	}
 }

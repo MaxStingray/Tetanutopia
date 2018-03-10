@@ -11,17 +11,17 @@ void AWeaponPickup::WhileOverlap(AActor * OtherActor)
 	APlayerRobot* player = Cast<APlayerRobot>(OtherActor);
 	if (player->bPickingPrimaryWeapon)
 	{
-		UBaseWeapon* temp = player->GetPrimaryWeapon();
-		player->EquipWeaponPrimary(Weapon->StaticClass());
+		TSubclassOf<UBaseWeapon> temp = player->GetPrimaryWeaponType();
+		player->EquipWeaponPrimary(WeaponType);
 		
-		SetWeapon(temp->StaticClass());
+		SetWeapon(temp);
 	}
 	else if (player->bPickingAlternateWeapon)
 	{
-		UBaseWeapon* temp = player->GetAlternateWeapon();
-		player->EquipWeaponAlternate(Weapon->StaticClass());
+		TSubclassOf<UBaseWeapon> temp = player->GetAlternateWeaponType();
+		player->EquipWeaponAlternate(WeaponType);
 
-		SetWeapon(temp->StaticClass());
+		SetWeapon(temp);
 	}
 }
 
@@ -35,10 +35,17 @@ void AWeaponPickup::SetWeapon(TSubclassOf<UBaseWeapon> newWeapon)
 	if (Weapon) { Weapon->DestroyComponent(); };
 	if (newWeapon)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("%s"), *Cast<UBaseWeapon>(newWeapon)->GetWeaponName());
+		WeaponType = newWeapon;
+
 		Weapon = NewObject<UBaseWeapon>(this, newWeapon);
 		Weapon->AttachTo(RootComponent);
 		Weapon->SetupAttachment(RootComponent);
 		Weapon->SetCollisionProfileName("NoCollision");
+		StartPickupCooldown();
+	}
+
+	if (Weapon == nullptr)
+	{
+		Destroy();
 	}
 }

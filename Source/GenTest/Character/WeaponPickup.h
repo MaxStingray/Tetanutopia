@@ -12,7 +12,9 @@ class GENTEST_API AWeaponPickup : public APickup
 
 private:
 	UPROPERTY()
-	UBaseWeapon* Weapon;
+	TSubclassOf<UBaseWeapon> WeaponType;
+	UPROPERTY()
+	UBaseWeapon *Weapon;
 
 protected:
 	UFUNCTION()
