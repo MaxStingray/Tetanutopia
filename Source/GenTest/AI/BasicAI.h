@@ -18,7 +18,7 @@ public:
 	ABasicAI();
 
 	// I dont expose this because it only works if you set it through the function
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadOnly)
 	UBaseWeapon* weapon;
 
 
@@ -30,7 +30,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	USoundCue* HurtSound;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int health = 100;
 
 public:	
