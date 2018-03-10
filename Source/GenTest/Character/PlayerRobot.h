@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "BaseWeapon.h"
-#include "Collectable.h"
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Health.h"
 #include "BaseItem.h"
