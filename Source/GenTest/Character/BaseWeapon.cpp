@@ -28,6 +28,7 @@ UBaseWeapon::UBaseWeapon()
 void UBaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+	initialProjectileOffset = ProjectileSpawnOffset;
 }
 
 void UBaseWeapon::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -44,13 +45,17 @@ void UBaseWeapon::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
 void UBaseWeapon::Fire()
 {
+	if (randomiseOffset)
+	{
+		//randomise the offset
+		RandomiseOffset(ProjectileSpawnOffset);
+	}
 	if (bCanFire && ProjectileType != nullptr)
 	{
 		UWorld* const World = GetWorld();
 		if (World != NULL)
 		{
 			bCanFire = false;
-
 			FRotator FireRotation = GetComponentRotation();
 			FVector SpawnLocation = GetComponentLocation() + FireRotation.RotateVector(ProjectileSpawnOffset);
 
@@ -153,4 +158,17 @@ void UBaseWeapon::InitialiseWeaponStats()
 	ProjectilesToSpawnOnFire = 1;
 	ProjectileSpawnOffset = FVector(10, 0, 0);
 	WeaponPositionOffset = FVector(0, 0, 0);
+}
+
+void UBaseWeapon::RandomiseOffset(FVector offset)
+{
+	//reset the projectile offset after each fire event
+	ProjectileSpawnOffset = initialProjectileOffset;
+
+	float minXOffset = ProjectileSpawnOffset.Y;
+	float maxXOffset = ProjectileSpawnOffset.Y * 50;
+
+	float randOffset = FMath::RandRange(minXOffset, maxXOffset);
+
+	ProjectileSpawnOffset = FVector(ProjectileSpawnOffset.X, randOffset, ProjectileSpawnOffset.Z);
 }

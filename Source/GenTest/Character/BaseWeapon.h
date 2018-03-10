@@ -47,6 +47,9 @@ protected:
 	// Setup weapon stats
 	void InitialiseWeaponStats();
 
+	//randomise offset for rapid-fire weapons
+	void RandomiseOffset(FVector offset);
+
 	// The projectile that is fire
 	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class ABaseProjectile> ProjectileType;
@@ -75,6 +78,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FString GetWeaponName();
 
+	UPROPERTY(EditAnywhere)
+	FVector initialProjectileOffset;
+
 	// Sets the offset
 	virtual void SetOffset(FVector offset);
 
@@ -85,6 +91,10 @@ public:
 	// The offset the projectile spawns from the weapon
 	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	FVector WeaponPositionOffset;
+
+	//randomise the offset somewhat. For rapid-fire weapons. This will randomise from the given offset + offset x 2
+	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool randomiseOffset;
 
 	// How fast the weapon fires each shot
 	UPROPERTY(Category = "Weapon|Stats", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
