@@ -28,8 +28,11 @@ private:
 	class USpringArmComponent* CameraBoom;	// The Camera Boom positions the attatched Camera Component above the Player
 
 	// The equipment being used 
+	UPROPERTY()
 	UBaseWeapon* WeaponPrimary;
+	UPROPERTY()
 	UBaseWeapon* WeaponAlternate;
+	UPROPERTY()
 	UBaseItem* Item;
 
 	// The offsets givin to the weapons position

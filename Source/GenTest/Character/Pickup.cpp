@@ -63,8 +63,13 @@ void APickup::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle_CollectCooldown, this, &APickup::EnablePickup, PickupCooldown);
+	StartPickupCooldown();
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_HoverDirection, this, &APickup::ReverseHover, HoverTime / 2);
+}
+
+void APickup::StartPickupCooldown()
+{
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_CollectCooldown, this, &APickup::EnablePickup, PickupCooldown);
 }
 
 void APickup::Tick(float DeltaTime)

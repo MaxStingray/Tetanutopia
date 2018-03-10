@@ -44,6 +44,9 @@ private:
 protected:
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintCallable)
+	void StartPickupCooldown();
+
 	UFUNCTION()
 	virtual void WhileOverlap(AActor* OtherActor);
 public:	
