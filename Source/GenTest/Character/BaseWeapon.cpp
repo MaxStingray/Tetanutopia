@@ -10,9 +10,6 @@
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "Engine/World.h"
 
-// I hope you don't have to mess with this class. I am very sorry if you do
-// - Alex
-
 UBaseWeapon::UBaseWeapon()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -31,6 +28,7 @@ UBaseWeapon::UBaseWeapon()
 void UBaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+	initialProjectileOffset = ProjectileSpawnOffset;
 }
 
 void UBaseWeapon::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -47,13 +45,17 @@ void UBaseWeapon::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
 void UBaseWeapon::Fire()
 {
-	if (bCanFire && ProjectileType != nullptr)
+	if (randomiseOffset)
+	{
+		//randomise the offset
+		RandomiseOffset(ProjectileSpawnOffset);
+	}
+	if (bCanFire && bCanBurstFire && ProjectileType != nullptr)
 	{
 		UWorld* const World = GetWorld();
 		if (World != NULL)
 		{
 			bCanFire = false;
-
 			FRotator FireRotation = GetComponentRotation();
 			FVector SpawnLocation = GetComponentLocation() + FireRotation.RotateVector(ProjectileSpawnOffset);
 
@@ -87,7 +89,6 @@ void UBaseWeapon::Fire()
 					{
 						MuzzleFlash->bSuppressSpawning = false;
 					}
-
 					proj->FinishSpawning(FTransform(FireRotation, SpawnLocation));
 				}
 				else
@@ -95,15 +96,31 @@ void UBaseWeapon::Fire()
 					UE_LOG(LogTemp, Warning, TEXT("There was an issue registering the owner of the projectile"));
 				}
 			}
-
+			shotCount++;
 			World->GetTimerManager().SetTimer(TimerHandle_TimeUntilCanFire, this, &UBaseWeapon::ReEnableCanFire, FireInterval);
+			
 		}
+		if (shotCount >= burstSize && isBurstWeapon)
+		{
+			bCanBurstFire = false;
+			World->GetTimerManager().SetTimer(TimerHandle_TimeUntilBurstFire, this, &UBaseWeapon::ReEnableBurstFire, burstFireInterval);
+		}
+
 	}
+
 }
 
 FString UBaseWeapon::GetWeaponName()
 {
-	return WeaponName;
+	if (WeaponName.Len() > 0)
+	{
+		return WeaponName;
+	}
+	else
+	{
+		return "";
+	}
+	
 }
 
 void UBaseWeapon::SetOffset(FVector offset)
@@ -119,6 +136,12 @@ void UBaseWeapon::ReEnableCanFire()
 	{
 		MuzzleFlash->bSuppressSpawning = true; //TODO: Might have some issues with slower firing weapons turn it off here and not sooner
 	}
+}
+
+void UBaseWeapon::ReEnableBurstFire()
+{
+	shotCount = 0;
+	bCanBurstFire = true;
 }
 
 void UBaseWeapon::InitialiseSounds()
@@ -140,7 +163,7 @@ void UBaseWeapon::InitialiseStaticMesh()
 void UBaseWeapon::InitialiseWeaponStats()
 {
 	bCanFire = true;
-
+	bCanBurstFire = true;
 	WeaponName = "Gun";
 	bSpreadImpactsOffset = false;
 
@@ -149,4 +172,17 @@ void UBaseWeapon::InitialiseWeaponStats()
 	ProjectilesToSpawnOnFire = 1;
 	ProjectileSpawnOffset = FVector(10, 0, 0);
 	WeaponPositionOffset = FVector(0, 0, 0);
+}
+
+void UBaseWeapon::RandomiseOffset(FVector offset)
+{
+	//reset the projectile offset after each fire event
+	ProjectileSpawnOffset = initialProjectileOffset;
+
+	float minXOffset = ProjectileSpawnOffset.Y;
+	float maxXOffset = ProjectileSpawnOffset.Y * 50;
+
+	float randOffset = FMath::RandRange(minXOffset, maxXOffset);
+
+	ProjectileSpawnOffset = FVector(ProjectileSpawnOffset.X, randOffset, ProjectileSpawnOffset.Z);
 }

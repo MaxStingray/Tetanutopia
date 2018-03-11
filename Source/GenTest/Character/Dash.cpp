@@ -25,6 +25,8 @@ UDash::UDash()
 	DashCooldown = 5.0f;
 	DashSpeedMult = 0.65f;
 	DashRevolutionTime = 0.5f;
+
+	ItemName = "Dash";
 }
 
 void UDash::BeginPlay()
