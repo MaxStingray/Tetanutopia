@@ -56,7 +56,6 @@ void UBaseWeapon::Fire()
 		if (World != NULL)
 		{
 			bCanFire = false;
-			bCanBurstFire = false;
 			FRotator FireRotation = GetComponentRotation();
 			FVector SpawnLocation = GetComponentLocation() + FireRotation.RotateVector(ProjectileSpawnOffset);
 
@@ -97,11 +96,18 @@ void UBaseWeapon::Fire()
 					UE_LOG(LogTemp, Warning, TEXT("There was an issue registering the owner of the projectile"));
 				}
 			}
-
+			shotCount++;
 			World->GetTimerManager().SetTimer(TimerHandle_TimeUntilCanFire, this, &UBaseWeapon::ReEnableCanFire, FireInterval);
+			
+		}
+		if (shotCount >= burstSize)
+		{
+			bCanBurstFire = false;
 			World->GetTimerManager().SetTimer(TimerHandle_TimeUntilBurstFire, this, &UBaseWeapon::ReEnableBurstFire, burstFireInterval);
 		}
+
 	}
+
 }
 
 FString UBaseWeapon::GetWeaponName()
@@ -134,6 +140,7 @@ void UBaseWeapon::ReEnableCanFire()
 
 void UBaseWeapon::ReEnableBurstFire()
 {
+	shotCount = 0;
 	bCanBurstFire = true;
 }
 

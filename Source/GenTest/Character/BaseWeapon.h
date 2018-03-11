@@ -21,8 +21,11 @@ protected:
 	// After a period of time this is called to reset the bCanFire
 	void ReEnableCanFire();
 
+	int shotCount;
+
 	//reset the bCanBurstFire
 	void ReEnableBurstFire();
+
 
 	// The handle for the timer until the next shot can be fired
 	FTimerHandle TimerHandle_TimeUntilCanFire;
@@ -111,5 +114,9 @@ public:
 	//how frequently a weapon can fire a burst, if set to 0 burst mode is disabled. Should always be longer than FireInterval
 	UPROPERTY(Category = "Weapon|Stats", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float burstFireInterval;
+
+	//number of shots per burst
+	UPROPERTY(Category = "Weapon|Stats", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	int burstSize;
 
 };
