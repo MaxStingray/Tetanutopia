@@ -100,7 +100,7 @@ void UBaseWeapon::Fire()
 			World->GetTimerManager().SetTimer(TimerHandle_TimeUntilCanFire, this, &UBaseWeapon::ReEnableCanFire, FireInterval);
 			
 		}
-		if (shotCount >= burstSize)
+		if (shotCount >= burstSize && isBurstWeapon)
 		{
 			bCanBurstFire = false;
 			World->GetTimerManager().SetTimer(TimerHandle_TimeUntilBurstFire, this, &UBaseWeapon::ReEnableBurstFire, burstFireInterval);

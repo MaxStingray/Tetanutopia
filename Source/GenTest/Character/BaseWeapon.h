@@ -17,7 +17,6 @@ protected:
 
 	//whether the next burst is ready (if burst fire enabled)
 	bool bCanBurstFire;
-
 	// After a period of time this is called to reset the bCanFire
 	void ReEnableCanFire();
 
@@ -67,6 +66,9 @@ protected:
 
 	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float ProjectileMaxSpread;
+
+	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool isBurstWeapon;
 
 	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int ProjectilesToSpawnOnFire;
