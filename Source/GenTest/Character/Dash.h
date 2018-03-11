@@ -18,13 +18,13 @@ private:
 	FTimerHandle TimerHandle_Dash;
 	APlayerRobot* OwningPlayer;
 
-	UPROPERTY(Category = "Item", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "_Item", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float DashCooldown;
 
-	UPROPERTY(Category = "Item", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "_Item", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float DashSpeedMult;
 
-	UPROPERTY(Category = "Item", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "_Item", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float DashRevolutionTime;
 
 	void StopDashing();

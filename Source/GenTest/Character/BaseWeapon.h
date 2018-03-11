@@ -15,11 +15,19 @@ protected:
 	// Whether we can fire
 	bool bCanFire;
 
+	//whether the next burst is ready (if burst fire enabled)
+	bool bCanBurstFire;
+
 	// After a period of time this is called to reset the bCanFire
 	void ReEnableCanFire();
 
+	//reset the bCanBurstFire
+	void ReEnableBurstFire();
+
 	// The handle for the timer until the next shot can be fired
 	FTimerHandle TimerHandle_TimeUntilCanFire;
+
+	FTimerHandle TimerHandle_TimeUntilBurstFire;
 
 	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool bSpreadImpactsOffset;
@@ -99,4 +107,9 @@ public:
 	// How fast the weapon fires each shot
 	UPROPERTY(Category = "Weapon|Stats", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float FireInterval;
+
+	//how frequently a weapon can fire a burst, if set to 0 burst mode is disabled. Should always be longer than FireInterval
+	UPROPERTY(Category = "Weapon|Stats", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float burstFireInterval;
+
 };

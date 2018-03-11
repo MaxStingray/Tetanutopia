@@ -50,12 +50,13 @@ void UBaseWeapon::Fire()
 		//randomise the offset
 		RandomiseOffset(ProjectileSpawnOffset);
 	}
-	if (bCanFire && ProjectileType != nullptr)
+	if (bCanFire && bCanBurstFire && ProjectileType != nullptr)
 	{
 		UWorld* const World = GetWorld();
 		if (World != NULL)
 		{
 			bCanFire = false;
+			bCanBurstFire = false;
 			FRotator FireRotation = GetComponentRotation();
 			FVector SpawnLocation = GetComponentLocation() + FireRotation.RotateVector(ProjectileSpawnOffset);
 
@@ -98,6 +99,7 @@ void UBaseWeapon::Fire()
 			}
 
 			World->GetTimerManager().SetTimer(TimerHandle_TimeUntilCanFire, this, &UBaseWeapon::ReEnableCanFire, FireInterval);
+			World->GetTimerManager().SetTimer(TimerHandle_TimeUntilBurstFire, this, &UBaseWeapon::ReEnableBurstFire, burstFireInterval);
 		}
 	}
 }
@@ -130,6 +132,11 @@ void UBaseWeapon::ReEnableCanFire()
 	}
 }
 
+void UBaseWeapon::ReEnableBurstFire()
+{
+	bCanBurstFire = true;
+}
+
 void UBaseWeapon::InitialiseSounds()
 {
 	static ConstructorHelpers::FObjectFinder<USoundCue> shootCue(TEXT("/Game/Audio/Sounds/Hit_Shorter1_Cue"));
@@ -149,7 +156,7 @@ void UBaseWeapon::InitialiseStaticMesh()
 void UBaseWeapon::InitialiseWeaponStats()
 {
 	bCanFire = true;
-
+	bCanBurstFire = true;
 	WeaponName = "Gun";
 	bSpreadImpactsOffset = false;
 
