@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "BaseWeapon.h"
-#include "Collectable.h"
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Health.h"
 #include "BaseItem.h"
@@ -28,9 +27,20 @@ private:
 	UPROPERTY(Category = Camera, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;	// The Camera Boom positions the attatched Camera Component above the Player
 
+	// The types of equipment used
+	UPROPERTY()
+	TSubclassOf<UBaseWeapon> WeaponPrimaryType;
+	UPROPERTY()
+	TSubclassOf<UBaseWeapon> WeaponAlternateType;
+	UPROPERTY()
+	TSubclassOf<UBaseItem> ItemType;
+
 	// The equipment being used 
+	UPROPERTY()
 	UBaseWeapon* WeaponPrimary;
+	UPROPERTY()
 	UBaseWeapon* WeaponAlternate;
+	UPROPERTY()
 	UBaseItem* Item;
 
 	// The offsets givin to the weapons position
@@ -167,6 +177,13 @@ public:
 	UBaseWeapon* GetAlternateWeapon() { return WeaponAlternate; };
 	UFUNCTION(BluePrintCallable)
 	UBaseItem* GetItem() { return Item; }
+
+	UFUNCTION(BluePrintCallable)
+	TSubclassOf<UBaseWeapon> GetPrimaryWeaponType() { return WeaponPrimaryType; };
+	UFUNCTION(BluePrintCallable)
+	TSubclassOf<UBaseWeapon> GetAlternateWeaponType() { return WeaponAlternateType; };
+	UFUNCTION(BluePrintCallable)
+	TSubclassOf<UBaseItem> GetItemType() { return ItemType; }
 
 	// Call this whenever you want to update the equipped weapon
 	UFUNCTION(BluePrintCallable)

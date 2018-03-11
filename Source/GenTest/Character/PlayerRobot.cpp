@@ -2,12 +2,12 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/InputComponent.h"
-#include "Collectable.h"
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/CollisionProfile.h"
 #include "Engine/StaticMesh.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Classes/Particles/ParticleSystemComponent.h"
 #include "Classes/Particles/ParticleSystem.h"
 
@@ -142,35 +142,15 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 		const float LookRight = GetInputAxisValue(BindingLookRight);
 
 		const FVector LookDirection = FVector(LookForward, LookRight, 0.f);
-
 		if (bLookWithMove && LookDirection.SizeSquared() < FLT_EPSILON)
 		{
-			// Make the player look in the direction of movement if not looking actively
-			 
 			FRotator MoveRotation = GetActorRotation();
+			// Make the player look in the direction of movement if not looking actively
 			MoveRotation.Yaw = FMath::Lerp(MoveRotation.Yaw, MoveDirection.Rotation().Yaw, 0.5f);
 			SetActorRotation(MoveRotation);
 		}
-		
-		// Tilt the player because we are moving
-		FRotator current = GetActorRotation();
-		current.Pitch = FMath::Lerp(current.Pitch, -20.0f, 0.5f);
-		SetActorRotation(current);
 
-		// Adjust the weapon to not be pitched
-		if(WeaponPrimary)
-		{
-			FRotator currentRotation = GetActorRotation();
-			currentRotation.Pitch = 0;
-			WeaponPrimary->SetWorldRotation(currentRotation);
-		}
-
-		if (WeaponAlternate)
-		{
-			FRotator currentRotation = GetActorRotation();
-			currentRotation.Pitch = 0;
-			WeaponAlternate->SetWorldRotation(currentRotation);
-		}
+		// TODO: Tilting
 
 		// Collision Handling
 		if (Hit.IsValidBlockingHit())
@@ -184,24 +164,7 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 	{
 		bIsMoving = false;
 
-		// Stop tilting the player
-		FRotator current = GetActorRotation();
-		current.Pitch = FMath::Lerp(current.Pitch, 0.0f, 0.5f);
-		SetActorRotation(current);
-
-		if (WeaponPrimary)
-		{
-			FRotator currentRotation = GetActorRotation(); //WeaponPrimary->GetComponentRotation();
-			currentRotation.Pitch = 0;
-			WeaponPrimary->SetWorldRotation(currentRotation);
-		}
-
-		if (WeaponAlternate)
-		{
-			FRotator currentRotation = GetActorRotation(); //WeaponAlternate->GetComponentRotation();
-			currentRotation.Pitch = 0;
-			WeaponAlternate->SetWorldRotation(currentRotation);
-		}
+		//	TODO: Stop Tilt
 	}
 }
 
@@ -330,6 +293,8 @@ void APlayerRobot::EquipWeaponPrimary(TSubclassOf<UBaseWeapon> weapon)
 	if (WeaponPrimary) { WeaponPrimary->DestroyComponent(); };
 	if (weapon)
 	{
+		WeaponPrimaryType = weapon;
+
 		WeaponPrimary = NewObject<UBaseWeapon>(this, weapon);
 		WeaponPrimary->SetOffset(WeaponPrimaryOffset);
 		WeaponPrimary->AttachTo(RootComponent);
@@ -344,6 +309,8 @@ void APlayerRobot::EquipWeaponAlternate(TSubclassOf<UBaseWeapon> weapon)
 	if (WeaponAlternate) { WeaponAlternate->DestroyComponent(); };
 	if (weapon)
 	{
+		WeaponAlternateType = weapon;
+
 		WeaponAlternate = NewObject<UBaseWeapon>(this, weapon);
 		WeaponAlternate->SetOffset(WeaponAlternateOffset);
 		WeaponAlternate->AttachTo(RootComponent);
@@ -358,6 +325,8 @@ void APlayerRobot::EquipItem(TSubclassOf<UBaseItem> item)
 	if (Item) { Item->DestroyComponent(); };
 	if (item)
 	{
+		ItemType = item;
+
 		Item = NewObject<UBaseItem>(this, item);
 		FinishAndRegisterComponent(Item);
 
@@ -412,5 +381,10 @@ void APlayerRobot::SetInputActive(bool value)
 	else
 	{
 		DisableInput(Cast<APlayerController>(this));
+
+		// We have to manually false out bools or else the input ends up locking
+		bIsUsingItem = false;
+		bIsFiringAlternate = false;
+		bIsFiringPrimary = false;
 	}
 }
