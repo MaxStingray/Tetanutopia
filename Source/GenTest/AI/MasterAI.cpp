@@ -1,10 +1,10 @@
-#include "BasicAI.h"
+#include "MasterAI.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
-ABasicAI::ABasicAI()
+AMasterAI::AMasterAI()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -17,26 +17,26 @@ ABasicAI::ABasicAI()
 
 
 // Called when the game starts or when spawned
-void ABasicAI::BeginPlay()
+void AMasterAI::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
 // Called every frame
-void ABasicAI::Tick(float DeltaTime)
+void AMasterAI::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
 // Called to bind functionality to input
-void ABasicAI::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AMasterAI::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
 
-void ABasicAI::Attack() {
+void AMasterAI::Attack() {
 	if (weapon) {
 		weapon->Fire();
 	}
@@ -46,13 +46,13 @@ void ABasicAI::Attack() {
 	}
 }
 
-void ABasicAI::OnDeath()
+void AMasterAI::OnDeath()
 {
 	UE_LOG(LogTemp, Display, TEXT("AI has died"));
 	this->Destroy();
 }
 
-void ABasicAI::TakeDamage(int value)
+void AMasterAI::TakeDamage(int value)
 {
 	UE_LOG(LogTemp, Display, TEXT("AI took damage"));
 
@@ -64,7 +64,7 @@ void ABasicAI::TakeDamage(int value)
 	}
 }
 
-void ABasicAI::Heal(int value)
+void AMasterAI::Heal(int value)
 {
 	health += value;
 	if (health > 100) {
@@ -72,7 +72,7 @@ void ABasicAI::Heal(int value)
 	}
 }
 
-void ABasicAI::EquipWeapon(TSubclassOf<UBaseWeapon> weaponType)
+void AMasterAI::EquipWeapon(TSubclassOf<UBaseWeapon> weaponType)
 {
 	if (weapon != nullptr)
 	{
@@ -80,6 +80,7 @@ void ABasicAI::EquipWeapon(TSubclassOf<UBaseWeapon> weaponType)
 	}
 
 	weapon = NewObject<UBaseWeapon>(this, weaponType);
-	weapon->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
-	weapon->SetOffset(FVector(0.0f, 0.0f, 0.0f));
+	weapon->SetOffset(FVector(0,0,0));
+	weapon->AttachTo(RootComponent);
+	weapon->SetupAttachment(RootComponent);
 }

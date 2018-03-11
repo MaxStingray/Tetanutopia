@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "BasicAI.h"
+#include "MasterAI.h"
 #include "Kamikaze.generated.h"
 
 UCLASS()
-class GENTEST_API AKamikaze : public ABasicAI
+class GENTEST_API AKamikaze : public AMasterAI
 {
 	GENERATED_BODY()
 
