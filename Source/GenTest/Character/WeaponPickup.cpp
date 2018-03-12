@@ -13,6 +13,8 @@ void AWeaponPickup::WhileOverlap(AActor * OtherActor)
 	{
 		TSubclassOf<UBaseWeapon> temp = player->GetPrimaryWeaponType();
 		player->EquipWeaponPrimary(WeaponType);
+
+		player->bDisplayWeaponPickup = false;
 		
 		SetWeapon(temp);
 	}
@@ -21,8 +23,22 @@ void AWeaponPickup::WhileOverlap(AActor * OtherActor)
 		TSubclassOf<UBaseWeapon> temp = player->GetAlternateWeaponType();
 		player->EquipWeaponAlternate(WeaponType);
 
+		player->bDisplayWeaponPickup = false;
+
 		SetWeapon(temp);
 	}
+	else
+	{
+		player->bDisplayWeaponPickup = true;
+		player->PickupContext = Weapon->GetWeaponName();
+	}
+}
+
+void AWeaponPickup::OverlapEnds(AActor* OtherActor)
+{
+	APlayerRobot* player = Cast<APlayerRobot>(OtherActor);
+	player->bDisplayWeaponPickup = false;
+	player->PickupContext = "";
 }
 
 AWeaponPickup::AWeaponPickup()

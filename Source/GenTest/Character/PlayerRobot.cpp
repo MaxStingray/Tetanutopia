@@ -49,6 +49,10 @@ void APlayerRobot::InitialiseControls()
 	bUseCameraForward = true;
 	bLookWithMove = false;
 
+	bDisplayItemPickup = false;
+	bDisplayWeaponPickup = false;
+	PickupContext = "";
+
 	bIsFiringPrimary = false;
 	bIsFiringAlternate = false;
 	bPickingPrimaryWeapon = false;

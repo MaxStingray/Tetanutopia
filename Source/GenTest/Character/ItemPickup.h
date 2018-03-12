@@ -18,6 +18,8 @@ protected:
 	UFUNCTION()
 	void WhileOverlap(AActor* OtherActor) override;
 
+	virtual void OverlapEnds(AActor* OtherActor) override;
+
 public:
 	AItemPickup();
 

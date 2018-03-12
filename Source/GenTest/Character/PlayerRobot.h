@@ -220,4 +220,12 @@ public:
 	bool bPickingPrimaryWeapon;
 	bool bPickingAlternateWeapon;
 	bool bPickingUpItem;
+
+	// Whether to display the message to pick something up
+	UPROPERTY(Category = "Internal", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bDisplayWeaponPickup;
+	UPROPERTY(Category = "Internal", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bDisplayItemPickup;
+	UPROPERTY(Category = "Internal", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FString PickupContext;
 };

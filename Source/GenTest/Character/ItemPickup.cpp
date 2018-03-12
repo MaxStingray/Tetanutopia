@@ -14,7 +14,24 @@ void AItemPickup::WhileOverlap(AActor * OtherActor)
 		TSubclassOf<UBaseItem> temp = player->GetItemType();
 		player->EquipItem(Item);
 		SetItem(temp);
+
+		player->bDisplayItemPickup = false;
 	}
+	else
+	{
+		player->bDisplayItemPickup = true;
+
+		UBaseItem* temp = NewObject<UBaseItem>(this, Item);
+		player->PickupContext = temp->GetWeaponName();
+		temp->DestroyComponent();
+	}
+}
+
+void AItemPickup::OverlapEnds(AActor* OtherActor)
+{
+	APlayerRobot* player = Cast<APlayerRobot>(OtherActor);
+	player->bDisplayItemPickup = false;
+	player->PickupContext = "";
 }
 
 AItemPickup::AItemPickup()
