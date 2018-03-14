@@ -62,7 +62,7 @@ protected:
 
 	// The projectile that is fire
 	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<class ABaseProjectile> ProjectileType;
+	TSubclassOf<class AActor> ProjectileType;
 
 	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float ProjectileMaxSpread;
