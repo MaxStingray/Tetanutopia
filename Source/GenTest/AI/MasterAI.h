@@ -45,9 +45,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void OnDeath() override;
-
+	UFUNCTION(BlueprintCallable)
 	virtual void TakeDamage(int value) override;
-
+	UFUNCTION(BlueprintCallable)
 	virtual void Heal(int value) override;
 
 	UFUNCTION(BlueprintCallable)
