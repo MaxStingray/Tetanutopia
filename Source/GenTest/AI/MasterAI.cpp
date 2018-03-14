@@ -64,12 +64,13 @@ void AMasterAI::TakeDamage(int value)
 	}
 }
 
-void AMasterAI::Heal(int value)
+void AMasterAI::Heal(int32 value)
 {
 	health += value;
-	if (health > 100) {
-		health = 100;
+	if (health > maxHealth) {
+		health = maxHealth;
 	}
+	UE_LOG(LogTemp, Display, TEXT("AI was healed"));
 }
 
 void AMasterAI::EquipWeapon(TSubclassOf<UBaseWeapon> weaponType)

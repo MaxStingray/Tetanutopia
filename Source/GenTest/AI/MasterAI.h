@@ -31,7 +31,9 @@ protected:
 	USoundCue* HurtSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int health = 100;
+	int32 health = 100;
+
+	int32 maxHealth = 100;
 
 public:	
 	// Called every frame
