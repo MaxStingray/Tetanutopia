@@ -54,7 +54,11 @@ void APickup::StartOverlap(UPrimitiveComponent* OverlappedComponent, AActor * Ot
 
 void APickup::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex)
 {
-	OverlappingActor = (OtherActor == OverlappingActor) ? nullptr : OverlappingActor;
+	if (OverlappingActor == OtherActor)
+	{
+		OverlapEnds(OverlappingActor);
+		OverlappingActor = nullptr;
+	}
 }
 
 void APickup::WhileOverlap(AActor* OtherActor)

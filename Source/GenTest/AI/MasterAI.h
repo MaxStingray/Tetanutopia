@@ -6,16 +6,16 @@
 #include "GameFramework/Character.h"
 #include "Character/BaseWeapon.h"
 #include "Character/Health.h"
-#include "BasicAI.generated.h"
+#include "MasterAI.generated.h"
 
 UCLASS()
-class GENTEST_API ABasicAI : public ACharacter, public IHealth
+class GENTEST_API AMasterAI : public ACharacter, public IHealth
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this pawn's properties
-	ABasicAI();
+	AMasterAI();
 
 	// I dont expose this because it only works if you set it through the function
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -31,7 +31,9 @@ protected:
 	USoundCue* HurtSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int health = 100;
+	int32 health = 100;
+
+	int32 maxHealth = 100;
 
 public:	
 	// Called every frame
@@ -43,10 +45,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual	void Attack();
 
+	UFUNCTION(BlueprintCallable)
 	virtual void OnDeath() override;
-
+	UFUNCTION(BlueprintCallable)
 	virtual void TakeDamage(int value) override;
-
+	UFUNCTION(BlueprintCallable)
 	virtual void Heal(int value) override;
 
 	UFUNCTION(BlueprintCallable)

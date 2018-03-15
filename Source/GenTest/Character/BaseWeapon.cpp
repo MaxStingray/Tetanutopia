@@ -76,10 +76,14 @@ void UBaseWeapon::Fire()
 					}
 				}
 
-				ABaseProjectile* proj = World->SpawnActorDeferred<ABaseProjectile>(ProjectileType, FTransform(FireRotation, SpawnLocation));				
+				AActor* proj = World->SpawnActorDeferred<AActor>(ProjectileType, FTransform(FireRotation, SpawnLocation));				
 				if (proj)
 				{
-					proj->SetFiringActor(GetOwner());
+					ABaseProjectile* baseProj = Cast<ABaseProjectile>(proj);
+					if (baseProj)
+					{
+						baseProj->SetFiringActor(GetOwner());
+					}
 
 					if (ShootSound != nullptr)
 					{
