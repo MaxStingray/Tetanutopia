@@ -49,6 +49,8 @@ protected:
 
 	UFUNCTION()
 	virtual void WhileOverlap(AActor* OtherActor);
+
+	virtual void OverlapEnds(AActor* OtherActor) {};
 public:	
 	APickup();
 	virtual void Tick(float DeltaTime) override;

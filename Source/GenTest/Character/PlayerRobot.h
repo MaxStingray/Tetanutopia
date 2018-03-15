@@ -6,6 +6,7 @@
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Health.h"
 #include "BaseItem.h"
+#include "Containers/Array.h"
 #include "PlayerRobot.generated.h"
 
 UCLASS()
@@ -220,4 +221,26 @@ public:
 	bool bPickingPrimaryWeapon;
 	bool bPickingAlternateWeapon;
 	bool bPickingUpItem;
+
+	// Whether to display the message to pick something up
+	UPROPERTY(Category = "Internal", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bDisplayWeaponPickup;
+	UPROPERTY(Category = "Internal", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bDisplayItemPickup;
+	UPROPERTY(Category = "Internal", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FString PickupContext;
+
+	// This should be its own header, but I just couldn't get Unreal to correspond with me at the time
+	UFUNCTION(BlueprintCallable)
+	static void ApplyDamageToActors(int amountOfDamage, TArray<FHitResult> hits)
+	{
+		for (FHitResult hit : hits)
+		{
+			IHealth* health = Cast<IHealth>(hit.Actor.Get());
+			if (health != nullptr)
+			{
+				health->TakeDamage(amountOfDamage);
+			}
+		}
+	}
 };
