@@ -32,7 +32,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 health = 100;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 maxHealth = 100;
 
 public:	
