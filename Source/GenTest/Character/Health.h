@@ -12,8 +12,8 @@ class GENTEST_API IHealth
 {
 	GENERATED_BODY()
 private:
-	//UFUNCTION(BlueprintCallable)
-	virtual void OnDeath();
+	UFUNCTION(BlueprintCallable)
+	virtual void OnDeath() {};
 public:
 	UFUNCTION(BlueprintCallable)
 	virtual void TakeDamage(int value) {};
