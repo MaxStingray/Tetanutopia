@@ -6,6 +6,8 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/CollisionProfile.h"
 #include "Engine/StaticMesh.h"
+#include "TimerManager.h"
+#include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Classes/Particles/ParticleSystemComponent.h"
@@ -239,6 +241,20 @@ void APlayerRobot::OnDeath()
 	Destroy(); 
 }
 
+void APlayerRobot::MakeInvulnerable()
+{
+	const float timeInvulnerable = 1.0f;
+	bIsVulnerable = false;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_TimeUntilVulnerable, this, &APlayerRobot::MakeVulnerable, timeInvulnerable);
+	UE_LOG(LogTemp, Warning, TEXT("Player is immune"));
+}
+
+void APlayerRobot::MakeVulnerable()
+{
+	bIsVulnerable = true;
+	UE_LOG(LogTemp, Warning, TEXT("Player is no longer immune"));
+}
+
 void APlayerRobot::BeginPlay()
 {
 	Super::BeginPlay();
@@ -353,6 +369,8 @@ void APlayerRobot::TakeDamage(int amount)
 		{
 			OnDeath();
 		}
+
+		MakeInvulnerable();
 	}
 }
 
