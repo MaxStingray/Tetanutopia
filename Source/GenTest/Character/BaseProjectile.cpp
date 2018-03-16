@@ -15,10 +15,7 @@ ABaseProjectile::ABaseProjectile()
 
 	bGenerateOverlapEventsDuringLevelStreaming = false;
 
-	bProjectilePiercesActors = false;
-	ProjectileDamage = 20;
-
-	ActorWhichFired = nullptr;
+	ProjectileDamage = CreateDefaultSubobject<UProjectileDamageComponent>(TEXT("ProjectileDamage"));
 
 	InitialiseStaticMesh();
 	InitialiseProjectileMove();
@@ -57,32 +54,12 @@ void ABaseProjectile::InitialiseProjectileMove()
 
 void ABaseProjectile::OnOverlapBegin(UPrimitiveComponent * OverlappedComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	if (OtherActor != ActorWhichFired)
-	{
-		IHealth* healthActor = Cast<IHealth>(OtherActor);
-		if (healthActor)
-		{
-			healthActor->TakeDamage(ProjectileDamage);
-		}
-
-		if (!bProjectilePiercesActors)
-		{
-			Destroy();
-		}
-	}
+	ProjectileDamage->CollideWith(OtherActor);
 }
 
 void ABaseProjectile::OnHit(UPrimitiveComponent * HitComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, FVector NormalImpulse, const FHitResult & Hit)
 {
 	Destroy();
-}
-
-void ABaseProjectile::SetFiringActor(AActor* owner)
-{
-	if (owner != nullptr)
-	{
-		ActorWhichFired = owner;
-	}
 }
 
 void ABaseProjectile::Tick(float DeltaSeconds)

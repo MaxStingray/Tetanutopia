@@ -46,8 +46,9 @@ void APlayerRobot::InitialiseControls()
 	BindingEquipItem = "EquipItem";
 
 	bShootWithLook = false;
-	bUseCameraForward = true;
+	bUseCameraForward = false;
 	bLookWithMove = false;
+	bInvertControls = false;
 
 	bDisplayItemPickup = false;
 	bDisplayWeaponPickup = false;
@@ -122,8 +123,8 @@ void APlayerRobot::InitialiseWeapons()
 
 void APlayerRobot::ApplyMovement(const float deltaSeconds)
 {
-	const float MoveForward = GetInputAxisValue(BindingMoveForward);
-	const float MoveRight = GetInputAxisValue(BindingMoveRight);
+	const float MoveForward = !bInvertControls ? GetInputAxisValue(BindingMoveForward) : GetInputAxisValue(BindingMoveForward) * -1;
+	const float MoveRight = !bInvertControls ? GetInputAxisValue(BindingMoveRight) : GetInputAxisValue(BindingMoveRight) * -1;
 
 	const FVector MoveDirection = FVector(MoveForward, MoveRight, 0.f).GetClampedToMaxSize(1.0f);	// Clamp to ensure we cant travel faster diagonally
 	FVector movement = MoveDirection * MoveSpeed * MoveSpeedMult * deltaSeconds;
@@ -142,8 +143,8 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 		FHitResult Hit(1.f);
 		AddActorWorldOffset(movement, true, &Hit);
 
-		const float LookForward = GetInputAxisValue(BindingLookForward);
-		const float LookRight = GetInputAxisValue(BindingLookRight);
+		const float LookForward = !bInvertControls ? GetInputAxisValue(BindingLookForward) : GetInputAxisValue(BindingLookForward) * -1;
+		const float LookRight = !bInvertControls ? GetInputAxisValue(BindingLookRight) : GetInputAxisValue(BindingLookRight) * -1;
 
 		const FVector LookDirection = FVector(LookForward, LookRight, 0.f);
 		if (bLookWithMove && LookDirection.SizeSquared() < FLT_EPSILON)
@@ -174,20 +175,22 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 
 void APlayerRobot::ApplyLook(const float deltaSeconds)
 {
-	const float LookForward = GetInputAxisValue(BindingLookForward);
-	const float LookRight = GetInputAxisValue(BindingLookRight);
+	const float LookForward = !bInvertControls ? GetInputAxisValue(BindingLookForward) : GetInputAxisValue(BindingLookForward) * -1;
+	const float LookRight = !bInvertControls ? GetInputAxisValue(BindingLookRight) : GetInputAxisValue(BindingLookRight) * -1;
 
 	const FVector LookDirection = FVector(LookForward, LookRight, 0.f);
 
 	if (LookDirection.SizeSquared() > FLT_EPSILON)
 	{
 		FRotator lookRotation = GetActorRotation();
-		lookRotation.Yaw = FMath::Lerp(lookRotation.Yaw, LookDirection.Rotation().Yaw, 0.5f);
+		float yawTemp = LookDirection.Rotation().Yaw;
 
 		if (bUseCameraForward)
 		{
-			lookRotation.Yaw += CameraComponent->GetComponentRotation().Yaw; // Fix the rotation to be based on the camera, rather than the player
+			yawTemp += CameraComponent->GetComponentRotation().Yaw; // Fix the rotation to be based on the camera, rather than the player
 		}
+
+		lookRotation.Yaw = FMath::Lerp(lookRotation.Yaw, yawTemp, 0.5f);
 
 		if (bShootWithLook)
 		{
