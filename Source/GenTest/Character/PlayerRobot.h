@@ -149,6 +149,8 @@ private:
 	bool bUseCameraForward;	// Whether forward should be in reltation to the camera, else the player
 	UPROPERTY(Category = "_Character|Controls|Options", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool bLookWithMove;		// Whether we should look in the direction we are moving
+	UPROPERTY(Category = "_Character|Controls|Options", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bInvertControls;	// Whether to invert the controls
 
 protected:
 	// Called when the game starts or when spawned
