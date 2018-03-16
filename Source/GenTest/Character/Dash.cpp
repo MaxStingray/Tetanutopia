@@ -22,7 +22,7 @@ UDash::UDash()
 
 	bCanDash = true;
 	bDashing = false;
-	DashCooldown = 5.0f;
+	DashCooldown = 1.5f;
 	DashSpeedMult = 0.65f;
 	DashRevolutionTime = 0.5f;
 
