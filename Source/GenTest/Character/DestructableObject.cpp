@@ -3,6 +3,7 @@
 void ADestructableObject::OnDeath()
 {
 	UE_LOG(LogTemp, Warning, TEXT("DESTRUCTABLE DEAD"));
+	ReceiveOnDeath();
 }
 
 ADestructableObject::ADestructableObject()
@@ -20,6 +21,7 @@ void ADestructableObject::TakeDamage(int value)
 		Health -= value;
 		if (Health <= 0)
 		{
+			Health = 0;
 			OnDeath();
 		}
 	}

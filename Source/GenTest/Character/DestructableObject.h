@@ -16,6 +16,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int Health;
 
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "WhenDestroyed"))
+	void ReceiveOnDeath();
+
 	void OnDeath() override;
 public:	
 	ADestructableObject();
