@@ -92,7 +92,7 @@ void UBaseWeapon::Fire()
 					proj->GetComponents<UProjectileDamageComponent>(damageComponents);
 					for (auto i = 0; i < damageComponents.Num(); i++)
 					{
-						damageComponents[i]->IgnoreTypeOfActor(GetOwner()->StaticClass());
+						damageComponents[i]->IgnoreTypeOfActor(GetOwner()->GetClass());
 
 						if (bUseBulletDamageOverride)
 						{

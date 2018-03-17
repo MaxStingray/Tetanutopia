@@ -16,7 +16,7 @@ void UProjectileDamageComponent::CollideWith(AActor* actor)
 	bool shouldIgnore = false;
 	for (TSubclassOf<AActor> type : ActorTypesToIgnore)
 	{
-		if (actor->StaticClass() == type)
+		if (actor->GetClass() == type)
 		{
 			shouldIgnore = true;
 			break;

@@ -6,7 +6,7 @@
 #include "DestructableObject.generated.h"
 
 UCLASS()
-class GENTEST_API ADestructableObject : public AActor, IHealth
+class GENTEST_API ADestructableObject : public AActor, public IHealth
 {
 	GENERATED_BODY()
 
