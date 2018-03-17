@@ -4,7 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "BaseItem.generated.h"
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable)
 class GENTEST_API UBaseItem : public UActorComponent
 {
 	GENERATED_BODY()

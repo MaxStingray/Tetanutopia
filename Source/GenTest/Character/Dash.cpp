@@ -71,5 +71,7 @@ void UDash::Use()
 
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle_DashCooldown, this, &UDash::EnableDash, DashCooldown);
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle_Dash, this, &UDash::StopDashing, DashRevolutionTime);
+
+		ReceiveDashStart();
 	}
 }
