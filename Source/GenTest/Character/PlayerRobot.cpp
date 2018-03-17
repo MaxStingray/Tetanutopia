@@ -115,8 +115,8 @@ void APlayerRobot::InitialiseStaticMesh()
 
 void APlayerRobot::InitialiseWeapons()
 {
-	WeaponPrimaryOffset = FVector(10, 25, 0);
-	WeaponAlternateOffset = FVector(10, -25, 0);
+	WeaponPrimaryOffset = FVector(0, 55, 50);
+	WeaponAlternateOffset = FVector(0, -55, 50);
 
 	WeaponPrimary = nullptr;
 	WeaponAlternate = nullptr;
@@ -266,12 +266,12 @@ void APlayerRobot::Tick(float DeltaTime)
 
 	if (Thruster && !LeftThruster)
 	{
-		LeftThruster = UGameplayStatics::SpawnEmitterAttached(Thruster, RootComponent, NAME_None, FVector(-10.0f,-30.0f,5.0f));
+		LeftThruster = UGameplayStatics::SpawnEmitterAttached(Thruster, RootComponent, NAME_None, FVector(-60.0f,-10.0f,5.0f));
 		FinishAndRegisterComponent(LeftThruster);
 	}
 	if (Thruster && !RightThruster)
 	{
-		RightThruster = UGameplayStatics::SpawnEmitterAttached(Thruster, RootComponent, NAME_None, FVector(-10.0f,30.0f,5.0f));
+		RightThruster = UGameplayStatics::SpawnEmitterAttached(Thruster, RootComponent, NAME_None, FVector(-60.0f,10.0f,5.0f));
 		FinishAndRegisterComponent(RightThruster);
 	}
 
