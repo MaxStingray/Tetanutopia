@@ -115,8 +115,8 @@ void APlayerRobot::InitialiseStaticMesh()
 
 void APlayerRobot::InitialiseWeapons()
 {
-	WeaponPrimaryOffset = FVector(0, 55, 50);
-	WeaponAlternateOffset = FVector(0, -55, 50);
+	WeaponPrimaryOffset = FVector(0, 55, 35);
+	WeaponAlternateOffset = FVector(0, -55, 35);
 
 	WeaponPrimary = nullptr;
 	WeaponAlternate = nullptr;
