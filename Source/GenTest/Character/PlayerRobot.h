@@ -249,4 +249,10 @@ public:
 			}
 		}
 	}
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnImmunityStart"))
+	void ReceiveOnImmunityStart();
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnImmunityEnd"))
+	void ReceiveOnImmunityEnd();
 };
