@@ -4,7 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "BaseItem.generated.h"
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable)
 class GENTEST_API UBaseItem : public UActorComponent
 {
 	GENERATED_BODY()
@@ -26,4 +26,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FString GetWeaponName();
+
+	UFUNCTION(BlueprintCallable)
+	virtual float GetMaxCooldown() { return -1.0f; };
+
+	UFUNCTION(BlueprintCallable)
+	virtual float GetRemainingCooldown() { return -1.0f; };
 };

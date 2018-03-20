@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Components/StaticMeshComponent.h"
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
+#include "Containers/Array.h"
 #include "Runtime/Engine/Classes/Components/AudioComponent.h"
 #include "BaseWeapon.generated.h"
 
@@ -15,6 +16,9 @@ protected:
 	// Whether we can fire
 	bool bCanFire;
 
+	// The actors projectiles should ignore
+	TArray<TSubclassOf<AActor>> ActorsToIgnoreForProjectiles;
+
 	//whether the next burst is ready (if burst fire enabled)
 	bool bCanBurstFire;
 	// After a period of time this is called to reset the bCanFire
@@ -25,13 +29,18 @@ protected:
 	//reset the bCanBurstFire
 	void ReEnableBurstFire();
 
+	// overrides for speed and damage
+	bool bUseBulletDamageOverride;
+	int BulletDamageOverride;
+	bool bUseBulletSpeedOverride;
+	float BulletSpeedOverride;
 
 	// The handle for the timer until the next shot can be fired
 	FTimerHandle TimerHandle_TimeUntilCanFire;
 
 	FTimerHandle TimerHandle_TimeUntilBurstFire;
 
-	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "_Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool bSpreadImpactsOffset;
 
 	// The sound that plays when a bullet is fired
@@ -39,7 +48,7 @@ protected:
 	USoundCue* ShootSound;
 	
 	// The name of the weapon
-	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "_Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	FString WeaponName;
 
 	// The muzzle flash particle effect
@@ -61,16 +70,16 @@ protected:
 	void RandomiseOffset(FVector offset);
 
 	// The projectile that is fire
-	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "_Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class AActor> ProjectileType;
 
-	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "_Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float ProjectileMaxSpread;
 
-	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "_Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool isBurstWeapon;
 
-	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "_Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int ProjectilesToSpawnOnFire;
 
 	// Called when the game starts
@@ -98,27 +107,41 @@ public:
 	virtual void SetOffset(FVector offset);
 
 	// The offset the projectile spawns from the weapon
-	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "_Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	FVector ProjectileSpawnOffset;
 
 	// The offset the projectile spawns from the weapon
-	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "_Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	FVector WeaponPositionOffset;
 
 	//randomise the offset somewhat. For rapid-fire weapons. This will randomise from the given offset + offset x 2
-	UPROPERTY(Category = "Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "_Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool randomiseOffset;
 
 	// How fast the weapon fires each shot
-	UPROPERTY(Category = "Weapon|Stats", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "_Weapon|Stats", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float FireInterval;
 
 	//how frequently a weapon can fire a burst, if set to 0 burst mode is disabled. Should always be longer than FireInterval
-	UPROPERTY(Category = "Weapon|Stats", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "_Weapon|Stats", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float burstFireInterval;
 
 	//number of shots per burst
-	UPROPERTY(Category = "Weapon|Stats", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "_Weapon|Stats", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int burstSize;
 
+	UFUNCTION(BlueprintCallable)
+	void SetProjectileDamageOverride(int value);
+
+	UFUNCTION(BlueprintCallable)
+	void SetProjectileSpeedOverride(float value);
+
+	UFUNCTION(BlueprintCallable)
+	void AddProjectileActorIgnore(TSubclassOf<AActor> value);
+
+	UFUNCTION(BlueprintCallable)
+	float GetMaxCooldown();
+
+	UFUNCTION(BlueprintCallable)
+	float GetRemainingCooldown();
 };

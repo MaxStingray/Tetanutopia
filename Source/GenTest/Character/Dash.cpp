@@ -22,7 +22,7 @@ UDash::UDash()
 
 	bCanDash = true;
 	bDashing = false;
-	DashCooldown = 5.0f;
+	DashCooldown = 1.5f;
 	DashSpeedMult = 0.65f;
 	DashRevolutionTime = 0.5f;
 
@@ -71,5 +71,17 @@ void UDash::Use()
 
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle_DashCooldown, this, &UDash::EnableDash, DashCooldown);
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle_Dash, this, &UDash::StopDashing, DashRevolutionTime);
+
+		ReceiveDashStart();
 	}
+}
+
+float UDash::GetMaxCooldown()
+{
+	return DashCooldown;
+}
+
+float UDash::GetRemainingCooldown()
+{
+	return GetWorld()->GetTimerManager().GetTimerRemaining(TimerHandle_DashCooldown);
 }

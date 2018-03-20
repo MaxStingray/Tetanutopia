@@ -5,7 +5,10 @@
 #include "Components/StaticMeshComponent.h"
 #include "Classes/Particles/ParticleSystemComponent.h"
 #include "Classes/Particles/ParticleSystem.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "TimerManager.h"
+#include "ProjectileDamageComponent.h"
+#include "Containers/Array.h"
 #include "Kismet/GameplayStatics.h"
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "Engine/World.h"
@@ -14,6 +17,12 @@ UBaseWeapon::UBaseWeapon()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	RegisterComponentWithWorld(GetWorld());	// If we use the CreateObject method we must register with the world for the render to work
+
+	BulletDamageOverride = 0;
+	BulletSpeedOverride = 0;
+	bUseBulletSpeedOverride = false;
+	bUseBulletDamageOverride = false;
+	ActorsToIgnoreForProjectiles = TArray<TSubclassOf<AActor>>();
 
 	InitialiseWeaponStats();
 	InitialiseStaticMesh();
@@ -79,10 +88,33 @@ void UBaseWeapon::Fire()
 				AActor* proj = World->SpawnActorDeferred<AActor>(ProjectileType, FTransform(FireRotation, SpawnLocation));				
 				if (proj)
 				{
-					ABaseProjectile* baseProj = Cast<ABaseProjectile>(proj);
-					if (baseProj)
+					TArray<UProjectileDamageComponent*> damageComponents = TArray<UProjectileDamageComponent*>();
+					proj->GetComponents<UProjectileDamageComponent>(damageComponents);
+					for (auto i = 0; i < damageComponents.Num(); i++)
 					{
-						baseProj->SetFiringActor(GetOwner());
+						damageComponents[i]->IgnoreTypeOfActor(GetOwner()->GetClass());
+
+						if (bUseBulletDamageOverride)
+						{
+							damageComponents[i]->SetDamage(BulletDamageOverride);
+						}
+
+						for (auto j = 0; j < ActorsToIgnoreForProjectiles.Num(); j++)
+						{
+							damageComponents[i]->IgnoreTypeOfActor(ActorsToIgnoreForProjectiles[j]);
+						}
+					}
+
+					if (bUseBulletSpeedOverride)
+					{
+						TArray<UProjectileMovementComponent*> moveComponents = TArray<UProjectileMovementComponent*>();
+						proj->GetComponents<UProjectileMovementComponent>(moveComponents);
+
+						for (auto i = 0; i < moveComponents.Num(); i++)
+						{
+							moveComponents[i]->MaxSpeed = BulletSpeedOverride;
+							moveComponents[i]->InitialSpeed = BulletSpeedOverride;
+						}
 					}
 
 					if (ShootSound != nullptr)
@@ -130,6 +162,37 @@ FString UBaseWeapon::GetWeaponName()
 void UBaseWeapon::SetOffset(FVector offset)
 {
 	AddLocalOffset(WeaponPositionOffset + offset, false);
+}
+
+void UBaseWeapon::SetProjectileDamageOverride(int value)
+{
+	BulletDamageOverride = value;
+	bUseBulletDamageOverride = true;
+}
+
+void UBaseWeapon::SetProjectileSpeedOverride(float value)
+{
+	BulletSpeedOverride = value;
+	bUseBulletSpeedOverride = true;
+}
+
+void UBaseWeapon::AddProjectileActorIgnore(TSubclassOf<AActor> value)
+{
+	ActorsToIgnoreForProjectiles.Add(value);
+}
+
+float UBaseWeapon::GetMaxCooldown()
+{
+	if (FireInterval >= 1.0f)
+	{
+		return FireInterval;
+	}
+	return -1.0f;
+}
+
+float UBaseWeapon::GetRemainingCooldown()
+{
+	return GetWorld()->GetTimerManager().GetTimerRemaining(TimerHandle_TimeUntilCanFire);
 }
 
 void UBaseWeapon::ReEnableCanFire()
