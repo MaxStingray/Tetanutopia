@@ -181,6 +181,20 @@ void UBaseWeapon::AddProjectileActorIgnore(TSubclassOf<AActor> value)
 	ActorsToIgnoreForProjectiles.Add(value);
 }
 
+float UBaseWeapon::GetMaxCooldown()
+{
+	if (FireInterval >= 1.0f)
+	{
+		return FireInterval;
+	}
+	return -1.0f;
+}
+
+float UBaseWeapon::GetRemainingCooldown()
+{
+	return GetWorld()->GetTimerManager().GetTimerRemaining(TimerHandle_TimeUntilCanFire);
+}
+
 void UBaseWeapon::ReEnableCanFire()
 {
 	bCanFire = true;

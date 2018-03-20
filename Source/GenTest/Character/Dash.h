@@ -48,4 +48,10 @@ public:
 	void EnableDash();
 
 	void Use() override;
+
+	UFUNCTION(BlueprintCallable)
+	float GetMaxCooldown() override;
+
+	UFUNCTION(BlueprintCallable)
+	float GetRemainingCooldown() override;
 };
