@@ -1,0 +1,123 @@
+# File produced by Open Asset Import Library (http://www.assimp.sf.net)
+# (assimp v3.1.71981620)
+
+newmtl initialShadingGroup
+kd 0.5 0.5 0.5
+ka 0 0 0
+ks 0 0 0
+ke 0 0 0
+d 1
+illum 1
+
+newmtl lambert2SG
+kd 0 0 0
+ka 0 0 0
+ks 0 0 0
+ke 0 0 0
+d 1
+illum 1
+
+newmtl lambert3SG
+kd 0 0 0
+ka 0 0 0
+ks 0 0 0
+ke 0 0 0
+d 1
+illum 1
+
+newmtl lambert4SG
+kd 0 0 0
+ka 0 0 0
+ks 0 0 0
+ke 0 0 0
+d 1
+illum 1
+
+newmtl lambert5SG
+kd 0.5 0.5 0.5
+ka 0 0 0
+ks 0 0 0
+ke 0 0 0
+d 1
+illum 1
+
+newmtl lambert6SG
+kd 0.5 0.5 0.5
+ka 0 0 0
+ks 0 0 0
+ke 0 0 0
+d 1
+illum 1
+
+newmtl lambert7SG
+kd 0.5 0.5 0.5
+ka 0 0 0
+ks 0 0 0
+ke 0 0 0
+d 1
+illum 1
+
+newmtl lambert8SG
+kd 0.5 0.5 0.5
+ka 0 0 0
+ks 0 0 0
+ke 0 0 0
+d 1
+illum 1
+
+newmtl lambert9SG
+kd 0.5 0.5 0.5
+ka 0 0 0
+ks 0 0 0
+ke 0 0 0
+d 1
+illum 1
+
+newmtl lambert10SG
+kd 0.5 0.5 0.5
+ka 0 0 0
+ks 0 0 0
+ke 0 0 0
+d 1
+illum 1
+
+newmtl lambert11SG
+kd 0.5 0.5 0.5
+ka 0 0 0
+ks 0 0 0
+ke 0 0 0
+d 1
+illum 1
+
+newmtl lambert12SG
+kd 0.5 0.5 0.5
+ka 0 0 0
+ks 0 0 0
+ke 0 0 0
+d 1
+illum 1
+
+newmtl lambert13SG
+kd 0.5 0.5 0.5
+ka 0 0 0
+ks 0 0 0
+ke 0 0 0
+d 1
+illum 1
+
+newmtl lambert14SG
+kd 0.5 0.5 0.5
+ka 0 0 0
+ks 0 0 0
+ke 0 0 0
+d 1
+illum 1
+
+newmtl lambert15SG
+kd 0.5 0.5 0.5
+ka 0 0 0
+ks 0 0 0
+ke 0 0 0
+d 1
+illum 1
+
