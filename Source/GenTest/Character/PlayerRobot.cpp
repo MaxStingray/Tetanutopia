@@ -7,6 +7,7 @@
 #include "Engine/CollisionProfile.h"
 #include "Engine/StaticMesh.h"
 #include "TimerManager.h"
+#include "Components/PrimitiveComponent.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -144,6 +145,7 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 
 		FHitResult Hit(1.f);
 		AddActorWorldOffset(movement, true, &Hit);
+		//RobotMeshComponent->AddImpulse(movement * 1000 * deltaSeconds);
 
 		const float LookForward = !bInvertControls ? GetInputAxisValue(BindingLookForward) : GetInputAxisValue(BindingLookForward) * -1;
 		const float LookRight = !bInvertControls ? GetInputAxisValue(BindingLookRight) : GetInputAxisValue(BindingLookRight) * -1;
@@ -243,16 +245,16 @@ void APlayerRobot::OnDeath()
 
 void APlayerRobot::MakeInvulnerable()
 {
-	const float timeInvulnerable = 1.0f;
+	ReceiveOnImmunityStart();
+	const float timeInvulnerable = 0.5f;
 	bIsVulnerable = false;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_TimeUntilVulnerable, this, &APlayerRobot::MakeVulnerable, timeInvulnerable);
-	UE_LOG(LogTemp, Warning, TEXT("Player is immune"));
 }
 
 void APlayerRobot::MakeVulnerable()
 {
+	ReceiveOnImmunityEnd();
 	bIsVulnerable = true;
-	UE_LOG(LogTemp, Warning, TEXT("Player is no longer immune"));
 }
 
 void APlayerRobot::BeginPlay()

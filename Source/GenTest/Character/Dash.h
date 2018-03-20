@@ -13,7 +13,10 @@ class GENTEST_API UDash : public UBaseItem
 
 private:
 	bool bCanDash;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool bDashing;
+
 	FTimerHandle TimerHandle_DashCooldown;
 	FTimerHandle TimerHandle_Dash;
 	APlayerRobot* OwningPlayer;
@@ -45,4 +48,10 @@ public:
 	void EnableDash();
 
 	void Use() override;
+
+	UFUNCTION(BlueprintCallable)
+	float GetMaxCooldown() override;
+
+	UFUNCTION(BlueprintCallable)
+	float GetRemainingCooldown() override;
 };

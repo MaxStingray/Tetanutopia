@@ -75,3 +75,13 @@ void UDash::Use()
 		ReceiveDashStart();
 	}
 }
+
+float UDash::GetMaxCooldown()
+{
+	return DashCooldown;
+}
+
+float UDash::GetRemainingCooldown()
+{
+	return GetWorld()->GetTimerManager().GetTimerRemaining(TimerHandle_DashCooldown);
+}

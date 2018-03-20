@@ -21,11 +21,11 @@ private:
 	UPROPERTY(Category = "_Character", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int CurrentHealth;
 
-	UPROPERTY(Category = Mesh, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = Mesh, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* RobotMeshComponent;
-	UPROPERTY(Category = Camera, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = Camera, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* CameraComponent;
-	UPROPERTY(Category = Camera, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = Camera, VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;	// The Camera Boom positions the attatched Camera Component above the Player
 
 	// The types of equipment used
@@ -249,4 +249,10 @@ public:
 			}
 		}
 	}
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnImmunityStart"))
+	void ReceiveOnImmunityStart();
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnImmunityEnd"))
+	void ReceiveOnImmunityEnd();
 };
