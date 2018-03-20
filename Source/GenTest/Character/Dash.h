@@ -6,7 +6,7 @@
 #include "PlayerRobot.h"
 #include "Dash.generated.h"
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable)
 class GENTEST_API UDash : public UBaseItem
 {
 	GENERATED_BODY()
@@ -37,6 +37,9 @@ protected:
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;	
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnDash"))
+	void ReceiveDashStart();
 	
 	UFUNCTION()
 	void EnableDash();

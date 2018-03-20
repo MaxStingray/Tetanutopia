@@ -152,6 +152,10 @@ private:
 	UPROPERTY(Category = "_Character|Controls|Options", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool bInvertControls;	// Whether to invert the controls
 
+	FTimerHandle TimerHandle_TimeUntilVulnerable;
+	void MakeInvulnerable();
+	void MakeVulnerable();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
