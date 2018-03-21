@@ -245,10 +245,9 @@ void APlayerRobot::OnDeath()
 	Destroy(); 
 }
 
-void APlayerRobot::MakeInvulnerable()
+void APlayerRobot::MakeInvulnerable(const float timeInvulnerable)
 {
 	ReceiveOnImmunityStart();
-	const float timeInvulnerable = 0.5f;
 	bIsVulnerable = false;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_TimeUntilVulnerable, this, &APlayerRobot::MakeVulnerable, timeInvulnerable);
 }
