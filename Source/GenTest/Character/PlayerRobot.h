@@ -153,8 +153,6 @@ private:
 	bool bInvertControls;	// Whether to invert the controls
 
 	FTimerHandle TimerHandle_TimeUntilVulnerable;
-	void MakeInvulnerable();
-	void MakeVulnerable();
 
 protected:
 	// Called when the game starts or when spawned
@@ -249,6 +247,11 @@ public:
 			}
 		}
 	}
+
+	UFUNCTION(BlueprintCallable)
+	void MakeInvulnerable(const float timeInvulnerable = 0.5f);
+	UFUNCTION(BlueprintCallable)
+	void MakeVulnerable();
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnImmunityStart"))
 	void ReceiveOnImmunityStart();
