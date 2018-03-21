@@ -72,7 +72,7 @@ void APlayerRobot::InitialiseCamera()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->bAbsoluteRotation = true; // Prevents the arm from rotating as the robot rotates
 	CameraBoom->bDoCollisionTest = false; // Prevents the camera from pulling when it colliders with terrain
-	CameraBoom->TargetArmLength = 600.0f; // The distance from the Robot that the camera is positioned
+	CameraBoom->TargetArmLength = 1400.0f; // The distance from the Robot that the camera is positioned
 	CameraBoom->RelativeRotation = FRotator(-45.f, 0.f, 0.f); // The angle of the camera
 
 	// Camera
@@ -186,22 +186,24 @@ void APlayerRobot::ApplyLook(const float deltaSeconds)
 
 	if (LookDirection.SizeSquared() > FLT_EPSILON)
 	{
-		FRotator lookRotation = GetActorRotation();
+		FRotator currentRotation = GetActorRotation();
+		
 		float yawTemp = LookDirection.Rotation().Yaw;
-
 		if (bUseCameraForward)
 		{
 			yawTemp += CameraComponent->GetComponentRotation().Yaw; // Fix the rotation to be based on the camera, rather than the player
 		}
+		FRotator targetRotation = currentRotation;
+		currentRotation.Yaw = yawTemp;
 
-		lookRotation.Yaw = FMath::Lerp(lookRotation.Yaw, yawTemp, 0.5f);
+		FRotator smoothRotation = FMath::Lerp(currentRotation, targetRotation, 0.5f);
 
 		if (bShootWithLook)
 		{
 			bIsFiringPrimary = true;
 		}
 
-		SetActorRotation(lookRotation);
+		SetActorRotation(smoothRotation);
 	}
 	else
 	{
