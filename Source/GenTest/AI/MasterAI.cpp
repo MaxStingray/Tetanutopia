@@ -81,7 +81,7 @@ void AMasterAI::EquipWeapon(TSubclassOf<UBaseWeapon> weaponType)
 	}
 
 	weapon = NewObject<UBaseWeapon>(this, weaponType);
-	weapon->SetOffset(FVector(0,0,0));
+	weapon->SetOffset(weaponOffset);
 	weapon->AttachTo(RootComponent);
 	weapon->SetupAttachment(RootComponent);
 }

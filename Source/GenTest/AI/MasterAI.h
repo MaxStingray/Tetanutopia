@@ -21,6 +21,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBaseWeapon* weapon;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector weaponOffset;
+
 
 protected:
 	// Called when the game starts or when spawned
