@@ -240,9 +240,8 @@ void APlayerRobot::UseItem()
 
 void APlayerRobot::OnDeath()
 {
-	// TODO: Other stuff
 	UE_LOG(LogTemp, Warning, TEXT("**** PLAYER HAS DIED ****"));
-	Destroy(); 
+	ReceiveOnDeath();
 }
 
 void APlayerRobot::MakeInvulnerable(const float timeInvulnerable)
@@ -358,6 +357,13 @@ void APlayerRobot::EquipItem(TSubclassOf<UBaseItem> item)
 
 		UGameplayStatics::PlaySoundAtLocation(this, EquipSound, GetActorLocation(), GetActorRotation());
 	}
+}
+
+void APlayerRobot::ClearWeaponsAndItems()
+{
+	if (Item) { Item->DestroyComponent(); };
+	if (WeaponPrimary) { WeaponPrimary->DestroyComponent(); };
+	if (WeaponAlternate) { WeaponAlternate->DestroyComponent(); };
 }
 
 void APlayerRobot::TakeDamage(int amount)

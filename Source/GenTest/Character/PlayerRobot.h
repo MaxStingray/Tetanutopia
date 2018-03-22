@@ -197,6 +197,9 @@ public:
 	void EquipWeaponAlternate(TSubclassOf<UBaseWeapon> weapon);
 	UFUNCTION(BluePrintCallable)
 	void EquipItem(TSubclassOf<UBaseItem> weapon);
+
+	UFUNCTION(BluePrintCallable)
+	void ClearWeaponsAndItems();
 	
 	// Method for taking damage
 	UFUNCTION(BlueprintCallable)
@@ -258,4 +261,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnImmunityEnd"))
 	void ReceiveOnImmunityEnd();
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnDeath"))
+	void ReceiveOnDeath();
 };
