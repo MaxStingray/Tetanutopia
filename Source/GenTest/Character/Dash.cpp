@@ -12,7 +12,7 @@ void UDash::StopDashing()
 	GetOwner()->SetActorRotation(rot);
 
 	OwningPlayer->MoveSpeedMult -= DashSpeedMult;
-	OwningPlayer->bIsVulnerable = true;
+	//OwningPlayer->bIsVulnerable = true;
 	OwningPlayer->SetInputActive(true);
 }
 
@@ -67,7 +67,8 @@ void UDash::Use()
 
 		OwningPlayer->SetInputActive(false);
 		OwningPlayer->MoveSpeedMult += DashSpeedMult;
-		OwningPlayer->bIsVulnerable = false;
+		//OwningPlayer->bIsVulnerable = false;
+		OwningPlayer->MakeInvulnerable(DashRevolutionTime);
 
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle_DashCooldown, this, &UDash::EnableDash, DashCooldown);
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle_Dash, this, &UDash::StopDashing, DashRevolutionTime);

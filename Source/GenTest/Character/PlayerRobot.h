@@ -153,8 +153,6 @@ private:
 	bool bInvertControls;	// Whether to invert the controls
 
 	FTimerHandle TimerHandle_TimeUntilVulnerable;
-	void MakeInvulnerable();
-	void MakeVulnerable();
 
 protected:
 	// Called when the game starts or when spawned
@@ -199,6 +197,9 @@ public:
 	void EquipWeaponAlternate(TSubclassOf<UBaseWeapon> weapon);
 	UFUNCTION(BluePrintCallable)
 	void EquipItem(TSubclassOf<UBaseItem> weapon);
+
+	UFUNCTION(BluePrintCallable)
+	void ClearWeaponsAndItems();
 	
 	// Method for taking damage
 	UFUNCTION(BlueprintCallable)
@@ -250,9 +251,17 @@ public:
 		}
 	}
 
+	UFUNCTION(BlueprintCallable)
+	void MakeInvulnerable(const float timeInvulnerable = 0.5f);
+	UFUNCTION(BlueprintCallable)
+	void MakeVulnerable();
+
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnImmunityStart"))
 	void ReceiveOnImmunityStart();
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnImmunityEnd"))
 	void ReceiveOnImmunityEnd();
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnDeath"))
+	void ReceiveOnDeath();
 };

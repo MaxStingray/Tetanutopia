@@ -1,0 +1,41 @@
+<<<<<<< HEAD
+# File produced by Open Asset Import Library (http://www.assimp.sf.net)
+# (assimp v3.1.68452469)
+
+newmtl blinn2SG
+kd 0.5 0.5 0.5
+ka 0 0 0
+ks 0.5 0.5 0.5
+ke 0 0 0
+d 1
+illum 1
+
+newmtl lambert3SG
+kd 0.5 0.48 0.24
+ka 0 0 0
+ks 0 0 0
+ke 0 0 0
+d 1
+illum 1
+
+=======
+# File produced by Open Asset Import Library (http://www.assimp.sf.net)
+# (assimp v3.1.68452469)
+
+newmtl blinn2SG
+kd 0.5 0.5 0.5
+ka 0 0 0
+ks 0.5 0.5 0.5
+ke 0 0 0
+d 1
+illum 1
+
+newmtl lambert3SG
+kd 0.5 0.48 0.24
+ka 0 0 0
+ks 0 0 0
+ke 0 0 0
+d 1
+illum 1
+
+>>>>>>> Artists
