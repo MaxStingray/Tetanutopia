@@ -138,4 +138,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AddProjectileActorIgnore(TSubclassOf<AActor> value);
+
+	UFUNCTION(BlueprintCallable)
+	float GetMaxCooldown();
+
+	UFUNCTION(BlueprintCallable)
+	float GetRemainingCooldown();
 };

@@ -26,4 +26,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FString GetWeaponName();
+
+	UFUNCTION(BlueprintCallable)
+	virtual float GetMaxCooldown() { return -1.0f; };
+
+	UFUNCTION(BlueprintCallable)
+	virtual float GetRemainingCooldown() { return -1.0f; };
 };

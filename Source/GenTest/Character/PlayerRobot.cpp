@@ -7,6 +7,7 @@
 #include "Engine/CollisionProfile.h"
 #include "Engine/StaticMesh.h"
 #include "TimerManager.h"
+#include "Components/PrimitiveComponent.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -71,7 +72,7 @@ void APlayerRobot::InitialiseCamera()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->bAbsoluteRotation = true; // Prevents the arm from rotating as the robot rotates
 	CameraBoom->bDoCollisionTest = false; // Prevents the camera from pulling when it colliders with terrain
-	CameraBoom->TargetArmLength = 600.0f; // The distance from the Robot that the camera is positioned
+	CameraBoom->TargetArmLength = 1400.0f; // The distance from the Robot that the camera is positioned
 	CameraBoom->RelativeRotation = FRotator(-45.f, 0.f, 0.f); // The angle of the camera
 
 	// Camera
@@ -144,6 +145,7 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 
 		FHitResult Hit(1.f);
 		AddActorWorldOffset(movement, true, &Hit);
+		//RobotMeshComponent->AddImpulse(movement * 1000 * deltaSeconds);
 
 		const float LookForward = !bInvertControls ? GetInputAxisValue(BindingLookForward) : GetInputAxisValue(BindingLookForward) * -1;
 		const float LookRight = !bInvertControls ? GetInputAxisValue(BindingLookRight) : GetInputAxisValue(BindingLookRight) * -1;
@@ -184,22 +186,24 @@ void APlayerRobot::ApplyLook(const float deltaSeconds)
 
 	if (LookDirection.SizeSquared() > FLT_EPSILON)
 	{
-		FRotator lookRotation = GetActorRotation();
+		FRotator currentRotation = GetActorRotation();
+		
 		float yawTemp = LookDirection.Rotation().Yaw;
-
 		if (bUseCameraForward)
 		{
 			yawTemp += CameraComponent->GetComponentRotation().Yaw; // Fix the rotation to be based on the camera, rather than the player
 		}
+		FRotator targetRotation = currentRotation;
+		currentRotation.Yaw = yawTemp;
 
-		lookRotation.Yaw = FMath::Lerp(lookRotation.Yaw, yawTemp, 0.5f);
+		FRotator smoothRotation = FMath::Lerp(currentRotation, targetRotation, 0.5f);
 
 		if (bShootWithLook)
 		{
 			bIsFiringPrimary = true;
 		}
 
-		SetActorRotation(lookRotation);
+		SetActorRotation(smoothRotation);
 	}
 	else
 	{
@@ -236,23 +240,21 @@ void APlayerRobot::UseItem()
 
 void APlayerRobot::OnDeath()
 {
-	// TODO: Other stuff
 	UE_LOG(LogTemp, Warning, TEXT("**** PLAYER HAS DIED ****"));
-	Destroy(); 
+	ReceiveOnDeath();
 }
 
-void APlayerRobot::MakeInvulnerable()
+void APlayerRobot::MakeInvulnerable(const float timeInvulnerable)
 {
-	const float timeInvulnerable = 1.0f;
+	ReceiveOnImmunityStart();
 	bIsVulnerable = false;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_TimeUntilVulnerable, this, &APlayerRobot::MakeVulnerable, timeInvulnerable);
-	UE_LOG(LogTemp, Warning, TEXT("Player is immune"));
 }
 
 void APlayerRobot::MakeVulnerable()
 {
+	ReceiveOnImmunityEnd();
 	bIsVulnerable = true;
-	UE_LOG(LogTemp, Warning, TEXT("Player is no longer immune"));
 }
 
 void APlayerRobot::BeginPlay()
@@ -355,6 +357,13 @@ void APlayerRobot::EquipItem(TSubclassOf<UBaseItem> item)
 
 		UGameplayStatics::PlaySoundAtLocation(this, EquipSound, GetActorLocation(), GetActorRotation());
 	}
+}
+
+void APlayerRobot::ClearWeaponsAndItems()
+{
+	if (Item) { Item->DestroyComponent(); };
+	if (WeaponPrimary) { WeaponPrimary->DestroyComponent(); };
+	if (WeaponAlternate) { WeaponAlternate->DestroyComponent(); };
 }
 
 void APlayerRobot::TakeDamage(int amount)
