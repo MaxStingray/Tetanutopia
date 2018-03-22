@@ -54,4 +54,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void EquipWeapon(TSubclassOf<UBaseWeapon> weaponType);
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "ReceiveOnDeath"))
+		void ReceiveOnDeath();
 };

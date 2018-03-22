@@ -49,7 +49,7 @@ void AMasterAI::Attack() {
 void AMasterAI::OnDeath()
 {
 	UE_LOG(LogTemp, Display, TEXT("AI has died"));
-	this->Destroy();
+	this->ReceiveOnDeath();
 }
 
 void AMasterAI::TakeDamage(int value)
