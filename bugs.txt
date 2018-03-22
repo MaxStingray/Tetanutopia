@@ -7,3 +7,4 @@ Add rotation to boss
 Give boss ads
 Make different size explosions
 Change game mode on level start
+Spinning Drill tanks the frame rate
