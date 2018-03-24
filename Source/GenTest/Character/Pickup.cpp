@@ -48,6 +48,7 @@ void APickup::StartOverlap(UPrimitiveComponent* OverlappedComponent, AActor * Ot
 		if (OtherActor->IsA(APlayerRobot::StaticClass()))
 		{
 			OverlappingActor = OtherActor;
+			ReceiveOnPlayerOverlapBegin();
 		}
 	}
 }
@@ -58,6 +59,7 @@ void APickup::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor * Othe
 	{
 		OverlapEnds(OverlappingActor);
 		OverlappingActor = nullptr;
+		ReceiveOnPlayerOverlapEnd();
 	}
 }
 

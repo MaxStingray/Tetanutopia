@@ -54,4 +54,10 @@ protected:
 public:	
 	APickup();
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Player Overlap Begin"))
+	void ReceiveOnPlayerOverlapBegin();
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Player Overlap End"))
+	void ReceiveOnPlayerOverlapEnd();
 };
