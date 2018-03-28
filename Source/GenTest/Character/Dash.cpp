@@ -47,9 +47,23 @@ void UDash::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentT
 	// If we can't dash, that means we are dashing
 	if (bDashing)
 	{
-		FRotator rot = GetOwner()->GetActorRotation();
-		rot.Roll += (360.0f / DashRevolutionTime * DeltaTime);
-		GetOwner()->SetActorRotation(rot);
+		//FRotator rot = GetOwner()->GetActorRotation();
+		//rot.Roll += (360.0f / DashRevolutionTime * DeltaTime);
+		//GetOwner()->SetActorRotation(rot);
+		
+		FVector oldPos = GetOwner()->GetActorLocation();
+		FQuat rot = FQuat(FVector(1,0,0), FMath::DegreesToRadians(360.0f) / DashRevolutionTime * DeltaTime);
+		FHitResult Hit(1.f);
+		
+		GetOwner()->AddActorLocalRotation(rot, true, &Hit);
+		GetOwner()->SetActorLocation(oldPos);
+
+		if (Hit.IsValidBlockingHit())
+		{
+			const FVector Normal2D = Hit.Normal.GetSafeNormal2D();
+			const FVector Deflection = FVector::VectorPlaneProject(GetOwner()->GetActorLocation() - oldPos, Normal2D) * (1.f - Hit.Time);
+			GetOwner()->AddActorWorldOffset(Deflection, true);
+		}
 	}
 }
 
