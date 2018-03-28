@@ -68,6 +68,8 @@ private:
 	// The following input cannot be done through just a repeat as this had a major delay that is noticable during gameplay
 	// Therefore, we have bools for when actions should be taking place. Which are toggled by events fired when input is pressed
 	
+	bool bCanControl;
+
 	bool bIsFiringPrimary;
 	bool bIsFiringAlternate;
 	bool bIsUsingItem;
@@ -153,6 +155,12 @@ private:
 	bool bInvertControls;	// Whether to invert the controls
 
 	FTimerHandle TimerHandle_TimeUntilVulnerable;
+
+	// For movement / looking
+	float LookForward;
+	float LookRight;
+	float MoveForward;
+	float MoveRight;
 
 protected:
 	// Called when the game starts or when spawned

@@ -18,6 +18,8 @@ APlayerRobot::APlayerRobot()
 {
 	PrimaryActorTick.bCanEverTick = true;	// Enables the Tick event from triggering every frame
 
+	bCanControl = true;
+
 	InitialiseStaticMesh();
 	InitialisePlayerStats();
 	InitialiseControls();
@@ -126,8 +128,11 @@ void APlayerRobot::InitialiseWeapons()
 
 void APlayerRobot::ApplyMovement(const float deltaSeconds)
 {
-	const float MoveForward = !bInvertControls ? GetInputAxisValue(BindingMoveForward) : GetInputAxisValue(BindingMoveForward) * -1;
-	const float MoveRight = !bInvertControls ? GetInputAxisValue(BindingMoveRight) : GetInputAxisValue(BindingMoveRight) * -1;
+	if (bCanControl)
+	{
+		MoveForward = !bInvertControls ? GetInputAxisValue(BindingMoveForward) : GetInputAxisValue(BindingMoveForward) * -1;
+		MoveRight = !bInvertControls ? GetInputAxisValue(BindingMoveRight) : GetInputAxisValue(BindingMoveRight) * -1;
+	}
 
 	const FVector MoveDirection = FVector(MoveForward, MoveRight, 0.f).GetClampedToMaxSize(1.0f);	// Clamp to ensure we cant travel faster diagonally
 	FVector movement = MoveDirection * MoveSpeed * MoveSpeedMult * deltaSeconds;
@@ -147,16 +152,19 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 		AddActorWorldOffset(movement, true, &Hit);
 		//RobotMeshComponent->AddImpulse(movement * 1000 * deltaSeconds);
 
-		const float LookForward = !bInvertControls ? GetInputAxisValue(BindingLookForward) : GetInputAxisValue(BindingLookForward) * -1;
-		const float LookRight = !bInvertControls ? GetInputAxisValue(BindingLookRight) : GetInputAxisValue(BindingLookRight) * -1;
-
-		const FVector LookDirection = FVector(LookForward, LookRight, 0.f);
-		if (bLookWithMove && LookDirection.SizeSquared() < FLT_EPSILON)
+		if (bCanControl)
 		{
-			FRotator MoveRotation = GetActorRotation();
-			// Make the player look in the direction of movement if not looking actively
-			MoveRotation.Yaw = FMath::Lerp(MoveRotation.Yaw, MoveDirection.Rotation().Yaw, 0.5f);
-			SetActorRotation(MoveRotation);
+			LookForward = !bInvertControls ? GetInputAxisValue(BindingLookForward) : GetInputAxisValue(BindingLookForward) * -1;
+			LookRight = !bInvertControls ? GetInputAxisValue(BindingLookRight) : GetInputAxisValue(BindingLookRight) * -1;
+
+			const FVector LookDirection = FVector(LookForward, LookRight, 0.f);
+			if (bLookWithMove && LookDirection.SizeSquared() < FLT_EPSILON)
+			{
+				FRotator MoveRotation = GetActorRotation();
+				// Make the player look in the direction of movement if not looking actively
+				MoveRotation.Yaw = FMath::Lerp(MoveRotation.Yaw, MoveDirection.Rotation().Yaw, 0.5f);
+				SetActorRotation(MoveRotation);
+			}
 		}
 
 		// TODO: Tilting
@@ -179,8 +187,12 @@ void APlayerRobot::ApplyMovement(const float deltaSeconds)
 
 void APlayerRobot::ApplyLook(const float deltaSeconds)
 {
-	const float LookForward = !bInvertControls ? GetInputAxisValue(BindingLookForward) : GetInputAxisValue(BindingLookForward) * -1;
-	const float LookRight = !bInvertControls ? GetInputAxisValue(BindingLookRight) : GetInputAxisValue(BindingLookRight) * -1;
+	if (bCanControl)
+	{
+
+		LookForward = !bInvertControls ? GetInputAxisValue(BindingLookForward) : GetInputAxisValue(BindingLookForward) * -1;
+		LookRight = !bInvertControls ? GetInputAxisValue(BindingLookRight) : GetInputAxisValue(BindingLookRight) * -1;
+	}
 
 	const FVector LookDirection = FVector(LookForward, LookRight, 0.f);
 
@@ -216,7 +228,7 @@ void APlayerRobot::ApplyLook(const float deltaSeconds)
 
 void APlayerRobot::FirePrimary()
 {
-	if (bIsFiringPrimary && WeaponPrimary)
+	if (bIsFiringPrimary && WeaponPrimary && bCanControl)
 	{
 		WeaponPrimary->Fire();
 	}
@@ -224,7 +236,7 @@ void APlayerRobot::FirePrimary()
 
 void APlayerRobot::FireAlternate()
 {
-	if (bIsFiringAlternate && WeaponAlternate)
+	if (bIsFiringAlternate && WeaponAlternate && bCanControl)
 	{
 		WeaponAlternate->Fire();
 	}
@@ -232,7 +244,7 @@ void APlayerRobot::FireAlternate()
 
 void APlayerRobot::UseItem()
 {
-	if (bIsUsingItem && Item)
+	if (bIsUsingItem && Item && bCanControl)
 	{
 		Item->Use();
 	}
@@ -408,17 +420,5 @@ int APlayerRobot::GetCurrentHealth()
 
 void APlayerRobot::SetInputActive(bool value)
 {
-	if (value)
-	{
-		EnableInput(Cast<APlayerController>(this));
-	}
-	else
-	{
-		DisableInput(Cast<APlayerController>(this));
-
-		// We have to manually false out bools or else the input ends up locking
-		bIsUsingItem = false;
-		bIsFiringAlternate = false;
-		bIsFiringPrimary = false;
-	}
+	bCanControl = value;
 }
