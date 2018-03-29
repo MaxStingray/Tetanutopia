@@ -280,12 +280,12 @@ void APlayerRobot::Tick(float DeltaTime)
 
 	if (Thruster && !LeftThruster)
 	{
-		LeftThruster = UGameplayStatics::SpawnEmitterAttached(Thruster, RootComponent, NAME_None, FVector(-60.0f,-10.0f,5.0f));
+		LeftThruster = UGameplayStatics::SpawnEmitterAttached(Thruster, RootComponent, NAME_None, FVector(-75.0f,-12.5f,5.0f));
 		FinishAndRegisterComponent(LeftThruster);
 	}
 	if (Thruster && !RightThruster)
 	{
-		RightThruster = UGameplayStatics::SpawnEmitterAttached(Thruster, RootComponent, NAME_None, FVector(-60.0f,10.0f,5.0f));
+		RightThruster = UGameplayStatics::SpawnEmitterAttached(Thruster, RootComponent, NAME_None, FVector(-75.0f,10.0f,5.0f));
 		FinishAndRegisterComponent(RightThruster);
 	}
 
