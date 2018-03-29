@@ -71,6 +71,7 @@ void AMasterAI::Heal(int32 value)
 		health = maxHealth;
 	}
 	UE_LOG(LogTemp, Display, TEXT("AI was healed"));
+	ReceiveOnHeal();
 }
 
 void AMasterAI::EquipWeapon(TSubclassOf<UBaseWeapon> weaponType)
