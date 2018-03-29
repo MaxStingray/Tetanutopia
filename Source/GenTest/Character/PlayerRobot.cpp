@@ -404,8 +404,9 @@ void APlayerRobot::Heal(int amount)
 		if (CurrentHealth > MaxHealth)
 		{
 			CurrentHealth = MaxHealth;
-		}
+		}		
 	}
+	ReceiveOnHeal();
 }
 
 int APlayerRobot::GetMaxHealth()

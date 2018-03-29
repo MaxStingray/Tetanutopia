@@ -272,4 +272,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnDeath"))
 	void ReceiveOnDeath();
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Heal"))
+	void ReceiveOnHeal();
 };
