@@ -43,7 +43,7 @@ void AItemPickup::SetItem(TSubclassOf<UBaseItem> newItem)
 	Item = newItem;
 	StartPickupCooldown();
 
-	if (Item == nullptr)
+	if (Item == nullptr || Item == NULL || Item.Get() == nullptr || Item.Get() == NULL)
 	{
 		Destroy();
 	}
