@@ -37,8 +37,7 @@ protected:
 	int32 health = 100;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 maxHealth = 100;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool Invulerable = false;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

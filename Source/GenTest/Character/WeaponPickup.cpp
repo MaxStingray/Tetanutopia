@@ -48,24 +48,20 @@ AWeaponPickup::AWeaponPickup()
 
 void AWeaponPickup::SetWeapon(TSubclassOf<UBaseWeapon> newWeapon)
 {
-	if (newWeapon != WeaponType)
+	if (Weapon) { Weapon->DestroyComponent(); };
+	if (newWeapon)
 	{
-		if (newWeapon.Get() == nullptr)
-		{
-			Destroy();
-			return;
-		}
+		WeaponType = newWeapon;
 
-		if (Weapon) { Weapon->DestroyComponent(); };
-		if (newWeapon)
-		{
-			WeaponType = newWeapon;
+		Weapon = NewObject<UBaseWeapon>(this, newWeapon);
+		Weapon->AttachTo(RootComponent);
+		Weapon->SetupAttachment(RootComponent);
+		Weapon->SetCollisionProfileName("NoCollision");
+		StartPickupCooldown();
+	}
 
-			Weapon = NewObject<UBaseWeapon>(this, newWeapon);
-			Weapon->AttachTo(RootComponent);
-			Weapon->SetupAttachment(RootComponent);
-			Weapon->SetCollisionProfileName("NoCollision");
-			StartPickupCooldown();
-		}
+	if (Weapon == nullptr)
+	{
+		Destroy();
 	}
 }
