@@ -58,7 +58,9 @@ void AMasterAI::TakeDamage(int value)
 
 	UGameplayStatics::PlaySoundAtLocation(this, HurtSound, GetActorLocation(), GetActorRotation());
 
-	health -= value;
+	if (!Invulerable) {
+		health -= value;
+	}
 	if (health < 0 && !Invulerable) {
 		OnDeath();
 	}
