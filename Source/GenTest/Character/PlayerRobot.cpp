@@ -252,7 +252,8 @@ void APlayerRobot::UseItem()
 
 void APlayerRobot::OnDeath()
 {
-	UE_LOG(LogTemp, Warning, TEXT("**** PLAYER HAS DIED ****"));
+	LeftThruster->DestroyComponent();
+	RightThruster->DestroyComponent();
 	ReceiveOnDeath();
 }
 
@@ -388,7 +389,9 @@ void APlayerRobot::TakeDamage(int amount)
 
 		if (CurrentHealth <= 0)
 		{
+			bIsVulnerable = false;
 			OnDeath();
+			return;
 		}
 
 		MakeInvulnerable();
