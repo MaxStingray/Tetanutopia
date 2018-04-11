@@ -9,7 +9,10 @@ AHealthPickup::AHealthPickup()
 void AHealthPickup::WhileOverlap(AActor* OtherActor)
 {
 	APlayerRobot* player = Cast<APlayerRobot>(OtherActor);
-	player->Heal(HealthToGrant);
-
-	Destroy();
+	
+	if (player->GetCurrentHealth() < player->GetMaxHealth())
+	{
+		player->Heal(HealthToGrant);
+		Destroy();
+	}
 }
