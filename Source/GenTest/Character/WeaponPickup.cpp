@@ -64,6 +64,7 @@ void AWeaponPickup::SetWeapon(TSubclassOf<UBaseWeapon> newWeapon)
 			Weapon = NewObject<UBaseWeapon>(this, newWeapon);
 			Weapon->AttachTo(RootComponent);
 			Weapon->SetupAttachment(RootComponent);
+			Weapon->SetWorldScale3D(FVector(1.5f, 1.5f, 1.5f));
 			Weapon->SetCollisionProfileName("NoCollision");
 			StartPickupCooldown();
 		}
