@@ -148,9 +148,10 @@ void UBaseWeapon::Fire()
 
 FString UBaseWeapon::GetWeaponName()
 {
-	if (WeaponName.Len() > 0)
+	FString name = WeaponName.ToString();
+	if (name.Len() > 0)
 	{
-		return WeaponName;
+		return name;
 	}
 	else
 	{
@@ -231,7 +232,7 @@ void UBaseWeapon::InitialiseWeaponStats()
 {
 	bCanFire = true;
 	bCanBurstFire = true;
-	WeaponName = "Gun";
+	WeaponName = NSLOCTEXT("Your Namespace", "WeaponKey", "Internal Weapon");
 	bSpreadImpactsOffset = false;
 
 	FireInterval = 1.0f;

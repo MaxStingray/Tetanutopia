@@ -49,7 +49,7 @@ protected:
 	
 	// The name of the weapon
 	UPROPERTY(Category = "_Weapon|Settings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	FString WeaponName;
+	FText WeaponName;
 
 	// The muzzle flash particle effect
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
