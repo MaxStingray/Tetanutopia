@@ -89,7 +89,7 @@ void APickup::Tick(float DeltaTime)
 	// Rotate in place
 	SetActorRotation(GetActorRotation() + FRotator(0.0f, RotationSpeed, 0.0f));
 	// Hover up and down
-	SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, HoverSpeed));
+	//SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, HoverSpeed));
 
 	if (OverlappingActor != nullptr)
 	{
