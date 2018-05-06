@@ -42,13 +42,13 @@ void AMasterAI::Attack() {
 	}
 	else
 	{
-		UE_LOG(LogTemp, Display, TEXT("No Weapon"));
+		//UE_LOG(LogTemp, Display, TEXT("No Weapon"));
 	}
 }
 
 void AMasterAI::OnDeath()
 {
-	UE_LOG(LogTemp, Display, TEXT("AI has died"));
+	//UE_LOG(LogTemp, Display, TEXT("AI has died"));
 	this->ReceiveOnDeath();
 }
 
@@ -72,7 +72,7 @@ void AMasterAI::Heal(int32 value)
 	if (health > maxHealth) {
 		health = maxHealth;
 	}
-	UE_LOG(LogTemp, Display, TEXT("AI was healed"));
+	//UE_LOG(LogTemp, Display, TEXT("AI was healed"));
 	ReceiveOnHeal();
 }
 
