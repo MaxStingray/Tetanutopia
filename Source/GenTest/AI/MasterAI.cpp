@@ -54,14 +54,14 @@ void AMasterAI::OnDeath()
 
 void AMasterAI::TakeDamage(int value)
 {
-	UE_LOG(LogTemp, Display, TEXT("AI took damage"));
+	//UE_LOG(LogTemp, Display, TEXT("AI took damage"));
 
 	UGameplayStatics::PlaySoundAtLocation(this, HurtSound, GetActorLocation(), GetActorRotation());
 
 	if (!Invulerable) {
 		health -= value;
 	}
-	if (health < 0 && !Invulerable) {
+	if (health < 0) {
 		OnDeath();
 	}
 }
